@@ -87,7 +87,7 @@ const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
                   <div>
                     <span class={`status-badge status-badge--${booking.status}`}>{label(booking.status)}</span>
                     <h2>{booking.name}</h2>
-                    <p>Requested {booking.preferredDate} · {label(booking.preferredTime)}</p>
+                    {booking.contactMethod ? <p>{booking.contactMethod === 'text' ? 'Text back requested' : 'Call back requested'}</p> : <p>Requested {booking.preferredDate} · {label(booking.preferredTime)}</p>}
                   </div>
                   <p class="admin-booking__received">Received {dateFormatter.format(new Date(booking.createdAt))}</p>
                 </div>

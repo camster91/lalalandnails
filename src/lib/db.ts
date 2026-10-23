@@ -29,6 +29,7 @@ async function initializeDatabase(): Promise<void> {
       name TEXT NOT NULL,
       email TEXT,
       phone TEXT,
+      contact_method TEXT,
       preferred_date TEXT NOT NULL,
       preferred_time TEXT NOT NULL,
       service_slug TEXT NOT NULL DEFAULT 'european-manicure',
@@ -47,4 +48,16 @@ async function initializeDatabase(): Promise<void> {
     d1.prepare(`CREATE INDEX IF NOT EXISTS idx_chat_rate_limits_expires
       ON chat_rate_limits(expires_at)`),
   ]);
+
+  // Add the reply preference without changing existing appointment records.
+  const columns = await d1.prepare('PRAGMA table_info(booking_requests)').all<{ name: string }>();
+  if (!columns.results.some((column) => column.name === 'contact_method')) {
+    try {
+      await d1.prepare('ALTER TABLE booking_requests ADD COLUMN contact_method TEXT').run();
+    } catch (error) {
+      // Another Worker may have completed the same additive migration.
+      const current = await d1.prepare('PRAGMA table_info(booking_requests)').all<{ name: string }>();
+      if (!current.results.some((column) => column.name === 'contact_method')) throw error;
+    }
+  }
 }

@@ -7,6 +7,7 @@ export const bookingRequests = sqliteTable('booking_requests', {
   name: text('name').notNull(),
   email: text('email'),
   phone: text('phone'),
+  contactMethod: text('contact_method'),
   preferredDate: text('preferred_date').notNull(),
   preferredTime: text('preferred_time').notNull(),
   serviceSlug: text('service_slug').notNull().default('european-manicure'),

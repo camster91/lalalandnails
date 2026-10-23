@@ -2,8 +2,7 @@ import type { APIRoute } from 'astro';
 import { bookingRequests } from '../../../db/schema';
 import { ensureDatabase, getD1, getDb } from '../../lib/db';
 
-const TIME_PREFERENCES = new Set(['morning', 'afternoon', 'evening', 'flexible']);
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTACT_METHODS = new Set(['call', 'text']);
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -15,19 +14,16 @@ export const POST: APIRoute = async ({ request }) => {
     if (String(input.website ?? '').trim()) return json({ ok: true }, 202);
 
     const name = clean(input.name, 80);
-    const email = clean(input.email, 120).toLowerCase();
     const phone = clean(input.phone, 40);
-    const preferredDate = clean(input.preferredDate, 10);
-    const preferredTime = clean(input.preferredTime, 20);
+    const contactMethod = clean(input.contactMethod, 10);
     const notes = clean(input.notes, 600);
     const consent = input.consent === true || input.consent === 'on' || input.consent === 'true';
 
     const errors: Record<string, string> = {};
     if (name.length < 2) errors.name = 'Please enter your name.';
-    if (!email && !phone) errors.contact = 'Please provide an email address or phone number.';
-    if (email && !EMAIL_PATTERN.test(email)) errors.email = 'Please enter a valid email address.';
-    if (!isValidPreferredDate(preferredDate)) errors.preferredDate = 'Choose a date within the next year.';
-    if (!TIME_PREFERENCES.has(preferredTime)) errors.preferredTime = 'Choose a time preference.';
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) errors.phone = 'Please enter a valid phone number.';
+    if (!CONTACT_METHODS.has(contactMethod)) errors.contactMethod = 'Choose a call or text back.';
     if (!consent) errors.consent = 'Consent is required so La La Land can respond.';
 
     if (Object.keys(errors).length > 0) return json({ ok: false, errors }, 400);
@@ -35,7 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
     await ensureDatabase();
     const duplicate = await getD1().prepare(`SELECT id FROM booking_requests
       WHERE created_at > ? AND ((email IS NOT NULL AND email = ?) OR (phone IS NOT NULL AND phone = ?))
-      LIMIT 1`).bind(Date.now() - 10 * 60 * 1000, email || '__none__', phone || '__none__').first();
+      LIMIT 1`).bind(Date.now() - 10 * 60 * 1000, '__none__', phone).first();
 
     if (duplicate) {
       return json({ ok: false, message: 'A recent request already uses those contact details. Please wait before trying again.' }, 429);
@@ -49,10 +45,11 @@ export const POST: APIRoute = async ({ request }) => {
       createdAt: now,
       updatedAt: now,
       name,
-      email: email || null,
+      email: null,
       phone: phone || null,
-      preferredDate,
-      preferredTime,
+      contactMethod,
+      preferredDate: '',
+      preferredTime: '',
       notes,
       serviceSlug: 'european-manicure',
       status: 'pending',
@@ -63,7 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({
       ok: true,
       id,
-      message: 'Your request has been received. This is not a confirmed appointment; La La Land will contact you using the details provided.',
+      message: `Thanks! Bianca will ${contactMethod === 'text' ? 'text' : 'call'} you to discuss your appointment. Your appointment is confirmed after you agree on the details.`,
     }, 201);
   } catch (error) {
     console.error('booking_request_failed', error instanceof Error ? error.message : 'unknown');
@@ -73,16 +70,6 @@ export const POST: APIRoute = async ({ request }) => {
 
 function clean(value: unknown, maxLength: number): string {
   return String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, maxLength);
-}
-
-function isValidPreferredDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const candidate = new Date(`${value}T12:00:00Z`);
-  if (Number.isNaN(candidate.getTime())) return false;
-  const today = new Date();
-  const start = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
-  const end = start + 366 * 24 * 60 * 60 * 1000;
-  return candidate.getTime() >= start && candidate.getTime() <= end;
 }
 
 function json(body: unknown, status: number): Response {

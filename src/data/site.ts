@@ -130,18 +130,18 @@ export const siteConfig: SiteConfig = {
   process: [
     {
       number: '01',
-      title: 'Share your preferred date',
-      description: 'Share your preferred date and the part of the day that works for you.',
+      title: 'Leave your number',
+      description: 'Share your name and phone number, then choose a call or text back.',
     },
     {
       number: '02',
       title: 'We review your request',
-      description: 'Your request is checked before an appointment is confirmed.',
+      description: 'Bianca will call or text to discuss your nails and find a time that works.',
     },
     {
       number: '03',
       title: 'Hear back from La La Land',
-      description: 'We’ll contact you using the details you provide. Your appointment is confirmed only after our follow-up.',
+      description: 'Agree on the service, price and visit details with Bianca before your appointment is confirmed.',
     },
   ],
   gallery: [],
@@ -153,7 +153,7 @@ export const siteConfig: SiteConfig = {
     { question: 'How do I find out the price and appointment length?', answer: 'Include your preferred length, finish, any design ideas and whether you have product on your nails. Ask Bianca about the service, price and appointment length before confirming your visit.' },
     { question: 'Should I mention existing gel or extensions?', answer: 'Yes. Let Bianca know what is currently on your nails, including gel, extensions or another product. This helps you discuss the appropriate appointment and whether removal needs to be arranged.' },
     { question: 'Can I bring a Pinterest inspiration photo?', answer: 'Yes. Save a few references showing the shape, length, colour or detail you like. Describe your ideas in the request, then discuss the reference photos and what is achievable with Bianca before confirming.' },
-    { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. The form sends an appointment request. La La Land will follow up using the email address or phone number you provide before your appointment is confirmed.' },
+    { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. Choose a call or text back and leave your phone number. Bianca will follow up to discuss availability, the service and the visit details before confirming your appointment.' },
     { question: 'Are the inspiration photos Bianca’s client work?', answer: 'The inspiration images currently shown are licensed stock photographs of real manicures. They are visual references, not Bianca’s portfolio or a promise of a particular result.' },
   ],
   policies: [],

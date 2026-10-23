@@ -2,9 +2,9 @@
   <div class="request-booking__intro reveal">
     <p class="eyebrow">Request an appointment</p>
     <h2 id="request-title">Your next manicure <em>starts here.</em></h2>
-    <p>Choose a preferred date and time. La La Land will review your request and contact you before the appointment is confirmed.</p>
+    <p>Leave your number and choose a call or text back. We’ll help you find an appointment that works.</p>
 
-    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>A request, then a confirmation.</strong><br />Your preferred date is a starting point. Please wait for La La Land to confirm your appointment before making plans to visit.</p></div>
+    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>Let’s find your appointment.</strong><br />No need to choose a day now. Bianca will follow up to discuss availability and confirm the details.</p></div>
   </div>
 
   <form class="booking-form reveal" data-booking-form action="/api/bookings" method="post" novalidate>
@@ -17,37 +17,19 @@
       <input name="name" autocomplete="name" maxlength="80" required />
     </label>
 
-    <fieldset class="booking-form__contact" aria-describedby="contact-hint">
-      <legend>How should La La Land contact you?</legend>
-      <div class="booking-form__split">
-        <label>
-          Email
-          <input name="email" type="email" autocomplete="email" maxlength="120" aria-describedby="contact-hint" />
-        </label>
-        <label>
-          Phone
-          <input name="phone" type="tel" autocomplete="tel" maxlength="40" aria-describedby="contact-hint" />
-        </label>
-      </div>
-      <p class="field-hint" id="contact-hint">Provide at least one way to contact you.</p>
-    </fieldset>
+    <label>
+      Phone number <span aria-hidden="true">*</span>
+      <input name="phone" type="tel" autocomplete="tel" maxlength="40" required aria-describedby="contact-hint" />
+    </label>
+    <p class="field-hint" id="contact-hint">Use a mobile number if you’d like a text back.</p>
 
-    <div class="booking-form__split">
-      <label>
-        Preferred date <span aria-hidden="true">*</span>
-        <input name="preferredDate" type="date" required data-preferred-date />
-      </label>
-      <label>
-        Time preference <span aria-hidden="true">*</span>
-        <select name="preferredTime" required>
-          <option value="">Choose one</option>
-          <option value="morning">Morning</option>
-          <option value="afternoon">Afternoon</option>
-          <option value="evening">Evening</option>
-          <option value="flexible">Flexible</option>
-        </select>
-      </label>
-    </div>
+    <label>
+      How should we get back to you? <span aria-hidden="true">*</span>
+      <select name="contactMethod" required>
+        <option value="text">Text me</option>
+        <option value="call">Call me</option>
+      </select>
+    </label>
 
     <label>
       What do you have in mind? <span class="field-optional">Optional</span>
@@ -60,7 +42,7 @@
     </label>
 
     <p class="field-hint">Please keep notes appointment-related and leave out medical information.</p>
-    <button class="button button--cream" type="submit">Send appointment request</button>
+    <button class="button button--cream" type="submit">Request a call or text</button>
     <p class="booking-form__status" data-booking-status role="status" aria-live="polite"></p>
   </form>
 </section>
@@ -68,26 +50,15 @@
 <script>
   const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
   const status = form?.querySelector<HTMLElement>('[data-booking-status]');
-  const dateInput = form?.querySelector<HTMLInputElement>('[data-preferred-date]');
-
-  if (dateInput) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    dateInput.min = `${year}-${month}-${day}`;
-  }
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const email = form.elements.namedItem('email') as HTMLInputElement | null;
     const phone = form.elements.namedItem('phone') as HTMLInputElement | null;
-    const hasContact = Boolean(email?.value.trim() || phone?.value.trim());
-    email?.setAttribute('aria-invalid', String(!hasContact));
-    phone?.setAttribute('aria-invalid', String(!hasContact));
-    if (!hasContact) {
-      if (status) status.textContent = 'Provide an email address or phone number so La La Land can respond.';
-      email?.focus();
+    const validPhone = (phone?.value.replace(/\D/g, '').length ?? 0) >= 10 && (phone?.value.replace(/\D/g, '').length ?? 0) <= 15;
+    phone?.setAttribute('aria-invalid', String(!validPhone));
+    if (!validPhone) {
+      if (status) status.textContent = 'Enter a valid phone number so we can call or text you.';
+      phone?.focus();
       return;
     }
     if (!form.reportValidity()) return;
