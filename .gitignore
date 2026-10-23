@@ -1,0 +1,10 @@
+node_modules/
+.astro/
+dist/
+previews/
+work/
+.wrangler/
+*.tgz
+.env
+.env.*
+!.env.example

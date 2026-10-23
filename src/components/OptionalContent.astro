@@ -1,0 +1,68 @@
+---
+import type { FaqEntry, GalleryEntry, ReviewEntry } from '../data/site';
+
+interface Props {
+  gallery: GalleryEntry[];
+  reviews: ReviewEntry[];
+  faqs: FaqEntry[];
+  policies: string[];
+}
+
+const { gallery, reviews, faqs, policies } = Astro.props;
+---
+
+{gallery.length > 0 && (
+  <section class="gallery section" id="work" aria-labelledby="work-title">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Selected work</p>
+      <h2 id="work-title">The La La Land <em>look.</em></h2>
+    </div>
+    <div class="gallery__grid">
+      {gallery.map((image) => (
+        <figure class="gallery__item reveal">
+          <img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+
+{reviews.length > 0 && (
+  <section class="reviews section" id="reviews" aria-labelledby="reviews-title">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Client notes</p>
+      <h2 id="reviews-title">In their <em>words.</em></h2>
+    </div>
+    <div class="reviews__grid">
+      {reviews.map((review) => (
+        <figure class="review reveal">
+          <blockquote>“{review.quote}”</blockquote>
+          <figcaption>{review.attribution}<span>{review.source}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+
+{(faqs.length > 0 || policies.length > 0) && (
+  <section class="faq section" id="faq" aria-labelledby="faq-title">
+    <div class="section-heading reveal">
+      <p class="eyebrow">Questions, answered</p>
+      <h2 id="faq-title">What would you like to <em>know?</em></h2>
+    </div>
+    <div class="faq__content reveal">
+      {faqs.map((item) => (
+        <details data-faq>
+          <summary>{item.question}<span aria-hidden="true">+</span></summary>
+          <p>{item.answer}</p>
+        </details>
+      ))}
+      {policies.length > 0 && (
+        <div class="policy-summary">
+          <h3>Policy summary</h3>
+          <ul>{policies.map((policy) => <li>{policy}</li>)}</ul>
+        </div>
+      )}
+    </div>
+  </section>
+)}

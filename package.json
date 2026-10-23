@@ -1,0 +1,27 @@
+{
+  "name": "lala-land-nails",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/prepare-sites-build.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "db:generate": "drizzle-kit generate"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/cloudflare": "^14.2.3",
+    "@cloudflare/workers-types": "^5.20260823.1",
+    "@openai/sites-vite-plugin": "^0.2.0",
+    "astro": "^7.2.4",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.125.0"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "gsap": "^3.15.0",
+    "lottie-web": "^5.13.0"
+  }
+}

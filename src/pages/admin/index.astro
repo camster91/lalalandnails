@@ -1,0 +1,140 @@
+---
+import { desc, eq } from 'drizzle-orm';
+import { bookingRequests } from '../../../db/schema';
+import { getAdminUser, getAuthenticatedUser } from '../../lib/auth';
+import { ensureDatabase, getDb } from '../../lib/db';
+import '../../styles/global.css';
+
+export const prerender = false;
+
+const authenticatedUser = getAuthenticatedUser(Astro.request);
+if (!authenticatedUser) return Astro.redirect('/signin-with-chatgpt?return_to=%2Fadmin');
+
+const adminUser = getAdminUser(Astro.request);
+if (!adminUser) Astro.response.status = 403;
+
+const allowedStatuses = ['pending', 'contacted', 'confirmed', 'declined', 'completed'] as const;
+type BookingStatus = typeof allowedStatuses[number];
+const requestedStatus = Astro.url.searchParams.get('status');
+const activeStatus = allowedStatuses.includes(requestedStatus as BookingStatus)
+  ? requestedStatus as BookingStatus
+  : null;
+
+let bookings: typeof bookingRequests.$inferSelect[] = [];
+let counts = Object.fromEntries(allowedStatuses.map((status) => [status, 0])) as Record<BookingStatus, number>;
+
+if (adminUser) {
+  await ensureDatabase();
+  const db = getDb();
+  const allBookings = await db.select().from(bookingRequests).orderBy(desc(bookingRequests.createdAt)).limit(250);
+  counts = allBookings.reduce((result, booking) => {
+    if (allowedStatuses.includes(booking.status as BookingStatus)) result[booking.status as BookingStatus] += 1;
+    return result;
+  }, counts);
+  bookings = activeStatus
+    ? await db.select().from(bookingRequests).where(eq(bookingRequests.status, activeStatus)).orderBy(desc(bookingRequests.createdAt)).limit(100)
+    : allBookings.slice(0, 100);
+}
+
+const dateFormatter = new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Toronto' });
+const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#330505" />
+    <link rel="icon" href="/brand/submark.svg" type="image/svg+xml" />
+    <title>Booking admin | La La Land Nail Hub</title>
+  </head>
+  <body class="admin-body">
+    {adminUser ? (
+      <main class="admin-shell">
+        <header class="admin-header">
+          <div>
+            <p class="eyebrow">La La Land Nail Hub</p>
+            <h1>Booking requests</h1>
+            <p>Signed in as {adminUser.fullName ?? adminUser.email}</p>
+          </div>
+          <div class="admin-header__actions">
+            <a class="button button--cream" href="/">View website</a>
+            <a class="text-link" href="/signout-with-chatgpt?return_to=/">Sign out</a>
+          </div>
+        </header>
+
+        <nav class="admin-filters" aria-label="Booking status filters">
+          <a class:list={{ 'is-active': !activeStatus }} href="/admin">All</a>
+          {allowedStatuses.map((status) => (
+            <a class:list={{ 'is-active': activeStatus === status }} href={`/admin?status=${status}`}>
+              {label(status)} <span>{counts[status]}</span>
+            </a>
+          ))}
+        </nav>
+
+        {bookings.length === 0 ? (
+          <section class="admin-empty">
+            <h2>No requests here yet.</h2>
+            <p>New appointment requests will appear in this dashboard.</p>
+          </section>
+        ) : (
+          <section class="admin-bookings" aria-label="Appointment requests">
+            {bookings.map((booking) => (
+              <article class="admin-booking">
+                <div class="admin-booking__summary">
+                  <div>
+                    <span class={`status-badge status-badge--${booking.status}`}>{label(booking.status)}</span>
+                    <h2>{booking.name}</h2>
+                    <p>Requested {booking.preferredDate} · {label(booking.preferredTime)}</p>
+                  </div>
+                  <p class="admin-booking__received">Received {dateFormatter.format(new Date(booking.createdAt))}</p>
+                </div>
+
+                <dl class="admin-booking__details">
+                  {booking.email && <div><dt>Email</dt><dd><a href={`mailto:${booking.email}`}>{booking.email}</a></dd></div>}
+                  {booking.phone && <div><dt>Phone</dt><dd><a href={`tel:${booking.phone}`}>{booking.phone}</a></dd></div>}
+                  <div><dt>Service</dt><dd>European manicure</dd></div>
+                  {booking.notes && <div><dt>Client note</dt><dd>{booking.notes}</dd></div>}
+                </dl>
+
+                <form class="admin-booking__form" method="post" action={`/api/admin/bookings/${booking.id}`}>
+                  <label>
+                    Status
+                    <select name="status">
+                      {allowedStatuses.map((status) => <option value={status} selected={booking.status === status}>{label(status)}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Private admin note
+                    <textarea name="adminNote" maxlength="500" rows="3">{booking.adminNote}</textarea>
+                  </label>
+                  <div class="admin-booking__form-actions">
+                    <button class="button" type="submit" name="action" value="update">Save request</button>
+                    <button class="admin-delete" type="submit" name="action" value="delete" data-confirm-delete>Delete permanently</button>
+                  </div>
+                </form>
+              </article>
+            ))}
+          </section>
+        )}
+      </main>
+    ) : (
+      <main class="admin-denied">
+        <p class="eyebrow">Access denied</p>
+        <h1>This account is not an administrator.</h1>
+        <a class="button button--cream" href="/">Return to the website</a>
+      </main>
+    )}
+    <script>
+      document.querySelectorAll<HTMLButtonElement>('[data-confirm-delete]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          if (!window.confirm('Permanently delete this appointment request? This cannot be undone.')) {
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

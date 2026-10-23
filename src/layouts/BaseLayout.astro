@@ -1,0 +1,101 @@
+---
+import '../styles/global.css';
+import type { SiteConfig } from '../data/site';
+
+interface Props {
+  site: SiteConfig;
+  title?: string;
+  description?: string;
+}
+
+const {
+  site,
+  title = 'European Manicures in Scarborough | La La Land Nail Hub',
+  description = 'Request a European manicure with Bianca Ashley at La La Land Nail Hub in Scarborough. Welcoming clients from Durham Region and across the GTA.',
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();
+const socialImage = new URL('/images/photography/17010953-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': ['BeautySalon', 'LocalBusiness'],
+  '@id': `${site.canonicalOrigin}/#business`,
+  name: site.businessName,
+  areaServed: ['Scarborough', 'Durham Region', 'Greater Toronto Area'],
+  url: canonicalUrl,
+  image: socialImage,
+  description,
+  knowsAbout: site.specialty,
+  ...(site.contact?.type === 'phone' ? { telephone: site.contact.href.replace('tel:', '') } : {}),
+  ...(site.location.locality && site.location.region && site.location.country ? {
+    address: {
+      '@type': 'PostalAddress',
+      ...(site.location.streetAddress ? { streetAddress: site.location.streetAddress } : {}),
+      addressLocality: site.location.locality,
+      addressRegion: site.location.region,
+      ...(site.location.postalCode ? { postalCode: site.location.postalCode } : {}),
+      addressCountry: site.location.country,
+    },
+  } : {}),
+  ...(site.socials.length > 0 ? { sameAs: site.socials.map((social) => social.href) } : {}),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#330505" />
+    <meta name="robots" content={site.launchReady ? 'index, follow' : 'noindex, nofollow'} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={site.businessName} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1440" />
+    <meta property="og:image:height" content="1800" />
+    <meta property="og:image:alt" content="Real red manicure inspiration photograph; not La La Land client work" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Real red manicure inspiration photograph; not La La Land client work" />
+    <link rel="icon" href="/brand/submark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/brand/submark.svg" color="#330505" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {site.analytics.domain && (
+      <script is:inline defer data-domain={site.analytics.domain} src="https://plausible.io/js/script.js"></script>
+    )}
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    <script is:inline>
+      window.plausible = window.plausible || function () {
+        (window.plausible.q = window.plausible.q || []).push(arguments);
+      };
+
+      document.addEventListener('click', function (event) {
+        const target = event.target instanceof Element ? event.target.closest('[data-analytics-events]') : null;
+        if (!target) return;
+        const events = (target.getAttribute('data-analytics-events') || '').split(/\s+/).filter(Boolean);
+        events.forEach(function (name) { window.plausible(name); });
+      });
+
+      document.querySelectorAll('[data-faq]').forEach(function (details) {
+        details.addEventListener('toggle', function () {
+          if (details.open) window.plausible('faq_engagement');
+        });
+      });
+    </script>
+  </body>
+</html>

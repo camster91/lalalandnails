@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout site={siteConfig} title="Page not found | La La Land Nail Hub">
+  <main class="not-found">
+    <BrandLogo />
+    <p class="eyebrow">404</p>
+    <h1>This page wandered off.</h1>
+    <a class="button button--cream" href="/">Back to the nail hub</a>
+  </main>
+</BaseLayout>

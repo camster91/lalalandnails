@@ -1,0 +1,73 @@
+---
+import type { ProcessStep } from '../data/site';
+
+interface Props {
+  steps: ProcessStep[];
+}
+
+const { steps } = Astro.props;
+---
+
+<section class="process section" id="process" aria-labelledby="process-title" data-process>
+  <div class="process__visual reveal" aria-hidden="true">
+    <img src="/images/photography/13424007-1440.webp" alt="" width="1440" height="960" loading="lazy" />
+    <div class="process__visual-overlay">
+      <div><span data-process-number>{steps[0]?.number}</span><small>Manicure reference</small></div>
+      <img src="/brand/submark.svg" alt="" />
+    </div>
+  </div>
+
+  <div class="process__content">
+    <div class="process__heading reveal">
+      <p class="eyebrow">How appointment requests work</p>
+      <h2 id="process-title">Three simple <em>steps.</em></h2>
+    </div>
+
+    <ol class="process__steps">
+      {steps.map((step, index) => (
+        <li class:list={['process__step', { 'is-active': index === 0 }]} data-process-step data-number={step.number}>
+          <span>{step.number}</span>
+          <div>
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<script>
+  const process = document.querySelector<HTMLElement>('[data-process]');
+  const steps = [...(process?.querySelectorAll<HTMLElement>('[data-process-step]') ?? [])];
+  const number = process?.querySelector<HTMLElement>('[data-process-number]');
+  const image = process?.querySelector<HTMLImageElement>('.process__visual > img');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = window.matchMedia('(max-width: 640px)');
+  let scheduled = false;
+
+  const update = () => {
+    scheduled = false;
+    if (!process || !steps.length) return;
+    const centre = window.innerHeight * .55;
+    let nearest = steps[0];
+    let distance = Infinity;
+    steps.forEach((step) => {
+      const rect = step.getBoundingClientRect();
+      const current = Math.abs(rect.top + rect.height / 2 - centre);
+      if (current < distance) { distance = current; nearest = step; }
+    });
+    steps.forEach((step) => step.classList.toggle('is-active', step === nearest));
+    if (number) number.textContent = nearest.dataset.number ?? '01';
+    if (image) {
+      const rect = process.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight)));
+      image.style.transform = reduceMotion.matches || mobile.matches ? '' : `translateY(${(progress - .5) * 12}%)`;
+    }
+  };
+  const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(update); } };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  reduceMotion.addEventListener('change', schedule);
+  update();
+</script>

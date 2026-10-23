@@ -1,0 +1,32 @@
+---
+import BrandLogo from './BrandLogo.astro';
+import type { SiteConfig } from '../data/site';
+
+interface Props {
+  site: SiteConfig;
+}
+
+const { site } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="site-footer__brand">
+    <BrandLogo compact />
+    <p>European manicures by Bianca Ashley. Appointments by request.</p>
+  </div>
+  <div class="site-footer__links">
+    <a href="#service">The service</a>
+    <a href="#about">About Bianca</a>
+    <a href="#visit">Visiting from the GTA</a>
+    <a href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
+    {site.socials.map((social) => <a href={social.href}>{social.label}</a>)}
+    {site.googleBusinessUrl && <a href={site.googleBusinessUrl}>Google Business Profile</a>}
+  </div>
+  <div class="site-footer__details">
+    {site.location.displayName && <p>{site.location.displayName}</p>}
+    {site.hours.map((hours) => <p>{hours}</p>)}
+    {site.contact && <a href={site.contact.href} data-analytics-events={`${site.contact.type}_click`}>{site.contact.label}</a>}
+    <p>By appointment.</p>
+    <p class="site-footer__copyright">© {new Date().getFullYear()} {site.businessName}</p>
+  </div>
+</footer>

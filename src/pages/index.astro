@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProcessStory from '../components/ProcessStory.astro';
+import OptionalContent from '../components/OptionalContent.astro';
+import BookingRequest from '../components/BookingRequest.astro';
+import ChatConcierge from '../components/ChatConcierge.astro';
+import MotionStory from '../components/MotionStory.astro';
+import VisitGuide from '../components/VisitGuide.astro';
+import LocalSection from '../components/LocalSection.astro';
+import MotionExperience from '../components/MotionExperience.astro';
+import { env } from 'cloudflare:workers';
+import { approvedReviews, siteConfig } from '../data/site';
+
+const service = siteConfig.services[0];
+const locationLabel = siteConfig.location.displayName;
+const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
+---
+
+<BaseLayout site={siteConfig}>
+  <div id="top" class="page-shell">
+    <Header site={siteConfig} />
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy reveal">
+          <p class="eyebrow">Scarborough nail studio · By appointment</p>
+          <h1 id="hero-title">European manicures.<br /><em>A little La La Land.</em></h1>
+          <p class="hero__intro">European manicures in Scarborough with Bianca Ashley. Welcoming clients from Durham Region and across the GTA.</p>
+          <div class="hero__actions">
+            <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
+            <a class="text-link" href="#service">Explore the service <span aria-hidden="true">↘</span></a>
+          </div>
+          <p class="hero__availability">European manicures · With Bianca Ashley</p>
+        </div>
+        <figure class="hero__media reveal">
+          <img src="/images/photography/17010953-1440.webp" srcset="/images/photography/17010953-720.webp 720w, /images/photography/17010953-1440.webp 1440w" sizes="(max-width: 900px) 100vw, 50vw" alt="Real photograph of red almond-shaped manicured nails on a light background" width="1440" height="1800" fetchpriority="high" />
+          <figcaption>Manicure inspiration</figcaption>
+        </figure>
+        <img class="hero__mark" src="/brand/submark.svg" alt="" aria-hidden="true" />
+      </section>
+
+      <div class="brand-marquee" data-marquee>
+        <div class="brand-marquee__track" aria-hidden="true">
+          {[0, 1].map(() => <div class="brand-marquee__group">
+            <span>La La Land Nail Hub</span><img src="/brand/submark.svg" alt="" />
+            <span>European manicures</span><img src="/brand/submark.svg" alt="" />
+            <span>With Bianca</span><img src="/brand/submark.svg" alt="" />
+          </div>)}
+        </div>
+        <button class="brand-marquee__pause" type="button" aria-label="Pause scrolling banner" aria-pressed="false" data-marquee-toggle><span aria-hidden="true">Ⅱ</span></button>
+      </div>
+
+      <section class="service section" id="service" aria-labelledby="service-title">
+        <div class="section-heading reveal">
+          <p class="eyebrow">The signature service</p>
+          <h2 id="service-title">A focused approach to <em>your nails.</em></h2>
+        </div>
+        <div class="service__content reveal">
+          <p class="service__lead">{service.description}</p>
+          <dl class="service__facts">
+            <div><dt>Specialty</dt><dd>{siteConfig.specialty}</dd></div>
+            <div><dt>Manicurist</dt><dd>{siteConfig.provider.name}</dd></div>
+            <div><dt>Availability</dt><dd>{service.availability}</dd></div>
+            {service.priceDisplay && <div><dt>Price</dt><dd>{service.priceDisplay}</dd></div>}
+            {service.duration && <div><dt>Duration</dt><dd>{service.duration}</dd></div>}
+            {locationLabel && <div><dt>Location</dt><dd>{locationLabel}</dd></div>}
+          </dl>
+          {service.inclusions.length > 0 && (
+            <div class="service__detail-list">
+              <h3>What’s included</h3>
+              <ul>{service.inclusions.map((item) => <li>{item}</li>)}</ul>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <VisitGuide />
+
+      <MotionStory />
+
+      <section class="about section" id="about" aria-labelledby="about-title">
+        <div class="about__title reveal">
+          <p class="eyebrow">The person behind the polish</p>
+          <h2 id="about-title">Meet <em>Bianca.</em></h2>
+        </div>
+        <div class="about__body reveal">
+          <p class="about__lead">{siteConfig.provider.name}</p>
+          <p class="about__role">{siteConfig.provider.role}</p>
+          <p>Bianca is your point of contact, from your first appointment request through to your European manicure.</p>
+          <a class="text-link" href="#booking">Request an appointment <span aria-hidden="true">↗</span></a>
+          {siteConfig.provider.credentials.length > 0 && (
+            <ul class="about__credentials">
+              {siteConfig.provider.credentials.map((credential) => <li>{credential}</li>)}
+            </ul>
+          )}
+        </div>
+        <img class="about__mark" src="/brand/submark.svg" alt="" aria-hidden="true" />
+      </section>
+
+      <ProcessStory steps={siteConfig.process} />
+
+      <LocalSection />
+
+      <OptionalContent
+        gallery={siteConfig.gallery}
+        reviews={approvedReviews}
+        faqs={siteConfig.faqs}
+        policies={siteConfig.policies}
+      />
+
+      <BookingRequest />
+    </main>
+    <Footer site={siteConfig} />
+    {chatEnabled && <ChatConcierge />}
+    <MotionExperience />
+  </div>
+
+</BaseLayout>
+
+<script>
+  const marquee = document.querySelector('[data-marquee]');
+  const pause = document.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+  pause?.addEventListener('click', () => {
+    const paused = marquee?.classList.toggle('is-paused') ?? false;
+    pause.setAttribute('aria-pressed', String(paused));
+    pause.setAttribute('aria-label', paused ? 'Resume scrolling banner' : 'Pause scrolling banner');
+    pause.innerHTML = `<span aria-hidden="true">${paused ? '▶' : 'Ⅱ'}</span>`;
+  });
+</script>

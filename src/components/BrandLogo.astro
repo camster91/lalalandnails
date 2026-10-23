@@ -1,0 +1,11 @@
+---
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+---
+
+<span class:list={['brand-logo', { 'brand-logo--compact': compact }]} role="img" aria-label="La La Land Nail Hub">
+  <img class="brand-logo__top" src="/brand/logo-top.svg" alt="" />
+  <img class="brand-logo__main" src="/brand/logo-main.svg" alt="" />
+</span>

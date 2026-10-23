@@ -1,0 +1,97 @@
+<button class="chat-launcher" type="button" data-chat-open aria-haspopup="dialog">
+  <span aria-hidden="true">✦</span> Ask La La Land
+</button>
+
+<dialog class="chat-dialog" data-chat-dialog aria-labelledby="chat-title">
+  <div class="chat-dialog__header">
+    <div>
+      <p class="eyebrow">AI concierge</p>
+      <h2 id="chat-title">Ask La La Land</h2>
+    </div>
+    <button type="button" class="chat-dialog__close" data-chat-close aria-label="Close concierge">×</button>
+  </div>
+
+  <div class="chat-dialog__messages" data-chat-messages aria-live="polite">
+    <div class="chat-message chat-message--assistant">
+      I can answer questions using La La Land’s approved website information. I cannot provide medical advice or confirm an appointment.
+    </div>
+  </div>
+
+  <div class="chat-prompts" aria-label="Suggested questions">
+    <button type="button" data-chat-prompt="What service does La La Land offer?">The service</button>
+    <button type="button" data-chat-prompt="How do I request an appointment?">Booking</button>
+    <button type="button" data-chat-prompt="Who will lead my appointment?">About Bianca</button>
+  </div>
+
+  <form class="chat-form" data-chat-form>
+    <label class="sr-only" for="chat-question">Your question</label>
+    <input id="chat-question" name="message" maxlength="500" autocomplete="off" placeholder="Ask a question…" required />
+    <button type="submit" aria-label="Send question">Send</button>
+  </form>
+  <p class="chat-disclaimer">Messages are not stored by La La Land. Do not include health, payment, or other sensitive information.</p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-chat-dialog]');
+  const openButton = document.querySelector<HTMLButtonElement>('[data-chat-open]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-chat-close]');
+  const form = dialog?.querySelector<HTMLFormElement>('[data-chat-form]');
+  const input = form?.querySelector<HTMLInputElement>('input[name="message"]');
+  const messages = dialog?.querySelector<HTMLElement>('[data-chat-messages]');
+
+  const openDialog = () => {
+    dialog?.showModal();
+    input?.focus();
+    window.plausible?.('concierge_opened');
+  };
+
+  openButton?.addEventListener('click', openDialog);
+  closeButton?.addEventListener('click', () => dialog?.close());
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+
+  dialog?.querySelectorAll<HTMLButtonElement>('[data-chat-prompt]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!input) return;
+      input.value = button.dataset.chatPrompt ?? '';
+      input.focus();
+    });
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const question = input?.value.trim() ?? '';
+    if (!question || !messages || !input) return;
+
+    appendMessage(messages, question, 'user');
+    input.value = '';
+    input.disabled = true;
+    const waiting = appendMessage(messages, 'Thinking…', 'assistant');
+
+    try {
+      const response = await fetch('/api/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: question }),
+      });
+      const result = await response.json() as { answer?: string; message?: string };
+      waiting.textContent = result.answer || result.message || 'The concierge could not answer right now.';
+      window.plausible?.('concierge_question');
+    } catch {
+      waiting.textContent = 'The concierge could not answer right now. Please try again shortly.';
+    } finally {
+      input.disabled = false;
+      input.focus();
+    }
+  });
+
+  function appendMessage(container: HTMLElement, text: string, role: 'user' | 'assistant'): HTMLDivElement {
+    const message = document.createElement('div');
+    message.className = `chat-message chat-message--${role}`;
+    message.textContent = text;
+    container.appendChild(message);
+    container.scrollTop = container.scrollHeight;
+    return message;
+  }
+</script>

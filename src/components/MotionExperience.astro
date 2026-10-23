@@ -1,0 +1,37 @@
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const running = new Set<Animation>();
+  let parallaxCleanup: (() => void) | undefined;
+
+  if (!reduced.matches && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) return;
+        observer.unobserve(entry.target);
+        const animation = entry.target.animate([
+          { opacity: .35, transform: 'translateY(22px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+        ], {duration: 650, easing: 'cubic-bezier(.2,.7,.2,1)'});
+        running.add(animation);
+        animation.onfinish = () => running.delete(animation);
+      });
+    }, {threshold: .12});
+    document.querySelectorAll<HTMLElement>('.reveal').forEach(element => observer.observe(element));
+
+    const desktop = window.matchMedia('(min-width: 901px)');
+    if (desktop.matches) {
+      void Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(([{gsap},{ScrollTrigger}]) => {
+        if (reduced.matches || !desktop.matches) return;
+        gsap.registerPlugin(ScrollTrigger);
+        const context = gsap.context(() => {
+          gsap.fromTo('.hero__media img', {scale:1}, {scale:1.06, ease:'none', scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:.8}});
+          gsap.fromTo('.about__mark', {rotation:-6}, {rotation:6, ease:'none', scrollTrigger:{trigger:'.about',start:'top bottom',end:'bottom top',scrub:1}});
+        });
+        parallaxCleanup = () => context.revert();
+      }).catch(() => {});
+    }
+    const stop = () => { observer.disconnect(); running.forEach(animation => animation.cancel()); parallaxCleanup?.(); };
+    reduced.addEventListener('change', () => { if (reduced.matches) stop(); });
+    desktop.addEventListener('change', () => { if (!desktop.matches) parallaxCleanup?.(); });
+  }
+</script>

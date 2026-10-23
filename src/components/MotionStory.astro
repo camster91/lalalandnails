@@ -1,0 +1,45 @@
+---
+const photos = [
+  { id: '17010953', title: 'A classic red', alt: 'Red almond nails photographed against a light background', credit: 'Andrea Mosti', source: 'https://www.pexels.com/photo/a-hand-with-red-painted-nails-17010953/', width:1440, height:1800 },
+  { id: '6941115', title: 'A softer palette', alt: 'Real hands with pale neutral nails resting on white fabric', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/photo-of-a-woman-s-hands-6941115/', width:1440, height:960 },
+  { id: '3997384', title: 'Colour, up close', alt: 'A red manicure photographed at a real salon table', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/person-with-red-nail-polish-3997384/', width:1440, height:2160 },
+  { id: '13424007', title: 'The finer details', alt: 'A nail technician using a file during a real manicure appointment', credit: 'Soana Beatriz', source: 'https://www.pexels.com/photo/a-manicurist-filing-a-client-s-nail-13424007/', width:1440, height:960 },
+  { id: '3997397', title: 'At the manicure table', alt: 'Red manicured nails and nail tools at a salon workstation', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/person-with-red-manicure-3997397/', width:1440, height:2160 },
+];
+---
+<section class="lookbook section" id="looks" aria-labelledby="looks-title" data-lookbook>
+  <div class="lookbook__heading reveal">
+    <div><p class="eyebrow">Save a little inspiration</p><h2 id="looks-title">Find your next<br /><em>nail mood.</em></h2></div>
+    <div class="lookbook__intro"><p>Real nails. Real texture. A few ideas to start the conversation about your next manicure.</p><div class="lookbook__controls"><button type="button" aria-label="Previous inspiration image" data-slide-prev>←</button><button type="button" aria-label="Next inspiration image" data-slide-next>→</button><span>Swipe or use the arrows</span></div></div>
+  </div>
+  <div class="lookbook__rail" data-slide-rail tabindex="0" role="region" aria-label="Manicure inspiration photos. Use arrow keys or swipe to browse.">
+    {photos.map((photo, index) => <figure class="lookbook__slide"><div class="lookbook__image"><img src={`/images/photography/${photo.id}-1440.webp`} srcset={`/images/photography/${photo.id}-720.webp 720w, /images/photography/${photo.id}-1440.webp 1440w`} sizes="(max-width: 640px) 78vw, (max-width:900px) 46vw, 430px" alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" /></div><figcaption><span>{String(index+1).padStart(2,'0')} / {photo.title}</span><a href={photo.source}>Photo: {photo.credit}</a></figcaption></figure>)}
+  </div>
+  <p class="lookbook__disclosure">Licensed photographs of real manicures, shown for inspiration. These are not Bianca’s client work. Discuss your reference ideas and the available options before confirming.</p>
+</section>
+<script>
+  const book = document.querySelector<HTMLElement>('[data-lookbook]');
+  const rail = book?.querySelector<HTMLElement>('[data-slide-rail]');
+  const prev = book?.querySelector<HTMLButtonElement>('[data-slide-prev]');
+  const next = book?.querySelector<HTMLButtonElement>('[data-slide-next]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const update = () => {
+    if (!rail) return;
+    if (prev) prev.disabled = rail.scrollLeft <= 2;
+    if (next) next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 2;
+  };
+  const slide = (direction: number) => {
+    if (!rail) return;
+    const card = rail.querySelector<HTMLElement>('.lookbook__slide');
+    rail.scrollBy({left: direction * ((card?.offsetWidth ?? rail.clientWidth) + 24), behavior: reduced.matches ? 'instant' : 'smooth'});
+  };
+  prev?.addEventListener('click', () => slide(-1));
+  next?.addEventListener('click', () => slide(1));
+  rail?.addEventListener('scroll', update, {passive:true});
+  rail?.addEventListener('keydown', event => {
+    if (event.target !== rail) return;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); slide(event.key === 'ArrowLeft' ? -1 : 1); }
+  });
+  window.addEventListener('resize', update);
+  update();
+</script>

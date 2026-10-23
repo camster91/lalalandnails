@@ -1,0 +1,108 @@
+---
+import BrandLogo from './BrandLogo.astro';
+import type { SiteConfig } from '../data/site';
+
+interface Props {
+  site: SiteConfig;
+}
+
+const { site } = Astro.props;
+---
+
+<header class="site-header" data-header>
+  <a class="site-header__brand" href="#top">
+    <BrandLogo compact />
+  </a>
+
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+    <span class="menu-toggle__label">Menu</span>
+    <span class="menu-toggle__icon" aria-hidden="true"><i></i><i></i></span>
+  </button>
+
+  <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
+    <a href="#service">The service</a>
+    <a href="#looks">Inspiration</a>
+    <a href="#process">How it works</a>
+    <a href="#about">Meet Bianca</a>
+    {site.gallery.length > 0 && <a href="#work">Selected work</a>}
+    {site.faqs.length > 0 && <a href="#faq">Questions</a>}
+    <a class="button button--small" href="#booking" data-analytics-events="booking_request_view">
+      Request an appointment
+    </a>
+  </nav>
+</header>
+
+<a class="mobile-booking" href="#booking" data-analytics-events="booking_request_view">
+  Request an appointment
+</a>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const toggleLabel = toggle?.querySelector<HTMLElement>('.menu-toggle__label');
+  const nav = document.querySelector<HTMLElement>('.site-nav');
+  const links = nav?.querySelectorAll('a');
+  let returnFocus = false;
+
+  const closeMenu = (restoreFocus = false) => {
+    toggle?.setAttribute('aria-expanded', 'false');
+    if (toggleLabel) toggleLabel.textContent = 'Menu';
+    document.body.classList.remove('menu-open');
+    if (restoreFocus) toggle?.focus();
+  };
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!isOpen));
+    if (toggleLabel) toggleLabel.textContent = isOpen ? 'Menu' : 'Close';
+    document.body.classList.toggle('menu-open', !isOpen);
+    returnFocus = !isOpen;
+    if (!isOpen) requestAnimationFrame(() => links?.[0]?.focus());
+  });
+
+  links?.forEach((link) => link.addEventListener('click', () => closeMenu()));
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.body.classList.contains('menu-open')) {
+      closeMenu(returnFocus);
+      returnFocus = false;
+    }
+    if (event.key === 'Tab' && document.body.classList.contains('menu-open') && toggle && links?.length) {
+      const first = links[0];
+      const last = links[links.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        toggle.focus();
+      } else if (event.shiftKey && document.activeElement === toggle) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        toggle.focus();
+      } else if (!event.shiftKey && document.activeElement === toggle) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
+  window.matchMedia('(min-width: 901px)').addEventListener('change', () => closeMenu());
+
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const mobileBooking = document.querySelector<HTMLElement>('.mobile-booking');
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const booking = document.querySelector<HTMLElement>('#booking');
+  const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+  updateHeader();
+  window.addEventListener('scroll', updateHeader, { passive: true });
+
+  if (mobileBooking && hero && booking && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const updateBooking = () => mobileBooking.classList.toggle('is-hidden', visible.size > 0);
+    const bookingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target));
+      updateBooking();
+    }, { threshold: .08 });
+    bookingObserver.observe(hero);
+    bookingObserver.observe(booking);
+  }
+</script>
