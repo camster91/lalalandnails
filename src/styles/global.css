@@ -618,13 +618,22 @@ html, body { overflow-x: clip; }
 .service__content, .about__body, .faq__content, .booking-form { align-self: start; }
 .service > *, .about > *, .faq > *, .request-booking > *, .visit-guide > *, .local > *, .process > * { min-width: 0; }
 @media (min-width: 901px) {
-  .service, .about, .faq, .request-booking, .visit-guide, .local, .process {
+  .service, .about, .faq, .request-booking, .visit-guide, .local, .process, .lookbook__heading {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--split-gap);
     align-items: start;
   }
   .service__content, .about__body, .booking-form { width: 100%; max-width: none; }
 }
+.lookbook__heading { align-items: start; }
+.lookbook__intro > p:first-child { margin-top: 0; }
+.process__heading { padding-top: 0; }
+/* The section owns the shared gutter, including its stacked mobile layout. */
+@media (max-width: 640px) {
+  .process__content { padding-inline: 0; }
+  .process__visual { margin-inline: 0; }
+}
+.process__visual > img { position: absolute; top: -6%; height: 112%; }
 .section-photo { width: 100%; margin: 2rem 0 0; }
 .section-photo__frame { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); background: var(--burgundy-soft); }
 .section-photo--wide .section-photo__frame { aspect-ratio: 16 / 10; }

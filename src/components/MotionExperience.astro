@@ -42,6 +42,15 @@
           });
         });
 
+        // Long sections reveal each item when it arrives, rather than playing
+        // every widget's animation while later items are still off screen.
+        document.querySelectorAll<HTMLElement>('.process__step > div, .lookbook__slide figcaption, .request-booking__note').forEach((widget) => {
+          gsap.fromTo(widget, { y: 12 }, {
+            y: 0, duration: .65, ease: 'power2.out', immediateRender: false,
+            scrollTrigger: { trigger: widget, start: 'top 92%', once: true },
+          });
+        });
+
         // Decorative image motion stays inside clipped frames. Text and forms
         // remain stationary, and touch layouts keep the static composition.
         if (desktop) {
@@ -58,7 +67,7 @@
           parallax('.section-photo__frame > img', 3, 1.02);
           parallax('.hero__media > img', 2, 1.08);
           parallax('.lookbook__image > img', 2, 1.08);
-          parallax('.process__visual > img', 4, 1);
+          parallax('.process__visual > img', 3, 1.02);
           gsap.fromTo('.about__mark', { rotation: -5 }, {
             rotation: 5, ease: 'none',
             scrollTrigger: { trigger: '.about', start: 'top bottom', end: 'bottom top', scrub: 1 },
