@@ -108,8 +108,8 @@ export const siteConfig: SiteConfig = {
   hours: [],
   contact: null,
   bookingUrl: null,
-  canonicalOrigin: 'https://lala-land-nails.cameron91.chatgpt.site',
-  approvedDomain: null,
+  canonicalOrigin: 'https://lalalandnails.ca',
+  approvedDomain: 'lalalandnails.ca',
   launchReady: false,
   analytics: {
     provider: 'plausible',

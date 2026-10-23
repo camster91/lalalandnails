@@ -17,5 +17,16 @@
       "binding": "SESSION",
       "id": "925b577f8134421b8f46dffda7a5d313"
     }
+  ],
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "lalalandnails.ca/*",
+      "zone_name": "lalalandnails.ca"
+    },
+    {
+      "pattern": "www.lalalandnails.ca/*",
+      "zone_name": "lalalandnails.ca"
+    }
   ]
 }
