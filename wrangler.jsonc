@@ -11,5 +11,11 @@
       "database_name": "lalalandnails",
       "database_id": "51ca47db-6fd4-4f57-8d6c-c03e34b13a48"
     }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "925b577f8134421b8f46dffda7a5d313"
+    }
   ]
 }
