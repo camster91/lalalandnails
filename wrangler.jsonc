@@ -1,13 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lala-land-nails-local",
+  "name": "lalalandnails",
   "compatibility_date": "2026-08-23",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "lala-land-nails-local",
-      "database_id": "00000000-0000-4000-8000-000000000000"
+      "database_name": "lalalandnails",
+      "database_id": "51ca47db-6fd4-4f57-8d6c-c03e34b13a48"
     }
   ]
 }
