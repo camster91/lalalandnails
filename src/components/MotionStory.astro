@@ -31,7 +31,8 @@ const photos = [
   const slide = (direction: number) => {
     if (!rail) return;
     const card = rail.querySelector<HTMLElement>('.lookbook__slide');
-    rail.scrollBy({left: direction * ((card?.offsetWidth ?? rail.clientWidth) + 24), behavior: reduced.matches ? 'instant' : 'smooth'});
+    const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
+    rail.scrollBy({left: direction * ((card?.offsetWidth ?? rail.clientWidth) + gap), behavior: reduced.matches ? 'instant' : 'smooth'});
   };
   prev?.addEventListener('click', () => slide(-1));
   next?.addEventListener('click', () => slide(1));

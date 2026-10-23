@@ -1,3 +1,6 @@
+---
+import SectionPhoto from './SectionPhoto.astro';
+---
 <section class="request-booking section" id="booking" aria-labelledby="request-title">
   <div class="request-booking__intro reveal">
     <p class="eyebrow">Request an appointment</p>
@@ -5,6 +8,7 @@
     <p>Leave your number and choose a call or text back. We’ll help you find an appointment that works.</p>
 
     <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>Let’s find your appointment.</strong><br />No need to choose a day now. Bianca will follow up to discuss availability and confirm the details.</p></div>
+    <SectionPhoto photo="neutral" caption="Your next manicure starts with a conversation. Inspiration photograph." aspect="wide" />
   </div>
 
   <form class="booking-form reveal" data-booking-form action="/api/bookings" method="post" novalidate>

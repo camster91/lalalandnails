@@ -41,9 +41,6 @@ const { steps } = Astro.props;
   const process = document.querySelector<HTMLElement>('[data-process]');
   const steps = [...(process?.querySelectorAll<HTMLElement>('[data-process-step]') ?? [])];
   const number = process?.querySelector<HTMLElement>('[data-process-number]');
-  const image = process?.querySelector<HTMLImageElement>('.process__visual > img');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const mobile = window.matchMedia('(max-width: 640px)');
   let scheduled = false;
 
   const update = () => {
@@ -59,15 +56,9 @@ const { steps } = Astro.props;
     });
     steps.forEach((step) => step.classList.toggle('is-active', step === nearest));
     if (number) number.textContent = nearest.dataset.number ?? '01';
-    if (image) {
-      const rect = process.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (rect.height + window.innerHeight)));
-      image.style.transform = reduceMotion.matches || mobile.matches ? '' : `translateY(${(progress - .5) * 12}%)`;
-    }
   };
   const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(update); } };
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule);
-  reduceMotion.addEventListener('change', schedule);
   update();
 </script>

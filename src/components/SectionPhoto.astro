@@ -1,0 +1,24 @@
+---
+interface Props {
+  photo: 'colour' | 'neutral' | 'detail' | 'care' | 'red';
+  caption: string;
+  aspect?: 'wide' | 'portrait';
+}
+
+const images = {
+  colour: { id: '3997384', alt: 'Close-up of a real red manicure at a salon table', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/person-with-red-nail-polish-3997384/', width: 1440, height: 2160 },
+  neutral: { id: '6941115', alt: 'Hands with a soft neutral manicure resting on white fabric', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/photo-of-a-woman-s-hands-6941115/', width: 1440, height: 960 },
+  detail: { id: '3997397', alt: 'Red manicured nails and tools at a salon workstation', credit: 'cottonbro studio', source: 'https://www.pexels.com/photo/person-with-red-manicure-3997397/', width: 1440, height: 2160 },
+  care: { id: '13424007', alt: 'A nail technician carefully filing a client’s nails', credit: 'Soana Beatriz', source: 'https://www.pexels.com/photo/a-manicurist-filing-a-client-s-nail-13424007/', width: 1440, height: 960 },
+  red: { id: '17010953', alt: 'Glossy red almond nails against a light background', credit: 'Andrea Mosti', source: 'https://www.pexels.com/photo/a-hand-with-red-painted-nails-17010953/', width: 1440, height: 1800 },
+};
+const { photo, caption, aspect } = Astro.props;
+const image = images[photo];
+---
+
+<figure class:list={['section-photo', aspect && `section-photo--${aspect}`]}>
+  <div class="section-photo__frame">
+    <img src={`/images/photography/${image.id}-1440.webp`} srcset={`/images/photography/${image.id}-720.webp 720w, /images/photography/${image.id}-1440.webp 1440w`} sizes="(max-width: 900px) 90vw, 660px" width={image.width} height={image.height} alt={image.alt} loading="lazy" decoding="async" />
+  </div>
+  <figcaption>{caption} <a href={image.source}>Photo: {image.credit}</a></figcaption>
+</figure>

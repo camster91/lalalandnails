@@ -107,7 +107,7 @@ em { color: var(--plum); font-weight: 300; }
 .marquee span { padding-right: .6em; font-family: var(--serif); font-size: clamp(3rem, 6vw, 6.5rem); line-height: .85; letter-spacing: -.06em; white-space: nowrap; }
 
 .service { display: grid; grid-template-columns: minmax(0, 1fr) minmax(22rem, .82fr); gap: 6vw; background: var(--paper); }
-.service__content { align-self: end; }
+.service__content { align-self: start; }
 .service__lead { margin: 0 0 3.5rem; font-family: var(--serif); font-size: clamp(1.55rem, 2.8vw, 2.6rem); line-height: 1.14; letter-spacing: -.035em; }
 .service__facts { margin: 0; border-top: 1px solid rgba(51, 5, 5, .25); }
 .service__facts div { display: grid; grid-template-columns: 1fr 1.3fr; padding: 1.15rem 0; border-bottom: 1px solid rgba(51, 5, 5, .25); }
@@ -559,7 +559,7 @@ html, body { overflow-x: clip; }
 .hero__media img { object-position: 50% 50%; }
 .hero__mark { right: max(1rem, calc((100% - var(--content-max)) / 2 + 42%)); }
 .visit-guide { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 7vw, 7rem); color: var(--burgundy); background: var(--blush); }
-.visit-guide__heading > p:last-child { max-width: 32rem; margin-top: 2rem; font-size: 1.125rem; }
+.visit-guide__heading > p:not(.eyebrow) { max-width: 32rem; margin-top: 2rem; font-size: 1.125rem; }
 .visit-guide__items { display: grid; }
 .visit-guide__items article { padding: 1.75rem 0; border-top: 1px solid rgba(51,5,5,.3); }
 .visit-guide__items article > span { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; }
@@ -604,7 +604,7 @@ html, body { overflow-x: clip; }
   .lookbook__slide { flex-basis: 82%; }
   .lookbook__controls span { font-size: .75rem; }
   .visit-guide { gap: 2rem; }
-  .visit-guide__heading > p:last-child { font-size: 1rem; }
+  .visit-guide__heading > p:not(.eyebrow) { font-size: 1rem; }
   .local { gap: 2rem; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -612,3 +612,32 @@ html, body { overflow-x: clip; }
   .lookbook__image img { transition: none; }
 }
 @media (max-width:900px) { .site-nav { justify-content: safe center; } }
+
+/* Shared column lines keep content aligned across the page. */
+:root { --split-gap: clamp(2rem, 4.5vw, 4rem); }
+.service__content, .about__body, .faq__content, .booking-form { align-self: start; }
+.service > *, .about > *, .faq > *, .request-booking > *, .visit-guide > *, .local > *, .process > * { min-width: 0; }
+@media (min-width: 901px) {
+  .service, .about, .faq, .request-booking, .visit-guide, .local, .process {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--split-gap);
+    align-items: start;
+  }
+  .service__content, .about__body, .booking-form { width: 100%; max-width: none; }
+}
+.section-photo { width: 100%; margin: 2rem 0 0; }
+.section-photo__frame { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius); background: var(--burgundy-soft); }
+.section-photo--wide .section-photo__frame { aspect-ratio: 16 / 10; }
+.section-photo--portrait .section-photo__frame { aspect-ratio: 4 / 5; }
+.section-photo__frame > img { position: absolute; top: -6%; left: 0; width: 100%; height: 112%; object-fit: cover; }
+.section-photo figcaption { margin-top: .75rem; font-size: .8125rem; line-height: 1.6; }
+.section-photo figcaption a { text-underline-offset: .2rem; }
+.section-photo figcaption a:focus-visible { outline-color: currentColor; }
+.hero__signature { position: absolute; z-index: 2; left: clamp(1rem, 2vw, 1.5rem); bottom: clamp(1rem, 2vw, 1.5rem); display: grid; width: clamp(3.5rem, 5vw, 5rem); aspect-ratio: 1; place-items: center; border: 1px solid rgba(255, 201, 218, .4); border-radius: 50%; padding: .75rem; background: var(--burgundy); pointer-events: none; }
+.hero__signature > img { position: static; inset: auto; width: 100%; height: auto; object-fit: contain; }
+/* GSAP owns image transforms; CSS hover must not compete with scroll motion. */
+.lookbook__image img { transition: none; }
+@media (hover: hover) { .lookbook__slide:hover img { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .section-photo__frame > img, .hero__media img, .lookbook__image img, .process__visual > img { transform: none !important; will-change: auto; }
+}
