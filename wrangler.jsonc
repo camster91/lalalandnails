@@ -28,5 +28,10 @@
       "pattern": "www.lalalandnails.ca/*",
       "zone_name": "lalalandnails.ca"
     }
+  ],
+  "send_email": [
+    {
+      "name": "BOOKING_EMAIL"
+    }
   ]
 }

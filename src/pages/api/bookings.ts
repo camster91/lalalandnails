@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import { bookingRequests } from '../../../db/schema';
 import { ensureDatabase, getD1, getDb } from '../../lib/db';
 
@@ -56,6 +57,29 @@ export const POST: APIRoute = async ({ request }) => {
       adminNote: '',
       consentAt: now,
     });
+
+    // Save the request first so an email outage cannot lose a client's enquiry.
+    try {
+      if (!env.BOOKING_EMAIL) throw new Error('Email binding unavailable');
+      await env.BOOKING_EMAIL.send({
+        from: { email: 'requests@lalalandnails.ca', name: 'La La Land Nail Hub' },
+        to: 'bianca@ashbi.ca',
+        subject: `New La La Land ${contactMethod === 'text' ? 'text' : 'call'}-back request`,
+        text: [
+          'A client has requested a European manicure appointment.',
+          '',
+          `Name: ${name}`,
+          `Phone: ${phone}`,
+          `Reply by: ${contactMethod === 'text' ? 'Text message' : 'Phone call'}`,
+          `Message: ${notes || 'No message provided.'}`,
+          '',
+          `Request ID: ${id}`,
+          'Please contact the client to discuss availability and confirm the details.',
+        ].join('\n'),
+      });
+    } catch {
+      console.error('booking_email_failed', { requestId: id });
+    }
 
     return json({
       ok: true,
