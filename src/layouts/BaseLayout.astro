@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import type { SiteConfig } from '../data/site';
+import { buildSchema, isIndexable, serializeSchema } from '../lib/seo';
 
 interface Props {
   site: SiteConfig;
@@ -16,39 +17,18 @@ const {
 
 const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();
 const socialImage = new URL('/images/generated/red-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': ['BeautySalon', 'LocalBusiness'],
-  '@id': `${site.canonicalOrigin}/#business`,
-  name: site.businessName,
-  areaServed: ['Scarborough', 'Durham Region', 'Greater Toronto Area'],
-  url: canonicalUrl,
-  image: socialImage,
-  description,
-  knowsAbout: site.specialty,
-  ...(site.contact?.type === 'phone' ? { telephone: site.contact.href.replace('tel:', '') } : {}),
-  ...(site.location.locality && site.location.region && site.location.country ? {
-    address: {
-      '@type': 'PostalAddress',
-      ...(site.location.streetAddress ? { streetAddress: site.location.streetAddress } : {}),
-      addressLocality: site.location.locality,
-      addressRegion: site.location.region,
-      ...(site.location.postalCode ? { postalCode: site.location.postalCode } : {}),
-      addressCountry: site.location.country,
-    },
-  } : {}),
-  ...(site.socials.length > 0 ? { sameAs: site.socials.map((social) => social.href) } : {}),
-};
+const indexable = isIndexable(site, Astro.url);
+const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-CA">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#330505" />
-    <meta name="robots" content={site.launchReady ? 'index, follow' : 'noindex, nofollow'} />
+    <meta name="robots" content={indexable ? 'index, follow, max-image-preview:large' : 'noindex, nofollow'} />
     <link rel="canonical" href={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -73,13 +53,13 @@ const schema = {
     {site.analytics.domain && (
       <script is:inline defer data-domain={site.analytics.domain} src="https://plausible.io/js/script.js"></script>
     )}
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    {schema && <script is:inline type="application/ld+json" set:html={serializeSchema(schema)} />}
     <title>{title}</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    <script is:inline>
+    {site.analytics.domain && <script is:inline>
       window.plausible = window.plausible || function () {
         (window.plausible.q = window.plausible.q || []).push(arguments);
       };
@@ -96,6 +76,6 @@ const schema = {
           if (details.open) window.plausible('faq_engagement');
         });
       });
-    </script>
+    </script>}
   </body>
 </html>

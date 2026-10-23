@@ -69,6 +69,7 @@ export interface SiteConfig {
   canonicalOrigin: string;
   approvedDomain: string | null;
   launchReady: boolean;
+  indexingEnabled: boolean;
   analytics: {
     provider: 'plausible';
     domain: string | null;
@@ -111,6 +112,7 @@ export const siteConfig: SiteConfig = {
   canonicalOrigin: 'https://lalalandnails.ca',
   approvedDomain: 'https://lalalandnails.ca',
   launchReady: false,
+  indexingEnabled: true,
   analytics: {
     provider: 'plausible',
     domain: null,
@@ -118,7 +120,7 @@ export const siteConfig: SiteConfig = {
   services: [
     {
       name: 'European manicure',
-      description: 'One specialty. One manicurist. Explore European manicures with Bianca, and share what you have in mind when you request your appointment.',
+      description: 'European manicure appointments in Scarborough with Bianca Ashley. Share your preferred shape, length and finish, then discuss the service, price and time needed before confirming your visit.',
       priceDisplay: null,
       duration: null,
       availability: 'By appointment',
@@ -147,6 +149,7 @@ export const siteConfig: SiteConfig = {
   gallery: [],
   reviews: [],
   faqs: [
+    { question: 'How do I request a European manicure in Scarborough?', answer: 'Use the appointment request form on this page. Leave your name and phone number, choose a call or text back, and add any questions. Bianca will follow up to discuss the service, price and availability. Sending a request does not confirm an appointment.' },
     { question: 'Where is La La Land Nail Hub based?', answer: 'La La Land Nail Hub is based in Scarborough, Toronto. We welcome appointment requests from Scarborough, Durham Region and the wider GTA. Appointments take place in Scarborough.' },
     { question: 'What can I book at La La Land?', answer: 'La La Land specializes in European manicure appointments with Bianca Ashley, the owner and gel manicurist. Tell Bianca about your current nails and the finish you have in mind when you send your request.' },
     { question: 'Can I visit from Pickering, Ajax or elsewhere in Durham?', answer: 'Yes. You can request an appointment if you are travelling from Durham Region or elsewhere in the GTA. The studio is in Scarborough; please confirm the appointment and visit details before arranging your journey.' },
@@ -154,6 +157,7 @@ export const siteConfig: SiteConfig = {
     { question: 'Should I mention existing gel or extensions?', answer: 'Yes. Let Bianca know what is currently on your nails, including gel, extensions or another product. This helps you discuss the appropriate appointment and whether removal needs to be arranged.' },
     { question: 'Can I bring a Pinterest inspiration photo?', answer: 'Yes. Save a few references showing the shape, length, colour or detail you like. Describe your ideas in the request, then discuss the reference photos and what is achievable with Bianca before confirming.' },
     { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. Choose a call or text back and leave your phone number. Bianca will follow up to discuss availability, the service and the visit details before confirming your appointment.' },
+    { question: 'Can I walk in without an appointment?', answer: 'La La Land works by appointment. Please send a request and agree on a confirmed time and visit details with Bianca before travelling to the studio.' },
     { question: 'Are the inspiration images Bianca’s client work?', answer: 'The inspiration images currently shown are AI-generated using real manicure references. They are visual ideas, not photographs of clients or the studio, Bianca’s portfolio, or a promise of a particular result.' },
   ],
   policies: [],

@@ -644,6 +644,13 @@ html, body { overflow-x: clip; }
 .section-photo figcaption a:focus-visible { outline-color: currentColor; }
 .hero__signature { position: absolute; z-index: 2; left: clamp(1rem, 2vw, 1.5rem); bottom: clamp(1rem, 2vw, 1.5rem); display: grid; width: clamp(3.5rem, 5vw, 5rem); aspect-ratio: 1; place-items: center; border: 1px solid rgba(255, 201, 218, .4); border-radius: 50%; padding: .75rem; background: var(--burgundy); pointer-events: none; }
 .hero__signature > img { position: static; inset: auto; width: 100%; height: auto; object-fit: contain; }
+.hero__reassurance { max-width: 32rem; margin: 1.5rem 0 0; color: var(--blush-light); font-size: .875rem; line-height: 1.6; }
+.service__decision { margin-top: 2rem; }
+.service__decision h3 { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; }
+.service__decision p { max-width: 38rem; line-height: 1.7; }
+.service__decision .button { margin: .5rem 1rem .5rem 0; }
+.service__decision .text-link { display: inline-block; }
+.booking-form__intro { margin: 0; font-size: .9375rem; line-height: 1.6; }
 /* GSAP owns image transforms; CSS hover must not compete with scroll motion. */
 .lookbook__image img { transition: none; }
 @media (hover: hover) { .lookbook__slide:hover img { transform: none; } }

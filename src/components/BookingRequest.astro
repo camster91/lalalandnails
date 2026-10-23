@@ -12,6 +12,7 @@ import SectionPhoto from './SectionPhoto.astro';
   </div>
 
   <form class="booking-form reveal" data-booking-form action="/api/bookings" method="post" novalidate>
+    <p class="booking-form__intro">A request, then a conversation. No day or time to choose now. Fields marked * are required.</p>
     <div class="booking-form__honeypot" aria-hidden="true">
       <label>Website <input name="website" tabindex="-1" autocomplete="off" /></label>
     </div>
@@ -37,16 +38,17 @@ import SectionPhoto from './SectionPhoto.astro';
 
     <label>
       What do you have in mind? <span class="field-optional">Optional</span>
-      <textarea name="notes" rows="4" maxlength="600" placeholder="A colour idea, your preferred style or a question about your appointment."></textarea>
+      <textarea name="notes" rows="4" maxlength="600" placeholder="Your preferred length or colour, any gel or extensions already on your nails, or a question for Bianca."></textarea>
     </label>
 
     <label class="booking-form__consent">
       <input name="consent" type="checkbox" required />
-      <span>I agree that La La Land may use these details to respond to this appointment request.</span>
+      <span>I agree that La La Land may use these details to respond to this appointment request. <span aria-hidden="true">*</span></span>
     </label>
 
     <p class="field-hint">Please keep notes appointment-related and leave out medical information.</p>
     <button class="button button--cream" type="submit">Request a call or text</button>
+    <p class="field-hint">Your appointment is confirmed only after you agree on the details with Bianca.</p>
     <p class="booking-form__status" data-booking-status role="status" aria-live="polite"></p>
   </form>
 </section>
@@ -54,6 +56,22 @@ import SectionPhoto from './SectionPhoto.astro';
 <script>
   const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
   const status = form?.querySelector<HTMLElement>('[data-booking-status]');
+  let started = false;
+  const trackStart = () => {
+    if (started) return;
+    started = true;
+    window.plausible?.('booking_request_started');
+  };
+  form?.addEventListener('input', trackStart);
+  form?.addEventListener('change', trackStart);
+  if (form && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      window.plausible?.('booking_form_viewed');
+      observer.disconnect();
+    }, { threshold: .25 });
+    observer.observe(form);
+  }
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -61,11 +79,15 @@ import SectionPhoto from './SectionPhoto.astro';
     const validPhone = (phone?.value.replace(/\D/g, '').length ?? 0) >= 10 && (phone?.value.replace(/\D/g, '').length ?? 0) <= 15;
     phone?.setAttribute('aria-invalid', String(!validPhone));
     if (!validPhone) {
+      window.plausible?.('booking_validation_error');
       if (status) status.textContent = 'Enter a valid phone number so we can call or text you.';
       phone?.focus();
       return;
     }
-    if (!form.reportValidity()) return;
+    if (!form.reportValidity()) {
+      window.plausible?.('booking_validation_error');
+      return;
+    }
 
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
@@ -77,9 +99,11 @@ import SectionPhoto from './SectionPhoto.astro';
       if (!response.ok || !result.ok) throw new Error(result.message || Object.values(result.errors ?? {})[0] || 'The request could not be sent.');
 
       form.reset();
+      started = false;
       if (status) status.textContent = result.message ?? 'Your request has been received.';
       window.plausible?.('booking_request_submitted');
     } catch (error) {
+      window.plausible?.('booking_request_failed');
       if (status) status.textContent = error instanceof Error ? error.message : 'The request could not be sent.';
     } finally {
       if (submit) submit.disabled = false;
