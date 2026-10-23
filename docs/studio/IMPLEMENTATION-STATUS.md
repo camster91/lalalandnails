@@ -27,7 +27,7 @@ The selected direction is the first displayed mobile mockup (Studio Today). This
 
 | Capability | Dependency and remaining work |
 | --- | --- |
-| Automatic Google Calendar connection | Register the salon OAuth client, configure a secure callback, choose the calendar and implement verified create/update/cancel reconciliation. ChatGPT’s Calendar connector does not provide web-app OAuth credentials. The event draft button works without this setup. |
+| Calendar subscription | Implemented: Settings → Manage calendar feed → Create private link. Add the URL in Google Calendar on desktop under Other calendars → From URL. Calendar apps refresh on their own schedules. Rotation revokes the old link; disabling stops future reads. |
 | Public online booking | Confirm salon hours, advance notice, cancellation rules and final prices/durations. Implement public availability, reservation lifecycle and anti-abuse protection before enabling. Existing call/text enquiry form is preserved. |
 | Stripe deposits/refunds | Salon Stripe connection, approved deposit/refund rules, webhook verification and reconciliation. Manual payment records do not call Stripe. |
 | Transactional reminders | Verified sending service that can deliver to clients, approved templates and delivery/retry records. Existing enquiry forwarding to Bianca is a separate flow requiring delivery verification. |
@@ -39,3 +39,5 @@ The selected direction is the first displayed mobile mockup (Studio Today). This
 ## Deployment and rollback
 
 Public homepage, lead capture and SEO are outside the UI change. New tables are additive and created only following authenticated staff access. Revert the focused application change to roll back; preserve the new tables and Access guard. Never restore the earlier identity-header authentication.
+
+Private calendar feed: includes appointments and blocked time, with stable IDs, UTC instants, revision metadata and cancelled events. Client names, contact details, notes and block labels are excluded. Only a SHA-256 token digest is stored. This is one-way subscription, not two-way calendar editing. Old downloaded copies cannot be remotely erased.

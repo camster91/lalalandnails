@@ -17,3 +17,5 @@ Locally verified: 27 tests, Astro check with zero diagnostics, production build,
 Approved scope: operational core with inactive integration setup states. Wider integrations remain explicitly tracked in IMPLEMENTATION-STATUS.md; this is not an all-features completion claim.
 
 Google Calendar uses the official eventedit template documented at https://developers.google.com/workspace/calendar/api/concepts/inviting-attendees-to-events . UTC start/end instants and Toronto display timezone are tested. No client identity, contact information or private notes are included. Cancelled/invalid appointments do not generate a handoff link.
+
+Subscription review: public read-only route requires a random 256-bit bearer token; only its hash is persisted. Staff management requires verified Access identity and same-origin writes. Rotation and disable actions are atomic and audited. Feed fields are selected explicitly, with no client joins or private text. Cancelled bookings and archived blocks remain cancellation events. Token URLs are returned only on creation, with no-store/no-referrer headers. Thirty Node tests pass, including token lifecycle and calendar privacy.
