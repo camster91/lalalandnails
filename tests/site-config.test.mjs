@@ -7,6 +7,6 @@ test('the public domain can be used as a base for canonical and social URLs', ()
   assert.equal(new URL(origin).protocol, 'https:');
   assert.equal(new URL('/booking?source=homepage', origin).href,
     'https://lalalandnails.ca/booking?source=homepage');
-  assert.equal(new URL('/images/photography/17010953-1440.webp', origin).hostname,
+  assert.equal(new URL('/images/generated/red-1440.webp', origin).hostname,
     'lalalandnails.ca');
 });

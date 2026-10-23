@@ -15,7 +15,7 @@ const {
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();
-const socialImage = new URL('/images/photography/17010953-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
+const socialImage = new URL('/images/generated/red-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
 const schema = {
   '@context': 'https://schema.org',
   '@type': ['BeautySalon', 'LocalBusiness'],
@@ -58,12 +58,12 @@ const schema = {
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:width" content="1440" />
     <meta property="og:image:height" content="1800" />
-    <meta property="og:image:alt" content="Real red manicure inspiration photograph; not La La Land client work" />
+    <meta property="og:image:alt" content="AI-generated burgundy manicure inspiration; not La La Land client work" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
-    <meta name="twitter:image:alt" content="Real red manicure inspiration photograph; not La La Land client work" />
+    <meta name="twitter:image:alt" content="AI-generated burgundy manicure inspiration; not La La Land client work" />
     <link rel="icon" href="/brand/submark.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="mask-icon" href="/brand/submark.svg" color="#330505" />

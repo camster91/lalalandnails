@@ -13,4 +13,4 @@ Pinterest research references (not downloaded or republished):
 https://www.pinterest.com/pin/578712620885600284/
 https://www.pinterest.com/ideas/short-nail-designs-burgundy/893549753838/
 
-Supersedes all AI-generated campaign imagery in the rendered homepage and social preview.
+Archived photography. The rendered homepage and social preview now use labelled AI-generated inspiration; see ../generated/README.md.

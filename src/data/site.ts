@@ -154,7 +154,7 @@ export const siteConfig: SiteConfig = {
     { question: 'Should I mention existing gel or extensions?', answer: 'Yes. Let Bianca know what is currently on your nails, including gel, extensions or another product. This helps you discuss the appropriate appointment and whether removal needs to be arranged.' },
     { question: 'Can I bring a Pinterest inspiration photo?', answer: 'Yes. Save a few references showing the shape, length, colour or detail you like. Describe your ideas in the request, then discuss the reference photos and what is achievable with Bianca before confirming.' },
     { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. Choose a call or text back and leave your phone number. Bianca will follow up to discuss availability, the service and the visit details before confirming your appointment.' },
-    { question: 'Are the inspiration photos Bianca’s client work?', answer: 'The inspiration images currently shown are licensed stock photographs of real manicures. They are visual references, not Bianca’s portfolio or a promise of a particular result.' },
+    { question: 'Are the inspiration images Bianca’s client work?', answer: 'The inspiration images currently shown are AI-generated using real manicure references. They are visual ideas, not photographs of clients or the studio, Bianca’s portfolio, or a promise of a particular result.' },
   ],
   policies: [],
   socials: [],
