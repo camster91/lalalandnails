@@ -20,6 +20,7 @@
     "wrangler": "^4.125.0"
   },
   "dependencies": {
+    "@phosphor-icons/web": "^2.1.2",
     "drizzle-orm": "^0.45.2",
     "gsap": "^3.15.0",
     "jose": "^6.2.13",

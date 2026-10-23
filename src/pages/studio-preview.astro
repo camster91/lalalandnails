@@ -1,0 +1,9 @@
+---
+import '../styles/global.css';
+import StudioApp from '../components/StudioApp.astro';
+export const prerender=false;
+if(!import.meta.env.DEV)return new Response('Not found',{status:404});
+Astro.response.headers.set('X-Robots-Tag','noindex, nofollow');
+Astro.response.headers.set('Cache-Control','no-store');
+---
+<!doctype html><html lang="en-CA"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="robots" content="noindex, nofollow"/><title>Studio preview | La La Land</title></head><body class="studio-body"><StudioApp demo/></body></html>

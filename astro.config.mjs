@@ -9,5 +9,5 @@ export default defineConfig({
     platformProxy: { enabled: true },
   }),
   build: { format: 'directory' },
-  vite: { plugins: [sites()] },
+  vite: { plugins: [sites()], server: { allowedHosts: ['terminal.local'] } },
 });

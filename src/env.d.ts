@@ -16,3 +16,5 @@ declare namespace Cloudflare {
 interface Window {
   plausible?: ((eventName: string) => void) & { q?: unknown[] };
 }
+
+declare module '@phosphor-icons/web/regular';

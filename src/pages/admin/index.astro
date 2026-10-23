@@ -1,81 +1,12 @@
 ---
 import '../../styles/global.css';
+import StudioApp from '../../components/StudioApp.astro';
 import { getStaffAccess, privateHeaders } from '../../lib/auth';
-import { leadStatuses, parseLeadFilters, torontoDate } from '../../lib/crm';
-import { ensureDatabase, getDb } from '../../lib/db';
-import { listLeads } from '../../lib/crm-store';
-
-export const prerender = false;
-Object.entries(privateHeaders).forEach(([name, value]) => Astro.response.headers.set(name, value));
-const access = await getStaffAccess(Astro.request);
-const filters = parseLeadFilters(Astro.url);
-let result: Awaited<ReturnType<typeof listLeads>> | null = null;
-let error = '';
-if (!access.configured) Astro.response.status = 503;
-else if (!access.user) Astro.response.status = 401;
-else if (!filters) { Astro.response.status = 400; error = 'Check your search filters and try again.'; }
-else {
-  try { await ensureDatabase(); result = await listLeads(filters, getDb()); }
-  catch { Astro.response.status = 503; error = 'The CRM is temporarily unavailable. Please try again.'; }
-}
-const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
-const received = new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Toronto' });
-const pageUrl = (page: number) => {
-  const params = new URLSearchParams();
-  if (filters?.q) params.set('q', filters.q);
-  if (filters?.status) params.set('status', filters.status);
-  if (filters?.view) params.set('view', filters.view);
-  params.set('page', String(page));
-  return `/admin?${params}`;
-};
-const today = torontoDate();
+export const prerender=false;
+Object.entries(privateHeaders).forEach(([name,value])=>Astro.response.headers.set(name,value));
+const access=await getStaffAccess(Astro.request);
+if(!access.configured)Astro.response.status=503;
+else if(!access.user)Astro.response.status=401;
 ---
-<!doctype html>
-<html lang="en-CA">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="robots" content="noindex, nofollow" />
-    <meta name="referrer" content="no-referrer" />
-    <link rel="icon" href="/brand/submark.svg" type="image/svg+xml" />
-    <title>Enquiry CRM | La La Land Nail Hub</title>
-  </head>
-  <body class="admin-body">
-    {access.user ? <main class="admin-shell">
-      <header class="admin-header">
-        <div><p class="eyebrow">La La Land Nail Hub</p><h1>Enquiry inbox</h1><p>Signed in as {access.user.email}</p></div>
-        <div class="admin-header__actions"><a class="button button--cream" href="/">View website</a><a class="text-link" href="/cdn-cgi/access/logout">Sign out</a></div>
-      </header>
-      {Astro.url.searchParams.get('saved') === '1' && <p class="crm-notice" role="status">Enquiry saved.</p>}
-      <form class="crm-filters" method="get" action="/admin">
-        <label>Find an enquiry<input name="q" type="search" maxlength="80" value={filters?.q ?? ''} placeholder="Name, phone or email" /></label>
-        <label>Status<select name="status"><option value="">All statuses</option>{leadStatuses.map(status => <option value={status} selected={filters?.status === status}>{label(status)}</option>)}</select></label>
-        <label>Inbox<select name="view"><option value="active" selected={filters?.view === 'active'}>Active enquiries</option><option value="due" selected={filters?.view === 'due'}>Follow-up due</option><option value="archived" selected={filters?.view === 'archived'}>Archived</option></select></label>
-        <button class="button" type="submit">Apply filters</button><a class="text-link" href="/admin">Clear</a>
-      </form>
-      {error ? <section class="admin-empty" role="alert"><h2>Unable to load enquiries</h2><p>{error}</p><a href="/admin">Return to the inbox</a></section> : result && <>
-        <p>{result.total} matching {result.total === 1 ? 'enquiry' : 'enquiries'} · Page {result.page} of {result.pages}</p>
-        {result.records.length === 0 ? <section class="admin-empty"><h2>No enquiries here.</h2><p>Try another filter, or return to the active inbox.</p><a href="/admin">View active enquiries</a></section> : <section class="admin-bookings" aria-label="Appointment enquiries">
-          {result.records.map(booking => <article class="admin-booking">
-            <div class="admin-booking__summary"><div><span class={`status-badge status-badge--${booking.status}`}>{label(booking.status)}</span>{booking.archivedAt && <span class="status-badge">Archived</span>}<h2>{booking.name}</h2><p>{booking.contactMethod === 'text' ? 'Text back requested' : booking.contactMethod === 'call' ? 'Call back requested' : 'Appointment enquiry'}</p></div><p class="admin-booking__received">Received {received.format(new Date(booking.createdAt))}</p></div>
-            <dl class="admin-booking__details">
-              {booking.phone && <div><dt>Phone</dt><dd><a href={`tel:${booking.phone}`}>{booking.phone}</a>{booking.contactMethod === 'text' && <> · <a href={`sms:${booking.phone}`}>Text client</a></>}</dd></div>}
-              {booking.email && <div><dt>Email</dt><dd><a href={`mailto:${booking.email}`}>{booking.email}</a></dd></div>}
-              <div><dt>Service</dt><dd>European manicure</dd></div>
-              {booking.followUpDate && <div><dt>Follow-up</dt><dd>{booking.followUpDate}{!booking.archivedAt && !['completed', 'declined'].includes(booking.status) && booking.followUpDate <= today && ' · Due'}</dd></div>}
-              {booking.notes && <div><dt>Client note</dt><dd>{booking.notes}</dd></div>}
-            </dl>
-            <form class="admin-booking__form" method="post" action={`/api/admin/bookings/${booking.id}`}>
-              <input type="hidden" name="updatedAt" value={booking.updatedAt} />
-              <label>Status<select name="status">{leadStatuses.map(status => <option value={status} selected={booking.status === status}>{label(status)}</option>)}</select></label>
-              <label>Follow-up date<input type="date" name="followUpDate" min="2000-01-01" max="2099-12-31" value={booking.followUpDate ?? ''} /><small>Toronto calendar date. Leave blank to clear.</small></label>
-              <label>Private staff note<textarea name="adminNote" maxlength="500" rows="3">{booking.adminNote}</textarea></label>
-              <div class="admin-booking__form-actions"><button class="button" type="submit" name="action" value="update">Save enquiry</button><button class="button button--cream" type="submit" name="action" value={booking.archivedAt ? 'restore' : 'archive'}>{booking.archivedAt ? 'Restore enquiry' : 'Archive enquiry'}</button></div>
-            </form>
-          </article>)}
-        </section>}
-        <nav class="crm-pagination" aria-label="Enquiry pages">{result.page > 1 && <a class="button button--cream" href={pageUrl(result.page - 1)}>Previous</a>}{result.page < result.pages && <a class="button button--cream" href={pageUrl(result.page + 1)}>Next</a>}</nav>
-      </>}
-    </main> : <main class="admin-denied"><p class="eyebrow">La La Land staff</p><h1>{access.configured ? 'Staff sign-in required.' : 'CRM access setup required.'}</h1><p>{access.configured ? 'Sign in with an approved staff account through Cloudflare Access.' : 'The enquiry inbox is locked until secure staff sign-in is configured.'}</p><a class="button button--cream" href="/">Return to the website</a></main>}
-  </body>
-</html>
+<!doctype html><html lang="en-CA"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="robots" content="noindex, nofollow"/><meta name="referrer" content="no-referrer"/><link rel="icon" href="/brand/submark.svg" type="image/svg+xml"/><title>Studio workspace | La La Land Nail Hub</title></head>
+<body class="studio-body">{access.user ? <StudioApp/> : <main class="studio-denied"><p>La La Land Nail Hub</p><h1>Staff sign-in required</h1><p>{access.configured?'Sign in with an approved staff account through Cloudflare Access.':'The workspace is locked until secure staff sign-in is configured.'}</p><a href="/">Return to website</a></main>}</body></html>

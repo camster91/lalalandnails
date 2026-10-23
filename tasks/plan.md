@@ -6,3 +6,5 @@
 4. Verify signed-token rejection/acceptance, migration preservation, persisted search/pagination/update/archive behaviour, Astro types and production build; deploy locked and check public-site availability and unauthenticated CRM responses.
 5. Configure Access in the account, verify Cameron/Bianca sign-in, finish responsive/keyboard QA and complete an approved real enquiry-to-email test. Cloudflare setup and the additive production migration are complete; protected routes redirect to Access and public homepage/form validation remain available. Authenticated browser testing remains pending.
 6. Later scope: deduplicated client directory, appointment calendar, activity history and reminders. No automatic client messages or billing are included in this release.
+
+The approved Studio Today UI now drives the operational core. See docs/studio/CAPABILITY-MAP.md for module order and docs/studio/IMPLEMENTATION-STATUS.md for verified scope and integration dependencies. Complete live staff QA before treating the core as production-verified. Keep the existing public call/text form while public scheduling and paid integrations are inactive.
