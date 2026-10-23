@@ -9,7 +9,7 @@ The backend is locked by default. Public site visitors can request appointments;
 3. Open `/admin` in a private browser window. Confirm Access prompts for sign-in, permitted staff can enter, a nonstaff account is denied, and a direct request to the workers.dev endpoint without a valid token is denied.
 4. Verify both page and API routes are protected. The app independently checks the signed token and allowlist, so edge-policy mistakes do not provide an identity-header bypass. The previous Sites identity headers no longer authorize CRM access.
 
-Missing application configuration returns 503; unauthenticated/unapproved requests return 401. CRM responses use private/no-store/noindex headers. Actual Access setup and successful live sign-in remain pending because connected Cloudflare account controls are unavailable in this session.
+Missing application configuration returns 503; unauthenticated/unapproved requests return 401. CRM responses use private/no-store/noindex headers. Cloudflare Access was configured on 2026-10-23 for the exact `/admin`, `/admin/*` and `/api/admin/*` paths on the root and www domains. Email-code sign-in is restricted to the two approved staff addresses. Team domain, audience and staff allowlist are Worker secret bindings. The public homepage returns 200; protected page/API requests redirect to Cloudflare Access; public form validation remains accessible. Successful staff sign-in and authorized edits still require an authenticated live test.
 
 ## API
 
@@ -21,7 +21,7 @@ Missing application configuration returns 503; unauthenticated/unapproved reques
 
 ## Persistence and verification
 
-The existing D1 `booking_requests` table gains nullable `follow_up_date` and `archived_at` columns and an index. Initialization is additive/idempotent, retries after errors, and runs on the next database access. No production records were exported, modified or deleted during development. Migration/query/update behaviour was tested on actual SQLite using a small D1-compatible adapter; that is not a production migration confirmation.
+The existing D1 `booking_requests` table gains nullable `follow_up_date` and `archived_at` columns and an index. Initialization is additive/idempotent, retries after errors, and runs on the next database access. No production records were exported, modified or deleted during development. Migration/query/update behaviour was tested on actual SQLite using a small D1-compatible adapter. On 2026-10-23 the production D1 schema was also migrated additively: contact_method, follow_up_date, archived_at and the follow-up index were verified. Record counts were unchanged; no enquiry contents were read.
 
 Run `node --test tests/*.test.mjs`, `npm run check`, `npm run build`. API authorization is checked before database initialization or queries. Live authorized CRUD, Access login, customer notification delivery and responsive browser QA still require verification. Use clearly marked test data only after an approved live test can be reconciled by the owner.
 

@@ -6,7 +6,8 @@
 - [x] Replace permanent deletion with reversible archive/restore.
 - [x] Test preservation of legacy enquiries and repeated migration on SQLite through a D1-compatible adapter.
 - [x] Pass signed-token, validation and database behaviour tests.
-- [ ] Configure Cloudflare Access application paths, team domain, audience and approved staff emails.
+- [x] Configure Cloudflare Access application paths, team domain, audience and approved staff emails.
+- [x] Apply and verify the additive production D1 migration; confirm public homepage/form validation and Access redirects.
 - [ ] Verify successful live staff login and authorized CRM reads/writes.
 - [ ] Verify mobile/tablet/desktop and keyboard journeys in Chrome.
 - [ ] Verify real appointment form notification delivery to Bianca after destination verification.
