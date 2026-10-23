@@ -109,7 +109,7 @@ export const siteConfig: SiteConfig = {
   contact: null,
   bookingUrl: null,
   canonicalOrigin: 'https://lalalandnails.ca',
-  approvedDomain: 'lalalandnails.ca',
+  approvedDomain: 'https://lalalandnails.ca',
   launchReady: false,
   analytics: {
     provider: 'plausible',
