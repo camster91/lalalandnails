@@ -27,4 +27,4 @@
 - [ ] Verify database recovery settings and rehearse a restoration.
 
 - [x] Add a prefilled Google Calendar event action with exact Toronto instants and no client PII in URLs.
-- [ ] Configure a salon Google OAuth client/calendar and implement automatic create/update/cancel sync.
+- [x] Implement a private hosted iCalendar subscription feed with hashed tokens, rotation/revocation, stable event IDs and cancellation updates. Google OAuth is not needed.

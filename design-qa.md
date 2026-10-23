@@ -43,3 +43,5 @@ Console review: browser extension metadata errors were present under a chrome-ex
 - The selected concept provides no empty/error/dialog designs; these were implemented as accessible, consistent extensions, not claimed to be pixel-matched source screens.
 
 Calendar addition: appointment detail now offers a Google event draft. URL/date/privacy behaviour is covered by two Node tests; saving a real event and automatic sync are not claimed as verified.
+
+Subscription addition: Settings now offers a private hosted feed rather than OAuth setup. A native dialog explains provider refresh delays, private-link handling, replacement/revocation and Google From URL setup. Demo mode never creates a public feed. Serializer and SQLite token lifecycle tests pass. Actual Google subscription remains a staff setup step.
