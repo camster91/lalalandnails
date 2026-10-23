@@ -1,39 +1,30 @@
 import type { APIRoute } from 'astro';
-import { eq } from 'drizzle-orm';
-import { bookingRequests } from '../../../../../db/schema';
-import { getAdminUser, isSameOriginWrite } from '../../../../lib/auth';
+import { getStaffAccess, isSameOriginWrite, privateHeaders } from '../../../../lib/auth';
+import { parseLeadUpdate } from '../../../../lib/crm';
 import { ensureDatabase, getDb } from '../../../../lib/db';
+import { updateLead } from '../../../../lib/crm-store';
 
-const STATUSES = new Set(['pending', 'contacted', 'confirmed', 'declined', 'completed']);
-
-export const POST: APIRoute = async ({ request, params }) => {
-  if (!getAdminUser(request)) return new Response('Unauthorized', { status: 401 });
-  if (!isSameOriginWrite(request)) return new Response('Invalid request origin', { status: 403 });
-
-  const id = params.id ?? '';
-  if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response('Invalid booking ID', { status: 400 });
-
-  const form = await request.formData();
-  const action = String(form.get('action') ?? 'update');
-  await ensureDatabase();
-  const db = getDb();
-
-  if (action === 'delete') {
-    await db.delete(bookingRequests).where(eq(bookingRequests.id, id));
-    return redirect('/admin');
+const update: APIRoute = async ({ request, params }) => {
+  const access = await getStaffAccess(request);
+  const json = (body: unknown, status: number) => Response.json(body, { status, headers: privateHeaders });
+  if (!access.configured || !access.user) return json({ error: access.configured ? 'Unauthorized' : 'Staff access setup required' }, access.configured ? 401 : 503);
+  if (!isSameOriginWrite(request)) return json({ error: 'Invalid request origin' }, 403);
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id ?? '')) return json({ error: 'Invalid enquiry ID' }, 400);
+  try {
+    const isJson = request.headers.get('content-type')?.includes('application/json');
+    const raw = isJson ? await request.json() : Object.fromEntries(await request.formData());
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return json({ error: 'Invalid update' }, 400);
+    const input = parseLeadUpdate(raw as Record<string, unknown>);
+    if (!input) return json({ error: 'Invalid update. Check the status, date, note length and record version.' }, 400);
+    await ensureDatabase();
+    const changed = await updateLead(params.id!, input, getDb());
+    if (!changed) return json({ error: 'This enquiry changed or no longer exists. Refresh the inbox before saving again.' }, 409);
+    if (isJson) return json({ ok: true, ...changed }, 200);
+    return new Response(null, { status: 303, headers: { ...privateHeaders, Location: input.action === 'archive' ? '/admin?view=archived&saved=1' : '/admin?saved=1' } });
+  } catch (error) {
+    return json({ error: error instanceof SyntaxError || error instanceof TypeError ? 'Invalid request body' : 'The update could not be saved. Please retry.' }, error instanceof SyntaxError || error instanceof TypeError ? 400 : 503);
   }
-
-  const status = String(form.get('status') ?? '');
-  if (!STATUSES.has(status)) return new Response('Invalid booking status', { status: 400 });
-  const adminNote = String(form.get('adminNote') ?? '').trim().slice(0, 500);
-
-  await db.update(bookingRequests)
-    .set({ status, adminNote, updatedAt: Date.now() })
-    .where(eq(bookingRequests.id, id));
-
-  return redirect(`/admin?status=${encodeURIComponent(status)}`);
 };
 
-function redirect(location: string): Response {
-  return new Response(null, { status: 303, headers: { Location: location } });
-}
+export const POST = update;
+export const PATCH = update;

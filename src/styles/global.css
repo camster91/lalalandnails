@@ -651,6 +651,13 @@ html, body { overflow-x: clip; }
 .service__decision .button { margin: .5rem 1rem .5rem 0; }
 .service__decision .text-link { display: inline-block; }
 .booking-form__intro { margin: 0; font-size: .9375rem; line-height: 1.6; }
+.crm-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; margin: 2rem 0; }
+.crm-filters label { display: grid; flex: 1 1 12rem; gap: .5rem; }
+.crm-filters input, .crm-filters select { min-height: 3rem; width: 100%; border: 1px solid currentColor; border-radius: .5rem; padding: .65rem; font: inherit; color: var(--burgundy); background: var(--paper); }
+.crm-notice { padding: 1rem; border: 1px solid currentColor; }
+.crm-pagination { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+.admin-booking__details dd { overflow-wrap: anywhere; white-space: pre-wrap; }
+.admin-booking__form small { font-weight: 400; line-height: 1.5; }
 /* GSAP owns image transforms; CSS hover must not compete with scroll motion. */
 .lookbook__image img { transition: none; }
 @media (hover: hover) { .lookbook__slide:hover img { transform: none; } }

@@ -8,6 +8,8 @@ export const bookingRequests = sqliteTable('booking_requests', {
   email: text('email'),
   phone: text('phone'),
   contactMethod: text('contact_method'),
+  followUpDate: text('follow_up_date'),
+  archivedAt: integer('archived_at'),
   preferredDate: text('preferred_date').notNull(),
   preferredTime: text('preferred_time').notNull(),
   serviceSlug: text('service_slug').notNull().default('european-manicure'),

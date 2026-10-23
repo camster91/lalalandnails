@@ -7,6 +7,9 @@ declare namespace Cloudflare {
     OPENAI_API_KEY?: string;
     OPENAI_MODEL?: string;
     CHAT_RATE_SALT?: string;
+    ACCESS_TEAM_DOMAIN?: string;
+    ACCESS_AUD?: string;
+    CRM_ADMIN_EMAILS?: string;
   }
 }
 
