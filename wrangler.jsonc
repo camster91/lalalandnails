@@ -21,12 +21,12 @@
   "workers_dev": true,
   "routes": [
     {
-      "pattern": "lalalandnails.ca/*",
-      "zone_name": "lalalandnails.ca"
+      "pattern": "lalalandnails.ca",
+      "custom_domain": true
     },
     {
-      "pattern": "www.lalalandnails.ca/*",
-      "zone_name": "lalalandnails.ca"
+      "pattern": "www.lalalandnails.ca",
+      "custom_domain": true
     }
   ],
   "send_email": [
