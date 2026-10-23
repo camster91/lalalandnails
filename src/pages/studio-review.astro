@@ -1,0 +1,7 @@
+---
+import reference from '../assets/studio-selected.webp';
+export const prerender=false;
+if(!import.meta.env.DEV)return new Response('Not found',{status:404});
+const width=Astro.url.searchParams.get('size')==='tablet'?768:Astro.url.searchParams.get('size')==='desktop'?1440:390;
+---
+<html lang="en-CA"><head><meta charset="utf-8"/><title>Studio responsive review</title><meta name="robots" content="noindex,nofollow"/><style>body{margin:0;background:#e9e3de;font:14px Arial}nav{padding:12px;display:flex;gap:20px}.compare{display:flex;justify-content:center;gap:28px;align-items:flex-start}.compare img{width:375px;height:auto}.compare iframe{margin:0}iframe{display:block;border:0;margin:0 auto;background:#fffaf5;height:844px;max-width:100%}</style></head><body><nav aria-label="Preview sizes"><a href="?size=mobile">Mobile · 390</a><a href="?size=tablet">Tablet · 768</a><a href="?size=desktop">Desktop · 1440</a><span>Development preview · sample data only</span></nav><div class="compare">{Astro.url.searchParams.has('compare') && <img src={reference.src} alt="Selected option 1 reference"/>}<iframe src="/studio-preview" width={width} title="Salon workspace preview"></iframe></div></body></html>

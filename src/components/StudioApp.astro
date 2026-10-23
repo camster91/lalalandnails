@@ -1,0 +1,17 @@
+---
+import '../styles/studio.css';
+import '@phosphor-icons/web/regular';
+const { demo = false } = Astro.props;
+---
+<div id="studio-app" data-demo={demo ? 'true' : 'false'}>
+  <a class="studio-skip" href="#studio-main">Skip to workspace</a>
+  <header class="studio-top"><a class="studio-brand" href="/admin" aria-label="La La Land Nail Hub dashboard"><span>LA LA LAND</span><small>NAIL HUB</small></a><div class="studio-identity">{demo && <span class="studio-demo">Demo data</span>}<button class="studio-avatar" data-open="account" aria-label="Account menu">BA</button></div></header>
+  <div class="studio-layout"><nav class="studio-sidebar" aria-label="Workspace"></nav><main id="studio-main" tabindex="-1"><div class="studio-loading" role="status">Loading your workspace…</div></main></div>
+  <nav class="studio-bottom" aria-label="Main navigation"></nav>
+  <div id="studio-message" role="status" aria-live="polite"></div>
+  <dialog id="studio-dialog" aria-labelledby="dialog-title"><div class="studio-dialog-heading"><h2 id="dialog-title"></h2><button class="studio-icon-button" data-close aria-label="Close dialog"><i class="ph ph-x" aria-hidden="true"></i></button></div><div id="dialog-body"></div></dialog>
+</div>
+<script>
+ import { startStudio } from '../scripts/studio';
+ startStudio();
+</script>

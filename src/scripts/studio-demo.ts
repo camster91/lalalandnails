@@ -1,0 +1,101 @@
+// Development fixtures only. Never inserted into production D1.
+export function demoSnapshot() {
+  const date = "2026-10-23",
+    v = 1;
+  const clients = ["Emily Martin", "Jessica Singh", "Olivia Lee"].map(
+    (name, i) => ({
+      id: "c" + i,
+      version: v,
+      name,
+      phone: "+1416555010" + i,
+      email: null,
+      notes: "",
+      preferences: "",
+      sensitivities: "",
+      marketing_consent_at: null,
+      photo_consent_at: null,
+    }),
+  );
+  const services = [
+    "Structured gel",
+    "European manicure",
+    "Gel maintenance",
+  ].map((name, i) => ({
+    id: "s" + i,
+    version: v,
+    name,
+    category: "Manicure",
+    price_cents: 6500 - i * 500,
+    duration: 90,
+    buffer: 15,
+    active: 1,
+    description: "",
+  }));
+  const appointments = clients.map((c, i) => ({
+    id: "a" + i,
+    version: v,
+    client_id: c.id,
+    client_name: c.name,
+    phone: c.phone,
+    service_id: services[i].id,
+    service_name: services[i].name,
+    start_at: Date.parse(date + "T" + ["13:00", "15:15", "18:30"][i] + ":00Z"),
+    end_at: Date.parse(date + "T" + ["14:30", "16:45", "20:00"][i] + ":00Z"),
+    price_cents: services[i].price_cents,
+    status: "confirmed",
+    notes: "",
+  }));
+  return {
+    date,
+    clients,
+    clientCount: { total: 3 },
+    clientPage: 1,
+    services,
+    appointments,
+    blocks: [],
+    waitlist: [],
+    payments: [],
+    activity: [],
+    counts: { new_enquiries: 2, follow_ups: 1 },
+    staff: "Demo staff",
+    integrations: { payments: false, email: false, sms: false, photos: false },
+  };
+}
+export const demoLeads = [
+  {
+    id: "l1",
+    name: "Chloe Park",
+    phone: "+14165550104",
+    contactMethod: "text",
+    notes: "Interested in structured gel. Any availability?",
+    status: "pending",
+    createdAt: Date.parse("2026-10-23T12:12Z"),
+    updatedAt: 1,
+    adminNote: "",
+    followUpDate: null,
+  },
+  {
+    id: "l2",
+    name: "Maya Chen",
+    phone: "+14165550105",
+    contactMethod: "call",
+    notes: "Follow up on consultation and booking.",
+    status: "contacted",
+    createdAt: Date.parse("2026-10-22T15:00Z"),
+    updatedAt: 1,
+    adminNote: "Consultation requested",
+    followUpDate: "2026-10-23",
+  },
+  {
+    id: "l3",
+    name: "Aisha Patel",
+    phone: "+14165550106",
+    contactMethod: "text",
+    notes: "A natural gel set, please.",
+    status: "pending",
+    createdAt: Date.parse("2026-10-23T11:45Z"),
+    updatedAt: 1,
+    adminNote: "",
+    followUpDate: null,
+  },
+];

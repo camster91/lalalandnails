@@ -12,3 +12,19 @@
 - [ ] Verify mobile/tablet/desktop and keyboard journeys in Chrome.
 - [ ] Verify real appointment form notification delivery to Bianca after destination verification.
 - [ ] Plan separate client-directory/calendar/reminder increments after the inbox is usable.
+
+# Salon workspace expansion — selected UI direction 1
+
+- [x] Implement the compact responsive studio shell and operational core described in docs/studio/IMPLEMENTATION-STATUS.md.
+- [x] Verify persistence/invariants on SQLite, signed authentication tests, Astro types, build and production dependency audit.
+- [ ] Verify the new production UI and actual authenticated create/edit/archive/export journeys after deployment.
+- [ ] Confirm salon hours, booking policies, final prices/durations; implement public availability/reservations with anti-abuse protection.
+- [ ] Connect salon Stripe, implement deposits/refunds and verified webhook reconciliation.
+- [ ] Configure transactional sender; implement client confirmation/reminder/review templates, delivery records and retries.
+- [ ] Select and approve SMS provider costs before enabling consented text reminders.
+- [ ] Provision private media storage and implement validated consent-controlled uploads/gallery/retention.
+- [ ] Add source attribution and consented retention workflows; confirm review destination.
+- [ ] Verify database recovery settings and rehearse a restoration.
+
+- [x] Add a prefilled Google Calendar event action with exact Toronto instants and no client PII in URLs.
+- [ ] Configure a salon Google OAuth client/calendar and implement automatic create/update/cancel sync.
