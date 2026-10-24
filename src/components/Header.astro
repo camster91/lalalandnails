@@ -24,11 +24,11 @@ const onPricing = Astro.url.pathname === '/services-pricing';
   <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
     <a href={onHome ? '#service' : '/#service'}>The service</a>
     <a href="/services-pricing" aria-current={onPricing ? 'page' : undefined}>Services &amp; Pricing</a>
-    <a href={onHome ? '#looks' : '/#looks'}>Inspiration</a>
-    <a href={onHome ? '#process' : '/#process'}>How it works</a>
+    <a class="nav-secondary" href={onHome ? '#looks' : '/#looks'}>Inspiration</a>
+    <a class="nav-secondary" href={onHome ? '#process' : '/#process'}>How it works</a>
     <a href={onHome ? '#about' : '/#about'}>Meet Bianca</a>
     {site.gallery.length > 0 && <a href={onHome ? '#work' : '/#work'}>Selected work</a>}
-    {site.faqs.length > 0 && <a href={onHome ? '#faq' : '/#faq'}>Questions</a>}
+    {site.faqs.length > 0 && <a class="nav-secondary" href={onHome ? '#faq' : '/#faq'}>Questions</a>}
     <a class="button button--small" href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">
       Request an appointment
     </a>
@@ -109,3 +109,29 @@ const onPricing = Astro.url.pathname === '/services-pricing';
     bookingObserver.observe(booking);
   }
 </script>
+
+<style>
+  /* Mid-size desktop header: preserve primary services/booking links without wrapping. */
+  @media (min-width: 901px) and (max-width: 1199px) {
+    .site-nav .nav-secondary { display: none; }
+    .site-nav > a:not(.button) { padding-inline: .45rem; font-size: .8125rem; }
+  }
+
+  /* More menu links fit safely on small phones by allowing the overlay to scroll. */
+  @media (max-width: 900px) {
+    .site-nav {
+      justify-content: flex-start;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-top: clamp(5.5rem, 13vh, 8rem);
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    .site-nav > a:not(.button) {
+      flex-shrink: 0;
+      padding-block: .5rem;
+      font-size: clamp(1.85rem, 7.7vw, 3.4rem);
+      line-height: 1.12;
+    }
+    .site-nav .button { flex-shrink: 0; margin-top: 1rem; }
+  }
+</style>
