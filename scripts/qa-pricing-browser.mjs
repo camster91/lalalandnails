@@ -135,7 +135,11 @@ try {
     return Boolean(teaser && visit && (teaser.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING));
   });
   assert.ok(order, 'homepage pricing teaser follows signature service and precedes visit guide');
-  await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
+  await page.locator('#pricing').scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
+  // Screenshot the actual component without browser-fixed chrome overlaying it.
+  // The sticky CTA's real visibility is asserted before hiding fixed elements.
+  await page.addStyleTag({ content: 'astro-dev-toolbar, .site-header, .mobile-booking, .skip-link { display: none !important }' });
   await page.locator('#pricing').screenshot({ path: 'qa-artifacts/home-pricing-preview-phone.png', animations: 'disabled' });
   await page.locator('#pricing a[href="/services-pricing"]').click();
   assert.equal(new URL(page.url()).pathname, '/services-pricing');
