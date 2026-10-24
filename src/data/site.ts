@@ -1,4 +1,4 @@
-import { pricingDraft } from './pricing';
+import { pricingDraft } from './pricing.ts';
 
 export interface ContactMethod {
   type: 'email' | 'phone';
