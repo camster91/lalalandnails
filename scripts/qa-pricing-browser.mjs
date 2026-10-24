@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
 
 const origin = 'http://127.0.0.1:4321';
 const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '4321'], {
@@ -43,6 +44,7 @@ try {
   }
   assert.ok(ready, 'Local Astro route did not start: ' + serverLogs);
 
+  mkdirSync('qa-artifacts', { recursive: true });
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   for (const size of viewports) {
     const page = await browser.newPage({
@@ -54,6 +56,8 @@ try {
     const response = await page.goto(origin + '/services-pricing', { waitUntil: 'domcontentloaded' });
     assert.equal(response?.status(), 200, size.name + ': pricing page HTTP status');
     await page.evaluate(() => document.fonts?.ready);
+    assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'), 'noindex, nofollow', size.name + ': draft route noindex');
+    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://lalalandnails.ca/services-pricing', size.name + ': expected canonical');
     assert.equal(await page.locator('main.pricing-page h1').count(), 1, size.name + ': one page heading (excluding dev toolbar)');
     for (const section of ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example']) {
       assert.equal(await page.locator('#' + section).count(), 1, size.name + ': missing section ' + section);
@@ -102,7 +106,10 @@ try {
       assert.equal(await menu.getAttribute('aria-expanded'), 'false', size.name + ': menu closes');
     }
 
-    console.log('PASS', size.name, size.width + 'x' + size.height, 'section/visual/navigation/overflow checks');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
+    await page.screenshot({ path: 'qa-artifacts/pricing-' + size.name + '.png', fullPage: true, animations: 'disabled', timeout: 30000 });
+    console.log('PASS', size.name, size.width + 'x' + size.height, 'section/visual/navigation/overflow/noindex checks');
     await page.close();
   }
 
@@ -115,6 +122,8 @@ try {
     return Boolean(teaser && visit && (teaser.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING));
   });
   assert.ok(order, 'homepage pricing teaser follows signature service and precedes visit guide');
+  await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
+  await page.locator('#pricing').screenshot({ path: 'qa-artifacts/home-pricing-preview-phone.png', animations: 'disabled' });
   await page.locator('#pricing a[href="/services-pricing"]').click();
   assert.equal(new URL(page.url()).pathname, '/services-pricing');
   await page.locator('.pricing-cta a[href="/#booking"]').click();
