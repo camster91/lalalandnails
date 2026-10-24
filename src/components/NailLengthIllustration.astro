@@ -1,0 +1,20 @@
+---
+interface Props {
+  length: 'Short' | 'Medium' | 'Long' | 'Extra long';
+}
+const { length } = Astro.props;
+const startY = { Short: 76, Medium: 66, Long: 53, 'Extra long': 37 }[length];
+const nailHeight = { Short: 54, Medium: 64, Long: 77, 'Extra long': 93 }[length];
+---
+<svg class="nail-length-illustration" viewBox="0 0 180 180" aria-hidden="true" focusable="false">
+  <rect width="180" height="180" rx="22" fill="#fffaf5" />
+  <path d="M59 166 C54 149 55 121 55 95 C55 74 62 63 69 62 C86 58 100 61 107 67 C115 73 122 84 122 96 L122 166" fill="#c9947f" stroke="#8c5c4c" stroke-width="1.7" />
+  <rect x="66" y={startY} width="46" height={nailHeight} rx="22" fill="#f4d6db" stroke="#83535a" stroke-width="1.6" />
+  <path d={`M73 ${startY + nailHeight - 9} Q89 ${startY + nailHeight - 14} 105 ${startY + nailHeight - 9}`} fill="none" stroke="#d0a5a9" stroke-width="1.6" />
+  <path d={`M78 ${startY + 11} Q72 ${startY + 33} 78 ${startY + 42}`} fill="none" stroke="#fff8f5" stroke-width="3" stroke-linecap="round" opacity=".9" />
+  <path d="M63 157 Q89 163 118 156" fill="none" stroke="#a97664" stroke-width="1.5" opacity=".7" />
+  <path d="M65 144 Q88 151 117 143" fill="none" stroke="#a97664" stroke-width="1.2" opacity=".55" />
+</svg>
+<style>
+  .nail-length-illustration { display: block; width: 100%; height: auto; max-width: 13rem; border-radius: 1.1rem; }
+</style>
