@@ -40,3 +40,11 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Check pricing and booking links on responsive viewports
         run: node scripts/qa-pricing-browser.mjs
+      - name: Preserve visual pricing review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pricing-visual-review
+          path: qa-artifacts/*.png
+          if-no-files-found: ignore
+          retention-days: 7
