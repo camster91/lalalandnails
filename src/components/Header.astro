@@ -1,6 +1,7 @@
 ---
 import BrandLogo from './BrandLogo.astro';
 import type { SiteConfig } from '../data/site';
+import { pricingDraft } from '../data/pricing';
 
 interface Props {
   site: SiteConfig;
@@ -9,6 +10,7 @@ interface Props {
 const { site } = Astro.props;
 const onHome = Astro.url.pathname === '/';
 const onPricing = Astro.url.pathname === '/services-pricing';
+const showPricing = import.meta.env.DEV || pricingDraft.approved;
 ---
 
 <header class="site-header" data-header>
@@ -23,7 +25,7 @@ const onPricing = Astro.url.pathname === '/services-pricing';
 
   <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
     <a href={onHome ? '#service' : '/#service'}>The service</a>
-    <a href="/services-pricing" aria-current={onPricing ? 'page' : undefined}>Services &amp; Pricing</a>
+    {showPricing && <a href="/services-pricing" aria-current={onPricing ? 'page' : undefined}>Services &amp; Pricing</a>}
     <a class="nav-secondary" href={onHome ? '#looks' : '/#looks'}>Inspiration</a>
     <a class="nav-secondary" href={onHome ? '#process' : '/#process'}>How it works</a>
     <a href={onHome ? '#about' : '/#about'}>Meet Bianca</a>
