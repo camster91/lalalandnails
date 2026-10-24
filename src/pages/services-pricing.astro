@@ -288,13 +288,14 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
   a:focus-visible { outline: 3px solid var(--plum); outline-offset: 3px; }
   @media(max-width: 900px) {
     .pricing-hero { grid-template-columns: 1fr; }
+    .pricing-hero__copy { padding-top: 9.5rem; }
     .pricing-hero__photo { min-height: 23rem; margin: 0 1rem 1rem; }
     .pricing-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .pricing-length-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .pricing-section--example { grid-template-columns: 1fr; }
   }
   @media(max-width: 600px) {
-    .pricing-hero__copy { padding-top: 5rem; }
+    .pricing-hero__copy { padding-top: 9.5rem; }
     .pricing-card-grid, .pricing-card-grid--repairs, .pricing-length-grid, .pricing-art-cards { grid-template-columns: 1fr; }
     .pricing-card__top { gap: .5rem; }
     .pricing-card__top strong { font-size: 1.75rem; }
