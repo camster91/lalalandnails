@@ -10,7 +10,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 const baseUrl = 'http://127.0.0.1:4387';
 const child = spawn('npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--port', '4387'], {
-  env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
+  env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1', ASTRO_PREVIEW_BACKGROUND: '1' },
   detached: process.platform !== 'win32',
   stdio: ['ignore', 'pipe', 'pipe'],
 });

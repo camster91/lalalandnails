@@ -1,6 +1,6 @@
 # La La Land Nail Hub — Services & Pricing implementation plan
 
-**Status:** Draft on `feature/services-pricing-draft`. **Not approved for publication.**  
+**Historical plan:** Written before pricing approval. Its draft status and unchecked gates below record that earlier stage, not current publication authority. The approved catalogue is `src/data/pricing.ts`; see [the approved release record](studio/PRICING-BOOKING-RELEASE.md). PRs #7 and #10 are now merged. Do not copy the historical rates below into application code.
 **Tracking:** [Issue #6](https://github.com/camster91/lalalandnails/issues/6)  
 **Business owner approval:** Bianca  
 **Implementation:** Cameron/dev

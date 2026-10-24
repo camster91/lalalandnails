@@ -4,8 +4,8 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
 const structured = prices.manicures.find((service) => service.id === 'structured')!;
 const lengths = prices.lengths.filter((length) => length.addOn !== null);
 const designs = [{ name: 'Solid colour — no nail art', addOn: 0 }, ...prices.artTiers];
-const initialLength = 10;
-const initialDesign = 20;
+const initialLength = prices.lengths[1].addOn;
+const initialDesign = prices.artTiers[1].addOn;
 const initialTotal = structured.price + initialLength + initialDesign;
 ---
 <div class="estimate-card" data-price-estimator data-base-price={structured.price}>
@@ -27,7 +27,7 @@ const initialTotal = structured.price + initialLength + initialDesign;
       <select name="estimate-art" data-estimate-art>
         {designs.map((item) => (
           <option value={item.addOn} selected={item.addOn === initialDesign}>
-            {item.name} · {item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn) + ('startingAt' in item ? '+' : '')}
+            {item.name} · {item.addOn === 0 ? 'Included' : ('startingAt' in item ? 'from ' : '+') + displayPrice(item.addOn)}
           </option>
         ))}
       </select>

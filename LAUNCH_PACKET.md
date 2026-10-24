@@ -2,6 +2,8 @@
 
 The canonical homepage is live and indexable. Unapproved business fields stay hidden. The checklist below records remaining business inputs; it does not describe the current hosting or indexing state. See docs/studio/SITE-REVIEW-FIXES.md for the latest fixes.
 
+24 October reconciliation: the approved catalogue, service durations and inclusions are public through merged PR #7; site-wide content followed in merged PR #10. See `docs/studio/PRICING-BOOKING-RELEASE.md` and `src/data/pricing.ts`. Weekday time blocks describe the existing appointment-request policy; they do not establish walk-in opening hours. The private home-studio address remains hidden. Other unchecked business inputs below are not newly approved by this QA pass.
+
 ## Booking and contact
 
 - [x] Simple call/text request form, popup and private staff workspace
@@ -17,9 +19,9 @@ The canonical homepage is live and indexable. Unapproved business fields stay hi
 
 ## Service
 
-- [ ] Price display
-- [ ] Duration
-- [ ] What is included
+- [x] Approved introductory price display from the shared catalogue
+- [x] Catalogue service durations and two-hour request-block guidance
+- [x] Catalogue service inclusions
 - [ ] Appointment preparation
 - [ ] Availability guidance
 - [ ] Removal, repair, payment, cancellation, lateness, and age policies

@@ -64,7 +64,9 @@ const showPricing = import.meta.env.DEV || pricingDraft.approved;
     if (!isOpen) requestAnimationFrame(() => links?.[0]?.focus());
   });
 
-  links?.forEach((link) => link.addEventListener('click', () => closeMenu()));
+  links?.forEach((link) => link.addEventListener('click', () => {
+    closeMenu(window.matchMedia('(max-width: 900px)').matches);
+  }));
 
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && document.body.classList.contains('menu-open')) {
