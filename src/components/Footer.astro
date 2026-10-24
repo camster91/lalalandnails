@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { site } = Astro.props;
+const onHome = Astro.url.pathname === '/';
 ---
 
 <footer class="site-footer">
@@ -15,10 +16,11 @@ const { site } = Astro.props;
     <p>European manicures by Bianca Ashley. Appointments by request.</p>
   </div>
   <div class="site-footer__links">
-    <a href="#service">The service</a>
-    <a href="#about">About Bianca</a>
-    <a href="#visit">Visiting from the GTA</a>
-    <a href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
+    <a href={onHome ? '#service' : '/#service'}>The service</a>
+    <a href="/services-pricing">Services &amp; Pricing</a>
+    <a href={onHome ? '#about' : '/#about'}>About Bianca</a>
+    <a href={onHome ? '#visit' : '/#visit'}>Visiting from the GTA</a>
+    <a href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">Request an appointment</a>
     <a href="/privacy">Privacy notice</a>
     {site.socials.map((social) => <a href={social.href}>{social.label}</a>)}
     {site.googleBusinessUrl && <a href={site.googleBusinessUrl}>Google Business Profile</a>}
