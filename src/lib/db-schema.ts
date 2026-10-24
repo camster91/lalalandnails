@@ -21,6 +21,19 @@ export async function initializeDatabase(d1: D1Database): Promise<void> {
     )`),
     d1.prepare(`CREATE INDEX IF NOT EXISTS idx_booking_requests_status_created
       ON booking_requests(status, created_at)`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS booking_request_details (
+      request_id TEXT PRIMARY KEY NOT NULL REFERENCES booking_requests(id),
+      selection_json TEXT NOT NULL,
+      inspiration_links_json TEXT NOT NULL DEFAULT '[]'
+    )`),
+    d1.prepare(`CREATE TABLE IF NOT EXISTS booking_inspiration (
+      id TEXT PRIMARY KEY NOT NULL,
+      request_id TEXT NOT NULL REFERENCES booking_requests(id),
+      mime TEXT NOT NULL CHECK(mime IN ('image/jpeg','image/png')),
+      image BLOB NOT NULL,
+      created_at INTEGER NOT NULL
+    )`),
+    d1.prepare('CREATE INDEX IF NOT EXISTS booking_inspiration_request ON booking_inspiration(request_id)'),
     d1.prepare(`CREATE TABLE IF NOT EXISTS chat_rate_limits (
       key TEXT PRIMARY KEY NOT NULL,
       count INTEGER NOT NULL DEFAULT 0,

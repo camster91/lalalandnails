@@ -31,6 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
         "studio_activity",
         "studio_photos",
         "booking_requests",
+        "booking_request_details",
+        "booking_inspiration",
       ];
     // One transaction provides a consistent export. Refuse oversized snapshots rather than silently truncating.
     const count = await db.batch(
@@ -49,12 +51,13 @@ export const POST: APIRoute = async ({ request }) => {
         413,
       );
     const rows = await db.batch(
-      tables.map((t) => db.prepare(`SELECT * FROM ${t} LIMIT 10001`)),
+      tables.map((t) => db.prepare(`SELECT ${t === "booking_inspiration" ? "id,request_id,mime,created_at" : "*"} FROM ${t} LIMIT 10001`)),
     );
     if (rows.some((r) => r.results.length > 10000))
       return json({ error: "Export limit exceeded." }, 413);
     const output = {
       format: "lalaland-studio-v1",
+      limitations: ["Inspiration image bytes are excluded. Image metadata, service selections, estimates and links are included. This is not a complete database backup."],
       createdAt: new Date().toISOString(),
       timezone: "America/Toronto",
       tables: Object.fromEntries(tables.map((t, i) => [t, rows[i].results])),

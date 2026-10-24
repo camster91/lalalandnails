@@ -1,4 +1,5 @@
 ---
+import BookingPreferences from './BookingPreferences.astro';
 import SectionPhoto from './SectionPhoto.astro';
 import { siteConfig } from '../data/site';
 ---
@@ -13,10 +14,12 @@ import { siteConfig } from '../data/site';
   </div>
 
   <div class="booking-form-home" data-booking-home>
-  <form class="booking-form" data-booking-form action="/api/bookings" method="post" novalidate>
+  <form class="booking-form" data-booking-form action="/api/bookings" method="post" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="leadSource" value="unknown" />
     <p class="booking-form__intro">Monday–Friday, 10 a.m.–3 p.m. Toronto time. One appointment per day. Fields marked * are required.</p>
     <p class="field-hint">See <a href="/services-pricing">services and proposed pricing</a> before requesting a time. Bianca confirms your quote and visit details.</p>
+    <ol class="booking-progress" aria-label="Appointment request steps"><li data-progress="0" aria-current="step">Time</li><li data-progress="1">Service</li><li data-progress="2">Inspiration</li><li data-progress="3">Your details</li></ol>
+    <fieldset data-booking-step="0"><legend tabindex="-1">1. Choose a time</legend>
     <div class="booking-calendar" data-booking-calendar tabindex="-1" aria-describedby="preferredDate-error preferredTime-error">
       <input type="hidden" name="preferredDate" />
       <details open>
@@ -28,11 +31,16 @@ import { siteConfig } from '../data/site';
         <p class="field-hint" data-calendar-notice role="status">Loading available dates…</p>
         <button type="button" class="text-link" data-calendar-retry hidden>Retry calendar</button>
         <label>Two-hour block · Toronto time <span aria-hidden="true">*</span><select name="preferredTime" required disabled aria-describedby="preferredTime-error"><option value="">Choose a date first</option></select></label>
-        <button type="button" class="button" data-calendar-use disabled>Use this time</button>
+        <button type="button" class="button" data-calendar-use disabled>Continue to service</button>
       </details>
       <span id="preferredDate-error" class="field-error" data-field-error="preferredDate"></span>
       <span id="preferredTime-error" class="field-error" data-field-error="preferredTime"></span>
     </div>
+    </fieldset>
+    <BookingPreferences />
+    <fieldset data-booking-step="3"><legend tabindex="-1">4. Your details &amp; review</legend>
+    <div data-booking-review class="booking-review"></div>
+    <button type="button" class="text-link" data-step-back="2">Back to inspiration</button>
     <div class="booking-form__honeypot" aria-hidden="true">
       <label>Website <input name="website" tabindex="-1" autocomplete="off" /></label>
     </div>
@@ -72,10 +80,11 @@ import { siteConfig } from '../data/site';
 
     <span id="consent-error" class="field-error" data-field-error="consent"></span>
     <p class="field-hint">Please keep notes appointment-related and leave out medical information.</p>
-    <button class="button button--cream" type="submit">Request a call or text</button>
+    <button class="button button--cream" type="submit">Send appointment request</button>
     <p class="field-hint">Your appointment is confirmed only after you agree on the details with Bianca.</p>
     <p class="field-hint">Read our <a href="/privacy">privacy notice</a>.</p>
     {siteConfig.contact && <p class="field-hint">Prefer to contact us directly? <a href={siteConfig.contact.href}>{siteConfig.contact.label}</a></p>}
+    </fieldset>
     <p class="booking-form__status" data-booking-status role="status" aria-live="polite"></p>
   </form>
   </div>

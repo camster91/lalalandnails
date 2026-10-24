@@ -1,4 +1,7 @@
 import type { APIRoute } from 'astro';
+import {readBookingBody} from '../../lib/booking-body';
+import {quoteBooking,parseInspirationLinks,validateInspirationImage,inspirationLimits} from '../../lib/booking-options';
+import {pricingDraft} from '../../data/pricing';
 import { env } from 'cloudflare:workers';
 import { getD1 } from '../../lib/db';
 import { studioReady } from '../../lib/studio-db';
@@ -14,11 +17,9 @@ const CONTACT_METHODS = new Set(['call', 'text']);
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    if(Number(request.headers.get('content-length')||0)>16384)return json({ok:false,message:'Please shorten your request.'},413);
-    const contentType = request.headers.get('content-type') ?? '';
-    const input = contentType.includes('application/json')
-      ? await request.json() as Record<string, unknown>
-      : Object.fromEntries(await request.formData());
+    if(!pricingDraft.approved&&!import.meta.env.DEV)return json({ok:false,message:'Service selection is not available yet.'},503);
+    let input:Record<string,unknown>,files:File[];
+    try{({input,files}=await readBookingBody(request));}catch{return json({ok:false,message:'Unable to read your request. Keep images under the stated limits.'},400);}
 
     if (String(input.website ?? '').trim()) return json({ ok: true }, 202);
 
@@ -36,6 +37,14 @@ export const POST: APIRoute = async ({ request }) => {
 
     const preferredDate=clean(input.preferredDate,10), preferredTime=clean(input.preferredTime,5);
     try {requestWindow(preferredDate,preferredTime);} catch(error) {if(error instanceof BookingSlotError)errors[error.field]=error.message;else throw error;}
+    let selection:ReturnType<typeof quoteBooking>|undefined,links:string[]=[];
+    const images:{mime:string;bytes:Uint8Array}[]=[];
+    try{selection=quoteBooking(input);}catch(error){errors.package=(error as Error).message;}
+    try{links=parseInspirationLinks(String(input.inspirationLinks||''));}catch(error){errors.inspirationLinks=(error as Error).message;}
+    try{
+      if(files.length>inspirationLimits.files)throw Error('Choose up to two inspiration images.');
+      for(const file of files)images.push(validateInspirationImage(new Uint8Array(await file.arrayBuffer()),file.type));
+    }catch(error){errors.inspirationImages=(error as Error).message;}
     if (Object.keys(errors).length > 0) return json({ ok: false, errors }, 400);
 
     await studioReady();
@@ -50,7 +59,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const now = Date.now();
-    const saved=await saveTimedRequest(getD1(),{name,phone:phone!,contactMethod,notes,leadSource:leadSource(input.leadSource),preferredDate,preferredTime},now);
+    const saved=await saveTimedRequest(getD1(),{name,phone:phone!,contactMethod,notes,leadSource:leadSource(input.leadSource),preferredDate,preferredTime,details:{selection:selection!,links,images}},now);
     const id=saved.id;
 
     // Save the request first so an email outage cannot lose a client's enquiry.
@@ -66,6 +75,11 @@ export const POST: APIRoute = async ({ request }) => {
           `Name: ${name}`,
           `Phone: ${phone}`,
           `Requested block: ${preferredDate} at ${preferredTime}, 2 hours (America/Toronto)`,
+          `Service estimate: ${selection!.serviceName} · $${selection!.total.toFixed(2)} CAD before applicable taxes`,
+          `Selected options: ${selection!.lines.map(l=>l.label).join(' + ')}; shape: ${selection!.shape}`,
+          `Consultation required: ${selection!.needsConsultation?'Yes':'Confirm suitability and timing'}`,
+          `Inspiration: ${links.length} link(s), ${images.length} private image(s). Review in the staff workspace.`,
+          `Staff workspace: https://lalalandnails.ca/admin`,
           `Reply by: ${contactMethod === 'text' ? 'Text message' : 'Phone call'}`,
           `Message: ${notes || 'No message provided.'}`,
           '',

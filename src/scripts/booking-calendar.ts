@@ -49,7 +49,7 @@ export function startBookingCalendar(form:HTMLFormElement){
  previous.addEventListener('click',()=>shift(-1));next.addEventListener('click',()=>shift(1));
  root.querySelector('[data-calendar-retry]')?.addEventListener('click',()=>void refresh());
  timeInput.addEventListener('change',()=>{useTime.disabled=!timeInput.value;});
- useTime.addEventListener('click',()=>{if(!dateInput.value||!timeInput.value)return;summary.textContent=`${labelDate(dateInput.value)} · ${labelTime(timeInput.value)} · Toronto`;details.open=false;form.querySelector<HTMLInputElement>('[name="name"]')?.focus();});
+ useTime.addEventListener('click',()=>{if(!dateInput.value||!timeInput.value)return;summary.textContent=`${labelDate(dateInput.value)} · ${labelTime(timeInput.value)} · Toronto`;details.open=false;form.dispatchEvent(new CustomEvent('booking:time-selected'));});
  const focus=()=>{details.open=true;root.focus();};
  void refresh();
  return {refresh,focus,reset:()=>{dateInput.value='';timeInput.value='';details.open=true;summary.textContent='Choose a date and time';void refresh();}};
