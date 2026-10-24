@@ -1,3 +1,4 @@
+import { pricingDraft } from '../data/pricing.ts';
 import {bookingPolicy} from './booking-policy.ts';
 import type { SiteConfig } from '../data/site';
 
@@ -6,7 +7,7 @@ export function isPublicOrigin(site: SiteConfig, url: URL): boolean {
 }
 
 export function isIndexable(site: SiteConfig, url: URL): boolean {
-  return isPublicOrigin(site, url) && url.pathname === '/';
+  return isPublicOrigin(site, url) && (url.pathname === '/' || (pricingDraft.approved && url.pathname === '/services-pricing'));
 }
 
 export function buildRobots(site: SiteConfig, url: URL): string {

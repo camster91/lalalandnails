@@ -52,12 +52,18 @@ export async function monthAvailability(db: D1Database,month: string,now=Date.no
   }
   return {month,days,timezone:bookingPolicy.timezone,duration:bookingPolicy.durationMinutes,maxPerDay:bookingPolicy.maxPerDay,today,lastDate:last.toISOString().slice(0,10)};
 }
-type TimedRequest={name:string;phone:string;contactMethod:string;notes:string;leadSource:string;preferredDate:string;preferredTime:string};
+type TimedRequest={name:string;phone:string;contactMethod:string;notes:string;leadSource:string;preferredDate:string;preferredTime:string;details?:{selection:unknown;links:string[];images:{mime:string;bytes:Uint8Array}[]}};
 export async function saveTimedRequest(db: D1Database,input: TimedRequest,now=Date.now()) {
   const w=requestWindow(input.preferredDate,input.preferredTime,now),id=crypto.randomUUID();
   try {
-    await db.prepare(`INSERT INTO booking_requests(id,created_at,updated_at,name,phone,contact_method,lead_source,preferred_date,preferred_time,requested_start,requested_end,requested_day_start,requested_day_end,notes,consent_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-      .bind(id,now,now,input.name,input.phone,input.contactMethod,input.leadSource,w.date,w.time,w.start,w.end,w.dayStart,w.dayEnd,input.notes,now).run();
+    const insert=db.prepare(`INSERT INTO booking_requests(id,created_at,updated_at,name,phone,contact_method,lead_source,preferred_date,preferred_time,requested_start,requested_end,requested_day_start,requested_day_end,notes,consent_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      .bind(id,now,now,input.name,input.phone,input.contactMethod,input.leadSource,w.date,w.time,w.start,w.end,w.dayStart,w.dayEnd,input.notes,now);
+    const statements=[insert];
+    if(input.details){
+      statements.push(db.prepare('INSERT INTO booking_request_details(request_id,selection_json,inspiration_links_json) VALUES(?,?,?)').bind(id,JSON.stringify(input.details.selection),JSON.stringify(input.details.links)));
+      for(const image of input.details.images)statements.push(db.prepare('INSERT INTO booking_inspiration(id,request_id,mime,image,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),id,image.mime,image.bytes.buffer.slice(image.bytes.byteOffset,image.bytes.byteOffset+image.bytes.byteLength),now));
+    }
+    await db.batch(statements);
   }catch(error){
     const message=error instanceof Error?error.message:'';
     if(/booking_day_unavailable|booking_requests.preferred_date|booking_request_one_day/.test(message))throw new BookingSlotError('That day or block is unavailable. Please choose another date or time.');

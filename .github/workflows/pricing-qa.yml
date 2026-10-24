@@ -1,0 +1,52 @@
+name: Draft pricing QA
+
+on:
+  push:
+    branches:
+      - feature/services-pricing-draft
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pricing-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Node tests / Astro check / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the draft branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run Node regression tests
+        run: node --test tests/*.test.mjs
+      - name: Run Astro type checks
+        run: npm run check
+      - name: Build Astro/Cloudflare output without deployment
+        run: npm run build
+      - name: Verify public production mode hides unapproved prices
+        run: node scripts/qa-pricing-production.mjs
+      - name: Install headless browser QA dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Check pricing and booking links on responsive viewports
+        run: node scripts/qa-pricing-browser.mjs
+      - name: Preserve visual pricing review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pricing-visual-review
+          path: qa-artifacts/*.png
+          if-no-files-found: ignore
+          retention-days: 7

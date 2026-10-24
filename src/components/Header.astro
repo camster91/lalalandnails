@@ -1,16 +1,20 @@
 ---
 import BrandLogo from './BrandLogo.astro';
 import type { SiteConfig } from '../data/site';
+import { pricingDraft } from '../data/pricing';
 
 interface Props {
   site: SiteConfig;
 }
 
 const { site } = Astro.props;
+const onHome = Astro.url.pathname === '/';
+const onPricing = Astro.url.pathname === '/services-pricing';
+const showPricing = import.meta.env.DEV || pricingDraft.approved;
 ---
 
 <header class="site-header" data-header>
-  <a class="site-header__brand" href="#top">
+  <a class="site-header__brand" href={onHome ? '#top' : '/#top'}>
     <BrandLogo compact />
   </a>
 
@@ -20,19 +24,20 @@ const { site } = Astro.props;
   </button>
 
   <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
-    <a href="#service">The service</a>
-    <a href="#looks">Inspiration</a>
-    <a href="#process">How it works</a>
-    <a href="#about">Meet Bianca</a>
-    {site.gallery.length > 0 && <a href="#work">Selected work</a>}
-    {site.faqs.length > 0 && <a href="#faq">Questions</a>}
-    <a class="button button--small" href="#booking" data-analytics-events="booking_request_view">
+    <a href={onHome ? '#service' : '/#service'}>The service</a>
+    {showPricing && <a href="/services-pricing" aria-current={onPricing ? 'page' : undefined}>Services &amp; Pricing</a>}
+    <a class="nav-secondary" href={onHome ? '#looks' : '/#looks'}>Inspiration</a>
+    <a class="nav-secondary" href={onHome ? '#process' : '/#process'}>How it works</a>
+    <a href={onHome ? '#about' : '/#about'}>Meet Bianca</a>
+    {site.gallery.length > 0 && <a href={onHome ? '#work' : '/#work'}>Selected work</a>}
+    {site.faqs.length > 0 && <a class="nav-secondary" href={onHome ? '#faq' : '/#faq'}>Questions</a>}
+    <a class="button button--small" href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">
       Request an appointment
     </a>
   </nav>
 </header>
 
-<a class="mobile-booking" href="#booking" data-analytics-events="booking_request_view">
+<a class:list={['mobile-booking', { 'is-hidden': onPricing }]} href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">
   Request an appointment
 </a>
 
@@ -89,20 +94,48 @@ const { site } = Astro.props;
 
   const header = document.querySelector<HTMLElement>('[data-header]');
   const mobileBooking = document.querySelector<HTMLElement>('.mobile-booking');
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const booking = document.querySelector<HTMLElement>('#booking');
+  const heroAndBookingTargets = Array.from(document.querySelectorAll<HTMLElement>(
+    '.hero, .pricing-hero, #pricing, #booking, .pricing-cta',
+  ));
   const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
   updateHeader();
   window.addEventListener('scroll', updateHeader, { passive: true });
 
-  if (mobileBooking && hero && booking && 'IntersectionObserver' in window) {
+  // Hide the duplicate floating CTA while the first or final booking CTA is
+  // already available. The pricing page has different section names to home.
+  if (mobileBooking && heroAndBookingTargets.length && 'IntersectionObserver' in window) {
     const visible = new Set<Element>();
     const updateBooking = () => mobileBooking.classList.toggle('is-hidden', visible.size > 0);
     const bookingObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target));
       updateBooking();
     }, { threshold: .08 });
-    bookingObserver.observe(hero);
-    bookingObserver.observe(booking);
+    heroAndBookingTargets.forEach((target) => bookingObserver.observe(target));
   }
 </script>
+
+<style>
+  /* Mid-size desktop header: preserve primary services/booking links without wrapping. */
+  @media (min-width: 901px) and (max-width: 1199px) {
+    .site-nav .nav-secondary { display: none; }
+    .site-nav > a:not(.button) { padding-inline: .45rem; font-size: .8125rem; }
+  }
+
+  /* More menu links fit safely on small phones by allowing the overlay to scroll. */
+  @media (max-width: 900px) {
+    .site-nav {
+      justify-content: flex-start;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-top: clamp(5.5rem, 13vh, 8rem);
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    .site-nav > a:not(.button) {
+      flex-shrink: 0;
+      padding-block: .5rem;
+      font-size: clamp(1.85rem, 7.7vw, 3.4rem);
+      line-height: 1.12;
+    }
+    .site-nav .button { flex-shrink: 0; margin-top: 1rem; }
+  }
+</style>
