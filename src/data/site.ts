@@ -1,3 +1,5 @@
+import { pricingDraft } from './pricing';
+
 export interface ContactMethod {
   type: 'email' | 'phone';
   label: string;
@@ -91,7 +93,7 @@ export interface SiteConfig {
 export const siteConfig: SiteConfig = {
   businessName: 'La La Land Nail Hub',
   legalName: null,
-  specialty: 'European manicures',
+  specialty: 'European/Russian-style manicures and structured gel',
   provider: {
     name: 'Bianca Ashley',
     role: 'Owner and gel manicurist',
@@ -119,14 +121,24 @@ export const siteConfig: SiteConfig = {
   },
   services: [
     {
-      name: 'European manicure',
-      description: 'European manicures with Bianca Ashley in Scarborough. Start with the shape, length and finish you love, whether you have a clear reference or need help explaining your ideas.',
-      priceDisplay: null,
+      name: 'European manicures and natural-nail structured gel',
+      description: 'European/Russian-style dry manicures with Bianca in Scarborough. Choose detailed natural-nail care, gel colour or a structured builder-gel overlay. Returning clients can request fills, maintenance or nail repairs.',
+      priceDisplay: pricingDraft.approved ? `From ${pricingDraft.manicures[0].price} CAD` : null,
       duration: 'Two-hour request block',
       availability: 'One appointment per weekday',
-      inclusions: [],
-      preparation: [],
-      policyNotes: [],
+      inclusions: [
+        'Careful dry manicure preparation and natural nail shaping.',
+        'Your chosen finish: natural nails, gel colour or a structured builder-gel overlay.',
+        'An estimated total before Bianca confirms the final service and price.',
+      ],
+      preparation: [
+        'Choose an available two-hour request block, then select your service and optional extras.',
+        'You can add nail inspiration photos/links and mention any existing gel or extensions.',
+      ],
+      policyNotes: [
+        'Submitting a request is not a confirmed appointment.',
+        'Bianca checks suitability, final price and visit details before confirming.',
+      ],
     },
   ],
   process: [
@@ -151,16 +163,26 @@ export const siteConfig: SiteConfig = {
   faqs: [
     { question: 'How do I request a European manicure in Scarborough?', answer: 'Choose an available two-hour block in the request calendar, choose your service, then leave your name and phone number and choose a call or text back. Requests are Monday–Friday within 10 a.m.–3 p.m. Toronto time, with one appointment per day. Bianca will confirm the service, price and visit details.' },
     { question: 'Where is La La Land Nail Hub based?', answer: 'La La Land Nail Hub is based in Scarborough, Toronto. We welcome appointment requests from Scarborough, Durham Region and the wider GTA. Appointments take place in Scarborough.' },
-    { question: 'What can I book at La La Land?', answer: 'La La Land specializes in European manicure appointments with Bianca Ashley, the owner and gel manicurist. Tell Bianca about your current nails and the finish you have in mind when you send your request.' },
+    { question: 'What can I book at La La Land?', answer: 'Choose a European dry manicure without polish, a European gel manicure, or natural-nail structured gel. Returning clients can select fills, maintenance or removal. Nail-art tiers and suitable individual repairs are add-ons. See Services & Pricing to compare the options.' },
+    { question: 'What is the difference between gel colour and structured gel?', answer: 'Both include detailed European/Russian-style dry manicure preparation. Gel colour adds a polished finish without a builder overlay. Structured gel adds balanced builder-gel support to the natural nails, finished with solid gel colour. Neither automatically adds extension length.' },
+    { question: 'When should I book a structured gel fill?', answer: 'A fill maintains suitable existing builder gel as the nail grows. Many clients return after about two to four weeks, depending on growth, length and wear. Lifting, extensive damage or unknown product from another studio may require a different service.' },
+    { question: 'Can I repair a broken nail?', answer: 'Small chips, individual gel repairs, colour fixes and suitable free-edge reconstruction are listed by nail. Send a nail photo if helpful. Gel should not be applied over a painful, bleeding, infected or significantly separated nail.' },
+    { question: 'How do nail art tiers work?', answer: 'Choose one of four design tiers based on complexity, then share a reference photo. Bianca checks the design and confirms the quote. An effect already included in a tier, such as French tips or chrome, is not charged twice.' },
+    { question: 'Are HEMA-free gels allergy-free?', answer: 'No. Selected HEMA-free gel formulations are available, but each exact product must be checked. These gels can contain other acrylates that may cause reactions. Discuss known product sensitivities directly before the appointment.' },
     { question: 'Can I visit from Pickering, Ajax or elsewhere in Durham?', answer: 'Yes. You can request an appointment if you are travelling from Durham Region or elsewhere in the GTA. The studio is in Scarborough; please confirm the appointment and visit details before arranging your journey.' },
-    { question: 'How do I find out the price and appointment length?', answer: 'View the services and pricing menu, then choose your package, length and art in the request form for an estimate before applicable taxes. The calendar offers two-hour request blocks. Bianca reviews your choices and confirms the final price and timing before your appointment.' },
+    { question: 'How do I find out the price and appointment length?', answer: 'The Services & Pricing page shows current introductory prices in CAD. Choose your service, natural-nail length and optional design in the request form to see an estimate before applicable taxes. A two-hour calendar block is a request, not a guarantee that complex art fits; Bianca confirms the final price and timing.' },
     { question: 'Should I mention existing gel or extensions?', answer: 'Yes. Let Bianca know what is currently on your nails, including gel, extensions or another product. This helps you discuss the appropriate appointment and whether removal needs to be arranged.' },
     { question: 'Can I bring a Pinterest inspiration photo?', answer: 'Yes. Add up to three public HTTPS inspiration links or two images in the optional inspiration section of your request. Show the shape, length, colour or detail you like; Bianca reviews what is achievable before confirming.' },
     { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. Your submitted request reserves that day for review, with one appointment per day. Bianca will call or text to agree on the service, price and visit details before confirming your appointment.' },
     { question: 'Can I walk in without an appointment?', answer: 'La La Land works by appointment. Please send a request and agree on a confirmed time and visit details with Bianca before travelling to the studio.' },
     { question: 'Are the inspiration images Bianca’s client work?', answer: 'The inspiration images currently shown are AI-generated using real manicure references. They are visual ideas, not photographs of clients or the studio, Bianca’s portfolio, or a promise of a particular result.' },
   ],
-  policies: [],
+  policies: [
+    'Appointments are requests until Bianca confirms the service, price and visit details.',
+    'Prices are in CAD; length, nail art and necessary repairs may add to the estimate. Applicable taxes are additional where required.',
+    'Mention existing gel or extensions when choosing a fill, removal or nail repair.',
+    'Inspiration links and images are optional and used privately for your appointment discussion.',
+  ],
   socials: [],
   googleBusinessUrl: null,
 };
