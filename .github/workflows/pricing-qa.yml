@@ -34,6 +34,8 @@ jobs:
         run: npm run check
       - name: Build Astro/Cloudflare output without deployment
         run: npm run build
+      - name: Verify public production mode hides unapproved prices
+        run: node scripts/qa-pricing-production.mjs
       - name: Install headless browser QA dependencies
         run: |
           npm install --no-save --package-lock=false playwright
