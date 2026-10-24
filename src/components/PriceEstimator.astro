@@ -47,8 +47,8 @@ const initialTotal = structured.price + initialLength + initialDesign;
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-price-estimator]').forEach((container) => {
-    const length = container.querySelector<HTMLSelectElement>('[data-estimate-length]');
-    const art = container.querySelector<HTMLSelectElement>('[data-estimate-art]');
+    const length = container.querySelector('[data-estimate-length]') as HTMLSelectElement | null;
+    const art = container.querySelector('[data-estimate-art]') as HTMLSelectElement | null;
     const lengthLine = container.querySelector<HTMLElement>('[data-estimate-length-line]');
     const artLine = container.querySelector<HTMLElement>('[data-estimate-art-line]');
     const output = container.querySelector<HTMLOutputElement>('[data-estimate-total]');
