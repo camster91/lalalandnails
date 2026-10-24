@@ -157,7 +157,8 @@ export async function saveStudioCommand(
         );
       let linkedRequest=c.leadId;
       let previousStart: number|undefined;
-      if(c.id){const previous=await db.prepare('SELECT lead_id,start_at FROM studio_appointments WHERE id=?').bind(c.id).first<{lead_id:string|null;start_at:number}>();linkedRequest=previous?.lead_id||null;previousStart=previous?.start_at;}
+      let previousPrice:number|undefined,previousService:string|undefined;
+      if(c.id){const previous=await db.prepare('SELECT lead_id,start_at,price_cents,service_id FROM studio_appointments WHERE id=?').bind(c.id).first<{lead_id:string|null;start_at:number;price_cents:number;service_id:string}>();linkedRequest=previous?.lead_id||null;previousStart=previous?.start_at;previousPrice=previous?.price_cents;previousService=previous?.service_id;}
       let publicBlock=false;
       if(linkedRequest){
         const lead=await db.prepare('SELECT id,requested_start FROM booking_requests WHERE id=? AND archived_at IS NULL').bind(linkedRequest).first<{id:string;requested_start:number|null}>();
@@ -165,6 +166,7 @@ export async function saveStudioCommand(
         publicBlock=lead.requested_start!=null;
       }
       if(publicBlock){
+        if(!c.id){const details=await db.prepare('SELECT request_id FROM booking_request_details WHERE request_id=?').bind(linkedRequest).first();if(details&&c.priceCents===null)throw new StudioError('Enter the agreed price, including any extras, before confirming this request.');}
         if(service.duration>120)throw new StudioError('Choose a service that fits within the two-hour request block.');
         if(previousStart!==c.start){
           const localTime=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Toronto',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(c.start));
@@ -193,7 +195,7 @@ export async function saveStudioCommand(
         c.start + duration * 60000,
         c.start + (duration + service.buffer) * 60000,
         service.name,
-        service.price_cents,
+        c.priceCents ?? (previousService===c.serviceId&&previousPrice!==undefined?previousPrice:service.price_cents),
         c.notes,
       ];
       mutation = c.id

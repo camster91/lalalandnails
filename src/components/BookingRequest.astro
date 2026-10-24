@@ -3,6 +3,7 @@ import BookingInspiration from './BookingInspiration.astro';
 import BookingPreferences from './BookingPreferences.astro';
 import SectionPhoto from './SectionPhoto.astro';
 import { siteConfig } from '../data/site';
+import { pricingDraft } from '../data/pricing';
 ---
 <section class="request-booking section" id="booking" aria-labelledby="request-title">
   <div class="request-booking__intro reveal">
@@ -20,7 +21,7 @@ import { siteConfig } from '../data/site';
     <p class="booking-form__intro">Monday–Friday, 10 a.m.–3 p.m. Toronto time. One appointment per day. Fields marked * are required.</p>
     <ol class="booking-progress" aria-label="Appointment request steps"><li data-progress="0" aria-current="step">Time</li><li data-progress="1">Service</li><li data-progress="2">Your details</li></ol>
     <fieldset data-booking-step="0"><legend tabindex="-1">1. Choose a time</legend>
-    <p class="field-hint"><a href="/services-pricing">View services and proposed pricing</a></p>
+    {(import.meta.env.DEV || pricingDraft.approved) && <p class="field-hint"><a href="/services-pricing">View services and proposed pricing</a></p>}
     <div class="booking-calendar" data-booking-calendar tabindex="-1" aria-describedby="preferredDate-error preferredTime-error">
       <input type="hidden" name="preferredDate" />
       <details open>

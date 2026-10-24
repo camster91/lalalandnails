@@ -12,6 +12,10 @@ test('draft pricing does not accidentally become a published, verified business 
   assert.equal(siteConfig.services[0].priceDisplay, null);
   assert.equal(siteConfig.launchReady, false);
   assert.match(readSource('src/pages/services-pricing.astro'), /pricing-proposal/);
+  assert.match(readSource('src/pages/services-pricing.astro'), /!import\.meta\.env\.DEV && !prices\.approved/);
+  for (const path of ['src/pages/index.astro','src/components/Header.astro','src/components/Footer.astro','src/components/BookingRequest.astro']) {
+    assert.match(readSource(path), /import\.meta\.env\.DEV \|\| pricingDraft\.approved|const showPricing = import\.meta\.env\.DEV \|\| pricingDraft\.approved/, path);
+  }
   assert.match(readSource('src/components/PricingTeaser.astro'), /Proposed starting prices/);
 });
 
@@ -59,11 +63,21 @@ test('the prices and CTAs appear in the intended page locations', () => {
   const booking = readSource('src/components/BookingRequest.astro');
   const components = ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example'];
   for (const id of components) assert.ok(page.includes('id="' + id + '"'), id);
-  assert.match(index, /<PricingTeaser \/>\s*<VisitGuide \/>/);
+  assert.ok(index.indexOf('<PricingTeaser />') < index.indexOf('<VisitGuide />'), 'pricing preview precedes visit guide');
+  assert.match(index, /pricingDraft\.approved\) && <PricingTeaser \/>/, 'preview is approval-gated');
   assert.match(header, /href="\/services-pricing"/);
   assert.match(footer, /href="\/services-pricing"/);
   assert.match(booking, /href="\/services-pricing"/);
   assert.match(page, /href="\/#booking"/);
   assert.match(page, /AI-generated inspiration/);
   assert.ok(!page.includes('priceRange') && !page.includes('aggregateRating'));
+});
+
+test('pricing page and booking packages share stable catalogue IDs and amounts',async()=>{
+ const {bookingPackages,reconstructionTiers,repairOptions}=await import('../src/lib/booking-options.ts');
+ const catalogue=[...pricingDraft.manicures,...pricingDraft.fills,pricingDraft.naturalMaintenance];
+ for(const service of catalogue)assert.equal(bookingPackages.find(p=>p.id===service.id)?.price,service.price,service.id);
+ assert.strictEqual(reconstructionTiers,pricingDraft.reconstructionTiers);assert.strictEqual(repairOptions,pricingDraft.repairs);
+ assert.equal(pricingDraft.naturalMaintenance.price,45);assert.deepEqual(reconstructionTiers.map(t=>t.price),[10,20,35,50]);
+ const page=readSource('src/pages/services-pricing.astro');assert.match(page,/prices\.reconstructionTiers\.map/);assert.match(page,/prices\.naturalMaintenance/);
 });

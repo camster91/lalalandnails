@@ -499,6 +499,9 @@ export async function startStudio() {
               booking?.service_id || "",
             ) +
             `<div class="studio-form-grid">${field("Date · Toronto", "date", booking ? torontoDate(new Date(booking.start_at)) : convertLead?.preferredDate || date, "date", 'required min="2000-01-01" max="2099-12-31"')}${field("Start time · Toronto", "time", booking ? localTime(booking.start_at) : convertLead?.preferredTime || "10:00", "time", "required")}</div>` +
+            field("Agreed appointment price · CAD, before tax", "price", booking?.price_cents!=null?(booking.price_cents/100).toFixed(2):"", "number", `min="0" max="5000" step="0.01" ${convertLead?'required':''}`) +
+            `<p class="studio-muted">${convertLead?'Review the estimate and enter the price agreed with the client, including extras.':'Leave blank to use the configured service price for a new booking.'} No payment is collected here.</p>` +
+            (convertLead?'<details><summary>View requested service and inspiration</summary><section data-conversion-details></section></details>':'') +
             area(
               "Appointment notes · products, shades and design",
               "notes",
@@ -507,6 +510,8 @@ export async function startStudio() {
           booking,
         ),
       );
+      const requestDetails=body.querySelector<HTMLElement>('[data-conversion-details]');
+      if(requestDetails&&convertLead&&!demo)void loadBookingEnquiryDetails(requestDetails,convertLead.id);
       return;
     }
     if (kind === "services-link") {

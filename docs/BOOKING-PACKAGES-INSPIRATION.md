@@ -1,44 +1,51 @@
-# Guided booking requests — dependent draft
+# Guided appointment requests
 
-Status: implemented on a separate branch stacked on pricing PR #7. Do not merge or deploy until the Services & Pricing catalogue and proposed reconstruction/maintenance options are approved. No production data or infrastructure changed by this feature.
+Status: dependent draft PR #8, integrated with pricing PR #7. The proposed catalogue is not approved for publication. No production merge, deployment, database change or real notification has been performed for this feature.
 
-## Client flow — simplified for CRO
+## Client journey
 
-1. Choose an available two-hour weekday block in Toronto time.
-2. Choose a package, length where applicable, and art level. “Not sure — help me choose” is a valid route with no invented price. Unknown length/art retains only a starting estimate. Shape, repairs and reconstruction sit under a collapsed **Additional needs — optional** disclosure. Fill prices include length; repairs and reconstruction cannot double charge.
-3. Review the time and estimate, provide name/phone/call-or-text consent, and optionally expand **Add inspiration** for links or images. Inspiration is no longer a separate required step. A final submission holds the day; selecting a time alone does not reserve capacity.
+1. **Time:** choose an available two-hour weekday block, Toronto time.
+2. **Service:** choose a package, applicable length and art level. “Not sure — help me choose” is valid without a numeric price. Shape, reconstruction and repairs are collapsed under optional additional needs.
+3. **Your details:** review the estimate, leave name/phone/call-or-text preference and consent. Inspiration links/images are optional here, with no separate required step. Back navigation and dialog reopening preserve the draft in memory.
 
-Step-view events (`booking_step_time_viewed`, `booking_step_service_viewed`, `booking_step_details_viewed`) are emitted once per draft through the existing optional Plausible hook. No contact data, filenames or inspiration URLs enter those events. No analytics provider is activated here; conversion/abandonment measurement needs that existing integration configured. No conversion lift is claimed.
+Selecting a time does not reserve capacity. Successful final submission atomically holds the day for Bianca's review. Bianca confirms service suitability, final price, timing and visit details before the appointment is confirmed.
 
-## Storage and staff review
+## One proposed catalogue
 
-- Server validates options and recomputes price; client-supplied totals are ignored. A snapshot is saved, preserving the original estimate when prices change later.
-- Streamed body limit: 700 KB including multipart overhead. At most two JPEG/PNG files of 300 KB each; validate signatures, JPEG marker/dimension metadata and raster dimensions. SVG/HTML are rejected. Existing daily network rate limit, honeypot, phone duplicate protection and database capacity constraints remain.
-- Small image blobs live in a separate D1 table, outside normal inbox/list queries. No R2 bucket, public image route, third-party media host or extra credentials are needed for this bounded feature.
-- The held day, selection snapshot, links and image rows commit in one D1 batch. Failed image/detail inserts roll back the reservation.
-- Staff enquiry dialog loads service selections, estimate, safe external links and private image previews. Every detail/image request verifies Access before database access. Images have no-store/no-referrer/nosniff and restrictive CSP headers.
-- Notifications contain a service summary and attachment counts, pointing to the protected workspace; image bytes and user inspiration URLs are not emailed.
-- Public availability and calendar feeds never include inspiration, images, selection details or contact information.
-- JSON export includes selections, estimates, links and image metadata. **Image bytes are excluded** and this is explicit in export metadata and staff UI; this is not a complete backup or tested restore. Full attachment export is a future increment.
-- Inspiration is private operational material, not portfolio permission or marketing consent. Retention follows enquiry records; archiving does not erase images. Existing privacy notice updated.
+`src/data/pricing.ts` owns manicure, fill, maintenance, length, art, repair, reconstruction and removal amounts. Stable service/repair IDs connect booking options to this source. The pricing page and booking estimate use the same maintenance and reconstruction entries; Tier 2 is named Elevated. Durations shown on the pricing page come from the supplied proposed menu, not from public availability slots.
 
-## Release and rollback
+Fill prices already include length. Reconstruction and individual repairs cannot charge for the same work. Bespoke/unknown options need consultation; estimates are CAD before applicable taxes. The server ignores submitted totals and computes a stored snapshot. Unknown services receive no invented zero-dollar price.
 
-PR #7 is actively changing. Retarget/rebase this dependent branch after its final catalogue is approved. In particular, move the supplied maintenance and reconstruction options into the canonical approved price catalogue before release, and reconcile package IDs/names/amounts with that final source. The production POST fails closed while `pricingDraft.approved` is false.
+Private CRM services are separately configured by authorised staff; no draft prices are seeded into production. For a public request with a selection snapshot, staff must enter the agreed price including extras when creating the appointment. Rescheduling the same service preserves that saved price if no replacement price is supplied. An explicit staff-entered price may reflect a different agreed quote after consultation. No payment is collected by these controls.
 
-Acceptance: complete 3-step flow; correct estimates and no double charges; optional links and images survive navigation; invalid files/URLs handled; staff-only retrieval; no privacy leak in availability/feed; atomic rollback; mobile/tablet/desktop layout and keyboard focus. Tests cover pure policy, body bounds/multipart parsing, real SQLite transaction/capacity and attachment rollback. No real client request or email sent for QA.
+## Request, inspiration and privacy
 
-Deployment: additive D1 tables initialize through existing migration code. Preserve Access restrictions. Roll back application changes while retaining attachment tables/records; never drop client inspiration as part of rollback. Staff live authenticated retrieval and notification delivery must be verified separately after authorised release.
+- Three public HTTPS links maximum; links are validated but never fetched automatically.
+- Two optional images maximum. Browser preparation resizes to 1,400px JPEG without retaining original metadata; server permits bounded JPEG/PNG files, 300 KB each, and a streamed 700 KB total body limit. Raster signatures, marker/frame metadata, dimensions and duplicate JPEG frame headers are checked. SVG/HTML are rejected.
+- Small private image blobs are stored separately in D1 and kept out of normal inbox lists. No public image bucket or third-party media service is introduced.
+- Held request, service snapshot, links and image rows save in one D1 transaction. Invalid/stale requests do not create partial holds or orphan attachments. Daily hashed network limits, honeypot and phone duplicate checks remain.
+- Staff detail/image APIs authenticate before database access. Images use private/no-store, no-referrer, nosniff and restrictive CSP headers. Public availability and calendar feed never expose inspiration or personal details.
+- Notifications contain the computed service summary and attachment counts, pointing to the protected staff workspace. They do not email image bytes or inspiration URLs. If the notification sender fails, the request remains saved; immediate duplicate retries do not send a second notification. Provider failure is logged by request ID. Actual inbox delivery remains unverified.
+- JSON export includes selection snapshots, estimates, links and image metadata. Image binaries are explicitly excluded in both export metadata and staff copy; this is not a complete database backup or tested restore.
+- Inspiration is private operational material, not permission to publish client images or send marketing. Retention follows the related enquiry; archive does not erase it.
 
-## Verification recorded
+## Measurement
 
-- 55 Node tests pass; Astro check: zero errors/warnings/hints; production build passes.
-- Earlier four-step verification: desktop time→service→inspiration→review flow; $105 structured/medium/Tier 2 calculation; $80 medium fill; JPEG preparation from a WebP reference and preview; link validation; missing contact/consent feedback; back navigation and dialog reopening preserve fields. No valid form was submitted.
-- Layout widths 320, 768, 1024 and 1440: no horizontal overflow in page or modal; 320px service screen visually inspected. Native keyboard/focus behaviour retained with step heading focus and explicit Back/Continue controls.
-- Security review addressed JPEG marker/dimension limits, duplicate frame-header regression and transparent export exclusions. Private staff retrieval is implemented but not tested with a live authenticated enquiry. Full image clipboard paste is implemented; file chooser upload was exercised.
+The optional existing Plausible hook emits one view event per draft step: `booking_step_time_viewed`, `booking_step_service_viewed`, `booking_step_details_viewed`. No contact details, filenames or inspiration URLs are included. No analytics account/provider is activated by this change, and no conversion improvement is claimed.
 
-## CRO simplification verification
+## Verification
 
-Added regression tests for help-me-choose requests with no numeric price and unknown length/art starting estimates. Mobile, tablet and desktop QA covers the three-step journey, collapsed optional controls, final-step inspiration validation, back navigation and preserved estimates. Production release still depends on PR #7 approval; no deployment or merge is included in this update.
+- 64 Node tests pass; Astro check has zero errors/warnings/hints; production build passes.
+- Real multipart request handler exercised against SQLite through a D1 adapter, with a mock notification sender. Verified server-calculated $105 estimate, private image/details retrieval, duplicate retry, competing day conflict, invalid upload, production draft gate, unknown-service consultation and provider-outage persistence.
+- Full synthetic lifecycle: submit → retrieve selections/images → explicitly agree $105 → create a two-hour appointment → change configured service price → move the appointment to a different date without repricing → cancel. Verified old/new day availability and retained request attachments.
+- Browser: three-step journey, help-me-choose, $105 estimate, optional controls, link errors and responsive widths 320/768/1024/1440. New maintenance/reconstruction pricing and staff conversion price controls reviewed visually; narrow pricing content has no horizontal overflow.
+- The staff preview uses fictional demo data. No valid production/client request, real email or payment was created for QA.
 
-CRO update verification: 57 tests passed; Astro check and build passed. Browser checked 320/768/1024/1440 widths, unknown-service continuation without a price, $105 known-service estimate, collapsed extras, combined details/inspiration step and unsafe-link errors. No valid client request or notification sent.
+## Release gates and rollback
+
+1. Bianca/Cameron: confirm the supplied proposed menu as final public rates and approve service scope, durations and policies. `pricingDraft.approved` remains false; production pricing route and new request POST fail closed while unapproved.
+2. Reconcile any final owner amendments, re-review the combined diff, then explicitly authorise merging/deployment of PRs #7/#8.
+3. Verify authenticated staff retrieval and actual delivery to Bianca's inbox with an authorised identifiable test request after release. The local mocked-sender test does not prove inbox delivery.
+4. Configure an approved analytics account if real funnel measurement is wanted.
+
+The additive D1 tables initialise through the existing migration path. Preserve Access restrictions and client data. Roll back application commits while retaining new tables and records; do not drop attachments as part of rollback.

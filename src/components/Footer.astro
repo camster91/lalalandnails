@@ -1,6 +1,7 @@
 ---
 import BrandLogo from './BrandLogo.astro';
 import type { SiteConfig } from '../data/site';
+import { pricingDraft } from '../data/pricing';
 
 interface Props {
   site: SiteConfig;
@@ -8,6 +9,7 @@ interface Props {
 
 const { site } = Astro.props;
 const onHome = Astro.url.pathname === '/';
+const showPricing = import.meta.env.DEV || pricingDraft.approved;
 ---
 
 <footer class="site-footer">
@@ -17,7 +19,7 @@ const onHome = Astro.url.pathname === '/';
   </div>
   <div class="site-footer__links">
     <a href={onHome ? '#service' : '/#service'}>The service</a>
-    <a href="/services-pricing">Services &amp; Pricing</a>
+    {showPricing && <a href="/services-pricing">Services &amp; Pricing</a>}
     <a href={onHome ? '#about' : '/#about'}>About Bianca</a>
     <a href={onHome ? '#visit' : '/#visit'}>Visiting from the GTA</a>
     <a href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">Request an appointment</a>

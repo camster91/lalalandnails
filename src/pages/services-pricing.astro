@@ -9,6 +9,9 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
 
 const structured = prices.manicures.find((service) => service.id === 'structured')!;
 const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTiers[1].addOn;
+
+// Fail closed for public requests; development QA may still inspect the draft.
+if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', { status: 404 });
 ---
 <BaseLayout
   site={siteConfig}
@@ -44,6 +47,7 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
         <a href="#length">Lengths & shapes</a>
         <a href="#art">Nail art</a>
         <a href="#repairs">Repairs</a>
+        <a href="#reconstruction">Reconstruction</a>
         <a href="#pricing-example">How pricing works</a>
       </nav>
 
@@ -60,6 +64,7 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
                 <h3>{service.name}</h3><strong>{displayPrice(service.price)}</strong>
               </div>
               <p>{service.description}</p>
+              <span class="pricing-card__meta">{service.duration}</span>
               {service.id === 'structured' && <span class="pricing-card__meta">Short natural-nail length included</span>}
             </article>
           ))}
@@ -74,7 +79,7 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
           <p>A structured gel fill is more than a colour change: existing product is assessed, lifted material is removed when suitable, and the grown-out structure is rebalanced.</p>
         </div>
         <div class="pricing-list" role="list">
-          {prices.fills.map((service) => (
+          {[...prices.fills,prices.naturalMaintenance].map((service) => (
             <article class="pricing-list__item" role="listitem">
               <div><h3>{service.name}</h3><p>{service.detail}</p></div>
               <strong>{displayPrice(service.price)}</strong>
@@ -149,9 +154,18 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
         <p class="pricing-caption">We do not apply gel over a nail that is bleeding, painful or showing signs of infection or significant separation. Cosmetic repairs depend on nail condition.</p>
       </section>
 
+      <section id="reconstruction" class="pricing-section pricing-section--cream" aria-labelledby="reconstruction-title">
+        <div class="pricing-intro"><p class="eyebrow">06 · Corrective work</p><h2 id="reconstruction-title">Full-set <em>reconstruction.</em></h2>
+        <p>Optional full-set add-ons beyond routine shaping and rebalancing, subject to nail condition and consultation.</p></div>
+        <div class="pricing-card-grid pricing-card-grid--repairs">
+          {prices.reconstructionTiers.map(tier=><article class="pricing-card"><div class="pricing-card__top"><h3>{tier.name}</h3><strong>+{displayPrice(tier.price)}</strong></div><p>{tier.detail}</p><span class="pricing-card__meta">Per set · Subject to assessment</span></article>)}
+        </div>
+        <p class="pricing-caption">Do not add an individual repair charge for work already covered by a reconstruction tier. Significant corrective work may need different appointment arrangements.</p>
+      </section>
+
       <section id="pricing-example" class="pricing-section pricing-section--example" aria-labelledby="example-title">
         <div class="pricing-example__copy">
-          <p class="eyebrow">06 · A simple formula</p>
+          <p class="eyebrow">07 · A simple formula</p>
           <h2 id="example-title">No surprise <em>add-ons.</em></h2>
           <p>Your estimated price is the base structured manicure, plus any additional natural-nail length and one appropriate nail art tier.</p>
           <p>Repairs or separate removal only apply when needed. Final service and cost are always agreed before your appointment is confirmed.</p>

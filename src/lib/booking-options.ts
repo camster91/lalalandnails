@@ -1,23 +1,12 @@
 import {pricingDraft} from '../data/pricing.ts';
 export const bookingPackages=[
  ...pricingDraft.manicures.map(p=>({...p,structured:p.id==='structured'})),
- ...pricingDraft.fills.map((p,i)=>({id:['fill-short','fill-medium','fill-long','colour-refresh'][i],name:p.name,price:p.price,description:p.detail,structured:false})),
- {id:'maintenance',name:'Natural nail maintenance',price:pricingDraft.manicures[0].price,description:'Natural nail care and shaping, without gel.',structured:false},
+ ...pricingDraft.fills.map(p=>({...p,description:p.detail,structured:false})),
+ {...pricingDraft.naturalMaintenance,description:pricingDraft.naturalMaintenance.detail,structured:false},
  {id:'removal',name:pricingDraft.standaloneRemoval.name,price:pricingDraft.standaloneRemoval.price,description:'Standalone gel removal.',structured:false},
 ];
-// Proposed additions supplied by the owner; approval remains governed by PR #7.
-export const reconstructionTiers=[
- {id:'1',name:'Light reconstruction',price:10},
- {id:'2',name:'Moderate reconstruction',price:20},
- {id:'3',name:'Full reconstruction',price:35},
- {id:'4',name:'Advanced reconstruction',price:50},
-];
-export const repairOptions=[
- {...pricingDraft.repairs[3],id:'colour'},
- {...pricingDraft.repairs[0],id:'minor'},
- {...pricingDraft.repairs[1],id:'structured'},
- {...pricingDraft.repairs[2],id:'broken'},
-];
+export const reconstructionTiers=pricingDraft.reconstructionTiers;
+export const repairOptions=pricingDraft.repairs;
 export function quoteBooking(input:Record<string,unknown>){
  if(input.package==='unsure')return {serviceId:'unsure',serviceName:'Not sure — help me choose',length:'unsure',art:'unsure',reconstruction:'none',repair:'none',repairCount:0,shape:'Not sure',lines:[] as {label:string;amount:number}[],total:null,currency:'CAD',approved:pricingDraft.approved,needsConsultation:true};
  const service=bookingPackages.find(p=>p.id===input.package);
