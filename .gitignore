@@ -4,6 +4,7 @@ dist/
 previews/
 work/
 .wrangler/
+qa-artifacts/
 *.tgz
 .env
 .env.*

@@ -15,7 +15,7 @@ import { mkdirSync } from 'node:fs';
 
 const origin = 'http://127.0.0.1:4321';
 const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '4321'], {
-  env: process.env,
+  env: { ...process.env, ASTRO_DEV_BACKGROUND: '1' },
   detached: process.platform !== 'win32',
   stdio: ['ignore', 'pipe', 'pipe'],
 });
@@ -45,7 +45,7 @@ try {
   assert.ok(ready, 'Local Astro route did not start: ' + serverLogs);
 
   mkdirSync('qa-artifacts', { recursive: true });
-  browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+  browser = await chromium.launch({ headless: true, args: ['--no-sandbox'], ...(process.env.QA_CHROME_PATH ? { executablePath: process.env.QA_CHROME_PATH } : {}) });
   for (const size of viewports) {
     const page = await browser.newPage({
       viewport: { width: size.width, height: size.height },

@@ -11,7 +11,7 @@ import {bookingPackages,reconstructionTiers,repairOptions} from '../lib/booking-
   <div data-service-options>
   <label data-length-label>Nail length<select name="length"><option value="unsure">Not sure — discuss with Bianca</option><option value="short">Short · included</option><option value="medium">Medium · +${pricingDraft.lengths[1].addOn}</option><option value="long">Long · +${pricingDraft.lengths[2].addOn}</option><option value="extra-long">Extra long · consultation</option></select></label>
   <p class="field-hint">Fill prices already include their stated length.</p>
-  <label>Nail art<select name="art"><option value="none">Solid colour / no art · included</option><option value="unsure">Not sure — help me choose</option>{pricingDraft.artTiers.map((p,i)=><option value={i+1}>{p.name} · +${p.addOn}{'startingAt' in p?'+':''}</option>)}</select></label>
+  <label>Nail art<select name="art"><option value="none">Solid colour / no art · included</option><option value="unsure">Not sure — help me choose</option>{pricingDraft.artTiers.map((p,i)=><option value={i+1}>{p.name} · {'startingAt' in p?'from ':'+'}${p.addOn}</option>)}</select></label>
   <details class="booking-optional" data-additional-needs>
   <summary>Additional needs — optional</summary>
   <p class="field-hint">Repairs, reconstruction or a preferred shape. Bianca confirms what is suitable and any additional cost.</p>

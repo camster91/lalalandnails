@@ -59,7 +59,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           {prices.manicures.map((service) => (
             <article class:list={['pricing-card', { 'pricing-card--featured': service.id === 'structured' }]}>
               <div class="pricing-card__top">
-                <h3>{service.name}</h3><strong>{displayPrice(service.price)}</strong>
+                <h3>{service.name}</h3><strong>{service.id === 'structured' && <small>From </small>}{displayPrice(service.price)}</strong>
               </div>
               <p>{service.description}</p>
               <span class="pricing-card__meta">{service.duration}</span>
@@ -126,7 +126,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
               </figure>
               <div class="pricing-art-card__title">
                 <h3>{tier.name}</h3>
-                <strong>+{displayPrice(tier.addOn)}{'startingAt' in tier ? '+' : ''}</strong>
+                <strong>{'startingAt' in tier ? 'From ' : '+'}{displayPrice(tier.addOn)}</strong>
               </div>
               <p>{tier.detail}</p>
             </article>
@@ -183,7 +183,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           </details>
           <details>
             <summary>How often will I need structured gel maintenance?</summary>
-            <p>Many clients return in approximately two to four weeks. Nail growth, length, lifestyle, lifting and the product’s condition determine when maintenance is appropriate. Contact the studio sooner if you notice lifting or damage.</p>
+            <p>Bianca recommends a maintenance schedule based on your nail growth, length, lifestyle and the product’s condition. Contact the studio if you notice lifting or damage rather than waiting for your next visit.</p>
           </details>
           <details>
             <summary>Does routine fill pricing include removal of the old gel?</summary>
@@ -242,6 +242,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
   .pricing-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
   .pricing-card h3, .pricing-list h3 { font-size: 1.2rem; line-height: 1.4; }
   .pricing-card__top strong { flex-shrink: 0; font-family: var(--serif); font-size: 2rem; font-weight: 400; }
+  .pricing-card__top strong small { display: block; font-family: var(--sans); font-size: .75rem; line-height: 1.5; }
   .pricing-card p { margin: 1.5rem 0 0; line-height: 1.7; }
   .pricing-card__meta { display: inline-block; margin-top: 1.25rem; font-size: .78rem; font-weight: 700; }
   .pricing-caption { max-width: 65rem; margin: 1.4rem 0 0; line-height: 1.65; font-size: .875rem; }
