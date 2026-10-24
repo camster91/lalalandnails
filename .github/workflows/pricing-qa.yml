@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/services-pricing-draft
-      - content/existing-site-services-copy
   workflow_dispatch:
 
 permissions:
