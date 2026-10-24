@@ -4,8 +4,8 @@ const photos = [imagery.red, imagery.neutral, imagery.colour, imagery.care, imag
 ---
 <section class="lookbook section" id="looks" aria-labelledby="looks-title" data-lookbook>
   <div class="lookbook__heading reveal">
-    <div><p class="eyebrow">Save a little inspiration</p><h2 id="looks-title">Find your next<br /><em>nail mood.</em></h2></div>
-    <div class="lookbook__intro"><p>A few ideas for colour, shape and finish to start the conversation about your next manicure.</p><div class="lookbook__controls"><button type="button" aria-label="Previous inspiration image" data-slide-prev>←</button><button type="button" aria-label="Next inspiration image" data-slide-next>→</button><span>Swipe or use the arrows</span></div></div>
+    <div><p class="eyebrow">Manicure colour & design ideas</p><h2 id="looks-title">Find your next<br /><em>nail mood.</em></h2></div>
+    <div class="lookbook__intro"><p>Explore a few colours and finishes, then add your own inspiration to the request. Bianca reviews the design and confirms what suits your natural nails.</p><div class="lookbook__controls"><button type="button" aria-label="Previous inspiration image" data-slide-prev>←</button><button type="button" aria-label="Next inspiration image" data-slide-next>→</button><span>Swipe or use the arrows</span></div></div>
   </div>
   <div class="lookbook__rail" data-slide-rail tabindex="0" role="region" aria-label="Manicure inspiration images. Use arrow keys or swipe to browse.">
     {photos.map((photo, index) => <figure class="lookbook__slide"><div class="lookbook__image"><img src={`/images/generated/${photo.id}-1440.webp`} srcset={`/images/generated/${photo.id}-720.webp 720w, /images/generated/${photo.id}-1440.webp 1440w`} sizes="(max-width: 640px) 78vw, (max-width:900px) 46vw, 430px" alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" /></div><figcaption><span>{String(index+1).padStart(2,'0')} / {photo.title}</span><small>AI-generated inspiration</small></figcaption></figure>)}

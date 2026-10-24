@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import type { SiteConfig } from '../data/site';
+import { homeMetadata, type SiteConfig } from '../data/site';
 import { buildSchema, isIndexable, serializeSchema } from '../lib/seo';
 
 interface Props {
@@ -11,8 +11,8 @@ interface Props {
 
 const {
   site,
-  title = 'European Manicures in Scarborough | La La Land Nail Hub',
-  description = 'Request a European manicure with Bianca Ashley at La La Land Nail Hub in Scarborough. Welcoming clients from Durham Region and across the GTA.',
+  title = homeMetadata.title,
+  description = homeMetadata.description,
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();

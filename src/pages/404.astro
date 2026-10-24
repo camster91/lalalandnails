@@ -5,10 +5,12 @@ import { siteConfig } from '../data/site';
 ---
 
 <BaseLayout site={siteConfig} title="Page not found | La La Land Nail Hub">
-  <main class="not-found">
+  <main id="main" class="not-found">
     <BrandLogo />
     <p class="eyebrow">404</p>
-    <h1>This page wandered off.</h1>
-    <a class="button button--cream" href="/">Back to the nail hub</a>
+    <h1>We couldn’t find that page.</h1>
+    <p>Find manicure services, compare prices or request an appointment from our homepage.</p>
+    <a class="button button--cream" href="/">Go to the homepage</a>
+    <a class="text-link" href="/services-pricing">View services &amp; pricing</a>
   </main>
 </BaseLayout>

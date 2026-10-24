@@ -24,7 +24,7 @@ const showPricing = import.meta.env.DEV || pricingDraft.approved;
   </button>
 
   <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
-    <a href={onHome ? '#service' : '/#service'}>The service</a>
+    <a href={onHome ? '#service' : '/#service'}>Manicure options</a>
     {showPricing && <a href="/services-pricing" aria-current={onPricing ? 'page' : undefined}>Services &amp; Pricing</a>}
     <a class="nav-secondary" href={onHome ? '#looks' : '/#looks'}>Inspiration</a>
     <a class="nav-secondary" href={onHome ? '#process' : '/#process'}>How it works</a>

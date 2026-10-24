@@ -9,7 +9,7 @@ const readSource = (path) => readFileSync(new URL('../' + path, import.meta.url)
 
 test('owner-approved catalogue is enabled while unrelated business facts remain unverified', () => {
   assert.equal(pricingDraft.approved, true);
-  assert.equal(siteConfig.services[0].priceDisplay, null);
+  assert.equal(siteConfig.services[0].priceDisplay, 'From $' + pricingDraft.manicures[0].price + ' CAD');
   assert.equal(siteConfig.launchReady, false);
   assert.match(readSource('src/pages/services-pricing.astro'), /pricing-proposal/);
   assert.match(readSource('src/pages/services-pricing.astro'), /!import\.meta\.env\.DEV && !prices\.approved/);

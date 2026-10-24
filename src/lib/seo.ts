@@ -1,6 +1,6 @@
 import { pricingDraft } from '../data/pricing.ts';
 import {bookingPolicy} from './booking-policy.ts';
-import type { SiteConfig } from '../data/site';
+import { homeMetadata, type SiteConfig } from '../data/site.ts';
 
 export function isPublicOrigin(site: SiteConfig, url: URL): boolean {
   return Boolean(site.indexingEnabled && site.approvedDomain && url.origin === new URL(site.approvedDomain).origin);
@@ -23,7 +23,7 @@ export function buildSchema(site: SiteConfig) {
     '@type': 'BeautySalon', '@id': id('business'),
     name: site.businessName, url: `${origin}/`,
     logo: `${origin}/brand/logo-main.svg`,
-    description: 'European manicure appointments with Bianca Ashley in Scarborough, Toronto, Ontario. Welcoming clients from Durham Region and the GTA.',
+    description: 'European/Russian-style dry manicures, structured gel, fills and nail art with Bianca Ashley in Scarborough, Toronto, Ontario.',
     areaServed: ['Scarborough', 'Durham Region', 'Greater Toronto Area'],
     openingHoursSpecification: {'@type':'OpeningHoursSpecification',dayOfWeek:['Monday','Tuesday','Wednesday','Thursday','Friday'],opens:`${bookingPolicy.openHour}:00`,closes:`${bookingPolicy.closeHour}:00`},
     address: {
@@ -41,7 +41,7 @@ export function buildSchema(site: SiteConfig) {
       business,
       { '@type': 'Person', '@id': id('bianca'), name: site.provider.name, jobTitle: site.provider.role, url: id('about'), worksFor: { '@id': id('business') } },
       { '@type': 'WebSite', '@id': id('website'), url: `${origin}/`, name: site.businessName, inLanguage: 'en-CA', publisher: { '@id': id('business') } },
-      { '@type': 'WebPage', '@id': id('webpage'), url: `${origin}/`, name: 'European Manicures in Scarborough | La La Land Nail Hub', inLanguage: 'en-CA', isPartOf: { '@id': id('website') }, about: { '@id': id('service') }, publisher: { '@id': id('business') } },
+      { '@type': 'WebPage', '@id': id('webpage'), url: `${origin}/`, name: homeMetadata.title, inLanguage: 'en-CA', isPartOf: { '@id': id('website') }, about: { '@id': id('service') }, publisher: { '@id': id('business') } },
       { '@type': 'Service', '@id': id('service'), name: service.name, serviceType: site.specialty, description: service.description, url: id('service'), provider: { '@id': id('business') }, areaServed: business.areaServed, availableChannel: { '@type': 'ServiceChannel', serviceUrl: id('booking') } },
       { '@type': 'FAQPage', '@id': id('faq'), url: id('faq'), isPartOf: { '@id': id('webpage') }, mainEntity: site.faqs.map((faq) => ({ '@type': 'Question', name: faq.question, acceptedAnswer: { '@type': 'Answer', text: faq.answer } })) },
     ],

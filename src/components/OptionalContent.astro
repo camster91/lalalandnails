@@ -49,7 +49,7 @@ const { gallery, reviews, faqs, policies } = Astro.props;
   <section class="faq section" id="faq" aria-labelledby="faq-title">
     <div class="section-heading reveal">
       <p class="eyebrow">Questions, answered</p>
-      <h2 id="faq-title">What would you like to <em>know?</em></h2>
+      <h2 id="faq-title">Before your <em>manicure.</em></h2>
       <SectionPhoto photo="care" caption="Nail care and appointment preparation." aspect="wide" />
     </div>
     <div class="faq__content reveal">
@@ -59,9 +59,10 @@ const { gallery, reviews, faqs, policies } = Astro.props;
           <p>{item.answer}</p>
         </details>
       ))}
+      <p><a href="/services-pricing">Compare manicure services, prices and nail-art tiers</a>, or <a href="#booking" data-analytics-events="booking_request_view">request an appointment with Bianca</a>.</p>
       {policies.length > 0 && (
         <div class="policy-summary">
-          <h3>Policy summary</h3>
+          <h3>Before you send your request</h3>
           <ul>{policies.map((policy) => <li>{policy}</li>)}</ul>
         </div>
       )}
