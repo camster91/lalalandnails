@@ -89,6 +89,15 @@ try {
     if (size.width <= 900) {
       await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
     }
+    // Capture the pristine first-load document, before hash navigation or
+    // scroll tests can reposition fixed elements in a full-page screenshot.
+    await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
+    await page.screenshot({
+      path: 'qa-artifacts/pricing-' + size.name + '.png',
+      fullPage: true,
+      animations: 'disabled',
+      timeout: 30000,
+    });
 
     const artLink = page.locator('.pricing-index a[href="#art"]');
     await artLink.click();
@@ -112,16 +121,6 @@ try {
       assert.equal(await menu.getAttribute('aria-expanded'), 'false', size.name + ': menu closes');
     }
 
-    await page.evaluate(() => {
-      const index = document.querySelector('.pricing-index');
-      if (index) index.scrollLeft = 0;
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    });
-    if (size.width <= 900) {
-      await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
-    }
-    await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
-    await page.screenshot({ path: 'qa-artifacts/pricing-' + size.name + '.png', fullPage: true, animations: 'disabled', timeout: 30000 });
     console.log('PASS', size.name, size.width + 'x' + size.height, 'section/visual/navigation/overflow/noindex checks');
     await page.close();
   }
