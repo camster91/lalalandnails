@@ -9,6 +9,9 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
 
 const structured = prices.manicures.find((service) => service.id === 'structured')!;
 const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTiers[1].addOn;
+
+// Fail closed for public requests; development QA may still inspect the draft.
+if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', { status: 404 });
 ---
 <BaseLayout
   site={siteConfig}
