@@ -1,6 +1,7 @@
 ---
 import SectionPhoto from './SectionPhoto.astro';
 import { siteConfig } from '../data/site';
+import { pricingDraft } from '../data/pricing';
 ---
 <section class="request-booking section" id="booking" aria-labelledby="request-title">
   <div class="request-booking__intro reveal">
@@ -16,7 +17,7 @@ import { siteConfig } from '../data/site';
   <form class="booking-form" data-booking-form action="/api/bookings" method="post" novalidate>
     <input type="hidden" name="leadSource" value="unknown" />
     <p class="booking-form__intro">Monday–Friday, 10 a.m.–3 p.m. Toronto time. One appointment per day. Fields marked * are required.</p>
-    <p class="field-hint">See <a href="/services-pricing">services and proposed pricing</a> before requesting a time. Bianca confirms your quote and visit details.</p>
+    {(import.meta.env.DEV || pricingDraft.approved) && <p class="field-hint">See <a href="/services-pricing">services and proposed pricing</a> before requesting a time. Bianca confirms your quote and visit details.</p>}
     <div class="booking-calendar" data-booking-calendar tabindex="-1" aria-describedby="preferredDate-error preferredTime-error">
       <input type="hidden" name="preferredDate" />
       <details open>
