@@ -15,6 +15,7 @@ import { chromium } from 'playwright';
 const origin = 'http://127.0.0.1:4321';
 const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '4321'], {
   env: process.env,
+  detached: process.platform !== 'win32',
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 let serverLogs = '';
@@ -124,5 +125,15 @@ try {
   await page.close();
 } finally {
   await browser?.close();
-  server.kill('SIGTERM');
+  // npm run dev spawns a shell + Astro; kill the process group so its inherited
+  // stdio handles cannot keep the QA runner alive after assertions finish.
+  if (server.pid) {
+    try {
+      if (process.platform !== 'win32') process.kill(-server.pid, 'SIGTERM');
+      else server.kill('SIGTERM');
+    } catch { /* already exited */ }
+  }
+  server.stdout?.destroy();
+  server.stderr?.destroy();
+  server.unref();
 }
