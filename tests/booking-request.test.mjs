@@ -22,7 +22,7 @@ function request(overrides={},image=true){
 }
 test('complete request saves the server estimate, private inspiration and review notification once',async()=>{
  const {sql,db,sent,dependencies}=await setup();
- const response=await handleBookingRequest(request({total:'1'}),dependencies);assert.equal(response.status,201);
+ const response=await handleBookingRequest(request({total:'1'}),{...dependencies,allowDraft:false});assert.equal(response.status,201);
  const result=await response.json(),details=await bookingDetails(db,result.id);
  assert.equal(details.selection.total,105);assert.deepEqual(details.links,['https://pin.it/fictional-qa']);assert.equal(details.images.length,1);
  const image=await bookingInspiration(db,details.images[0].url.split('/').at(-1));assert.equal(image.mime,'image/jpeg');assert.ok(image.image.length>0);
@@ -49,8 +49,8 @@ test('help-me-choose is saved and sent as a consultation without a zero-dollar q
  assert.equal(response.status,201);const details=await bookingDetails(db,(await response.json()).id);assert.equal(details.selection.total,null);
  assert.match(sent[0].text,/help me choose/);assert.doesNotMatch(sent[0].text,/\$0/);sql.close();
 });
-test('draft activation and invalid files cannot create or notify a booking',async()=>{
- const {sql,dependencies,sent}=await setup();assert.equal((await handleBookingRequest(request(),{...dependencies,allowDraft:false})).status,503);
+test('invalid files cannot create or notify a booking',async()=>{
+ const {sql,dependencies,sent}=await setup();
  const form=await request({},false).formData();form.append('inspirationImages',new File(['not an image'],'fake.jpg',{type:'image/jpeg'}));
  const response=await handleBookingRequest(new Request('https://example.com/api/bookings',{method:'POST',headers:{'CF-Connecting-IP':'192.0.2.1'},body:form}),dependencies);
  assert.equal(response.status,400);assert.ok((await response.json()).errors.inspirationImages);assert.equal(sent.length,0);

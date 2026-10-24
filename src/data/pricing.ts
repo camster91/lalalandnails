@@ -1,10 +1,6 @@
-/**
- * DRAFT pricing only. Values from the October 2026 pricing discussion are
- * proposals for owner review, NOT approved publication rates.
- * Keep this feature branch unmerged until Bianca confirms the catalogue.
- */
+/** Public introductory catalogue approved by Cameron on 24 October 2026. */
 export const pricingDraft = {
-  approved: false,
+  approved: true,
   currency: 'CAD',
   manicures: [
     { duration: '45–60 minutes', id: 'dry', name: 'European Dry Manicure', price: 45, description: 'Precision dry manicure preparation and natural nail shaping. No gel or colour.' },

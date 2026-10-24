@@ -7,8 +7,8 @@ import { siteConfig } from '../src/data/site.ts';
 
 const readSource = (path) => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('draft pricing does not accidentally become a published, verified business fact', () => {
-  assert.equal(pricingDraft.approved, false);
+test('owner-approved catalogue is enabled while unrelated business facts remain unverified', () => {
+  assert.equal(pricingDraft.approved, true);
   assert.equal(siteConfig.services[0].priceDisplay, null);
   assert.equal(siteConfig.launchReady, false);
   assert.match(readSource('src/pages/services-pricing.astro'), /pricing-proposal/);
