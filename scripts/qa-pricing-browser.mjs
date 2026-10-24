@@ -54,7 +54,7 @@ try {
     const response = await page.goto(origin + '/services-pricing', { waitUntil: 'domcontentloaded' });
     assert.equal(response?.status(), 200, size.name + ': pricing page HTTP status');
     await page.evaluate(() => document.fonts?.ready);
-    assert.equal(await page.locator('h1').count(), 1, size.name + ': one page heading');
+    assert.equal(await page.locator('main.pricing-page h1').count(), 1, size.name + ': one page heading (excluding dev toolbar)');
     for (const section of ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example']) {
       assert.equal(await page.locator('#' + section).count(), 1, size.name + ': missing section ' + section);
     }
