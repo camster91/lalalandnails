@@ -80,3 +80,17 @@ test('daily request rate limit is atomic per network and expires without storing
  const rows=sql.prepare('SELECT * FROM chat_rate_limits').all();assert.equal(rows.length,1);
  assert.equal(JSON.stringify(rows).includes('192.0.2.'),false);sql.close();
 });
+
+test('service snapshot, links and private image save atomically with the held day',async()=>{
+ const {sql,db}=await database();
+ const image=new Uint8Array([255,216,255,217]);
+ // The D1 boundary accepts ArrayBuffer; adapt its bytes for Node SQLite.
+ const prepare=(text,values=[])=>({bind:(...v)=>prepare(text,v.map(x=>x instanceof ArrayBuffer?new Uint8Array(x):x)),run:async()=>({meta:sql.prepare(text).run(...values)})});
+ const binaryDb={...db,prepare};
+ const req=await saveTimedRequest(binaryDb,{...input(),details:{selection:{serviceName:'Example',total:75},links:['https://pin.it/example'],images:[{mime:'image/jpeg',bytes:image}]}},now);
+ assert.equal(JSON.parse(sql.prepare('SELECT selection_json FROM booking_request_details WHERE request_id=?').get(req.id).selection_json).total,75);
+ assert.equal(sql.prepare('SELECT length(image) bytes FROM booking_inspiration WHERE request_id=?').get(req.id).bytes,4);
+ await assert.rejects(saveTimedRequest(binaryDb,{...input('2026-10-27'),details:{selection:{},links:[],images:[{mime:'image/svg+xml',bytes:image}]}},now));
+ assert.equal(sql.prepare("SELECT count(*) n FROM booking_requests WHERE preferred_date='2026-10-27'").get().n,0);
+ assert.equal(sql.prepare('SELECT count(*) n FROM booking_request_details').get().n,1);sql.close();
+});

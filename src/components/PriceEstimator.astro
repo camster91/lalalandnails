@@ -42,7 +42,7 @@ const initialTotal = structured.price + initialLength + initialDesign;
     <span>Estimated total · CAD</span>
     <output data-estimate-total aria-live="polite" aria-atomic="true">{displayPrice(initialTotal)}</output>
   </div>
-  <p class="estimate-card__note" data-estimate-note>Suggested prices only. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.</p>
+  <p class="estimate-card__note" data-estimate-note>Estimated price. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.</p>
 </div>
 
 <script>
@@ -66,7 +66,7 @@ const initialTotal = structured.price + initialLength + initialDesign;
       output.textContent = format(total) + (art.selectedOptions[0]?.textContent?.includes('Tier 4') ? '+' : '');
       note.textContent = art.selectedOptions[0]?.textContent?.includes('Tier 4')
         ? 'Tier 4 artwork begins at this price. Bianca reviews your reference photo and confirms the final price and time before booking. Taxes and separate repairs/removal may be additional.'
-        : 'Suggested prices only. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.';
+        : 'Estimated price. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.';
     };
     length.addEventListener('change', update);
     art.addEventListener('change', update);

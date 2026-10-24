@@ -62,3 +62,8 @@ test('structured-data serialization cannot close its containing script', () => {
   assert.equal(output.includes('<'), false);
   assert.deepEqual(JSON.parse(output), input);
 });
+
+test('approved pricing is indexable only at the canonical public origin',()=>{
+ assert.equal(isIndexable(siteConfig,new URL('https://lalalandnails.ca/services-pricing')),true);
+ assert.equal(isIndexable(siteConfig,new URL('https://lalalandnails.camster915391.workers.dev/services-pricing')),false);
+});

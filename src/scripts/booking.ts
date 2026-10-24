@@ -1,3 +1,5 @@
+import {startBookingSteps} from './booking-steps';
+import {quoteBooking,parseInspirationLinks} from '../lib/booking-options';
 import { normalizePhone } from '../lib/phone';
 import { detectLeadSource } from '../lib/lead-source';
 import {startBookingCalendar} from './booking-calendar';
@@ -7,6 +9,7 @@ export function startBooking() {
   const home = document.querySelector<HTMLElement>('[data-booking-home]');
   const dialogBody = dialog?.querySelector<HTMLElement>('[data-booking-dialog-body]');
   if (!form || !dialog || !home || !dialogBody) return;
+  const steps=startBookingSteps(form);
   const calendar=startBookingCalendar(form);
   const sourceInput=form.elements.namedItem('leadSource') as HTMLInputElement;
   sourceInput.value=detectLeadSource(location.href,document.referrer);
@@ -46,6 +49,7 @@ export function startBooking() {
     dialog.scrollTop=0;
     // Focus the heading/close control, avoiding an unexpected mobile keyboard.
     dialog.querySelector<HTMLButtonElement>('[data-booking-close]')?.focus({preventScroll:true});
+    form.dispatchEvent(new CustomEvent('booking:opened'));
     window.plausible?.('booking_form_viewed');
   });
   const clearErrors = () => {
@@ -54,8 +58,10 @@ export function startBooking() {
   };
   const showErrors = (errors: Record<string,string>) => {
     let first: HTMLElement | null = null;
-    for (const [name,message] of Object.entries(errors)) {
-      if (!["preferredDate","preferredTime","name","phone","contactMethod","consent"].includes(name)) continue;
+    const priority=['preferredDate','preferredTime','package','inspirationLinks','inspirationImages','name','phone','contactMethod','consent'];
+    for (const name of priority.filter(n=>n in errors)) {
+      const message=errors[name];
+      if (!["preferredDate","preferredTime","name","phone","contactMethod","consent","package","inspirationLinks","inspirationImages"].includes(name)) continue;
       const field=form.elements.namedItem(name);
       const hint=form.querySelector<HTMLElement>(`[data-field-error="${name}"]`);
       if (hint) hint.textContent=message;
@@ -63,13 +69,17 @@ export function startBooking() {
       if (field instanceof HTMLElement && !(field instanceof HTMLInputElement && field.type==="hidden")) { field.setAttribute('aria-invalid','true'); first ??= field; }
     }
     status.textContent='Please check the highlighted fields.';
+    const firstName=priority.find(n=>n in errors)!;
+    steps.go(['preferredDate','preferredTime'].includes(firstName)?0:firstName==='package'?1:2);
     if(first?.hasAttribute("data-booking-calendar") || first?.getAttribute("name")==="preferredTime") calendar.focus();
-    else first?.focus();
+    else {if(firstName==='package')form.querySelector<HTMLDetailsElement>('[data-additional-needs]')!.open=true;
+      if(['inspirationLinks','inspirationImages'].includes(firstName))form.querySelector<HTMLDetailsElement>('[data-booking-inspiration]')!.open=true;
+      first?.focus();}
     window.plausible?.('booking_validation_error');
   };
   const trackStart = () => {
     if (started) return;
-    started=true;
+    started=true;form.dispatchEvent(new CustomEvent('booking:opened'));
     window.plausible?.('booking_request_started');
   };
   form.addEventListener('input',trackStart);
@@ -77,16 +87,22 @@ export function startBooking() {
   if ('IntersectionObserver' in window) {
     const observer=new IntersectionObserver(entries=> {
       if (!entries.some(e=>e.isIntersecting)) return;
+      form.dispatchEvent(new CustomEvent('booking:opened'));
       window.plausible?.('booking_form_viewed'); observer.disconnect();
     },{threshold:.25});observer.observe(form);
   }
   form.addEventListener('submit',async event=> {
     event.preventDefault();
+    if(!steps.isFinal()){steps.next();return;}
     const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     if (submit.disabled) return;
+    if(!steps.ready()){status.textContent='Please wait while your images are prepared.';return;}
     clearErrors();
     const data=new FormData(form);
     const errors: Record<string,string>={};
+    steps.appendImages(data);
+    try{quoteBooking(Object.fromEntries(data));}catch(e){errors.package=(e as Error).message;}
+    try{parseInspirationLinks(String(data.get('inspirationLinks')||''));}catch(e){errors.inspirationLinks=(e as Error).message;}
     if(!data.get('preferredDate'))errors.preferredDate='Choose an available weekday.';
     if(!data.get('preferredTime'))errors.preferredTime='Choose a two-hour block.';
     if(String(data.get('name')||'').trim().length<2) errors.name='Please enter your name.';
@@ -103,7 +119,7 @@ export function startBooking() {
       const result=await response.json() as {ok?:boolean;message?:string;errors?:Record<string,string>};
       if(result.errors) {if(response.status===409)await calendar.refresh();showErrors(result.errors);return;}
       if(!response.ok || !result.ok) throw Error(result.message || 'The request could not be sent. Please try again shortly.');
-      form.reset();calendar.reset();sourceInput.value=detectLeadSource(location.href,document.referrer);started=false;
+      form.reset();calendar.reset();steps.reset();sourceInput.value=detectLeadSource(location.href,document.referrer);started=false;
       status.textContent=result.message || 'Your request has been received.';
       status.tabIndex=-1;status.focus();
       window.plausible?.('booking_request_submitted');

@@ -7,8 +7,8 @@ import { siteConfig } from '../src/data/site.ts';
 
 const readSource = (path) => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
-test('draft pricing does not accidentally become a published, verified business fact', () => {
-  assert.equal(pricingDraft.approved, false);
+test('owner-approved catalogue is enabled while unrelated business facts remain unverified', () => {
+  assert.equal(pricingDraft.approved, true);
   assert.equal(siteConfig.services[0].priceDisplay, null);
   assert.equal(siteConfig.launchReady, false);
   assert.match(readSource('src/pages/services-pricing.astro'), /pricing-proposal/);
@@ -71,4 +71,13 @@ test('the prices and CTAs appear in the intended page locations', () => {
   assert.match(page, /href="\/#booking"/);
   assert.match(page, /AI-generated inspiration/);
   assert.ok(!page.includes('priceRange') && !page.includes('aggregateRating'));
+});
+
+test('pricing page and booking packages share stable catalogue IDs and amounts',async()=>{
+ const {bookingPackages,reconstructionTiers,repairOptions}=await import('../src/lib/booking-options.ts');
+ const catalogue=[...pricingDraft.manicures,...pricingDraft.fills,pricingDraft.naturalMaintenance];
+ for(const service of catalogue)assert.equal(bookingPackages.find(p=>p.id===service.id)?.price,service.price,service.id);
+ assert.strictEqual(reconstructionTiers,pricingDraft.reconstructionTiers);assert.strictEqual(repairOptions,pricingDraft.repairs);
+ assert.equal(pricingDraft.naturalMaintenance.price,45);assert.deepEqual(reconstructionTiers.map(t=>t.price),[10,20,35,50]);
+ const page=readSource('src/pages/services-pricing.astro');assert.match(page,/prices\.reconstructionTiers\.map/);assert.match(page,/prices\.naturalMaintenance/);
 });

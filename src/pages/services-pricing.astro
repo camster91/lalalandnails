@@ -14,7 +14,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
 <BaseLayout
   site={siteConfig}
   title="European Manicures & Structured Gel Pricing in Scarborough | La La Land Nail Hub"
-  description="Explore proposed European manicure, structured gel, fill, nail art and nail repair prices for La La Land Nail Hub in Scarborough. Final service and price are confirmed before an appointment."
+  description="Explore European manicure, structured gel, fill, nail art and nail repair prices for La La Land Nail Hub in Scarborough. Final service and price are confirmed before an appointment."
 >
   <div id="top" class="page-shell">
     <Header site={siteConfig} />
@@ -45,6 +45,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <a href="#length">Lengths & shapes</a>
         <a href="#art">Nail art</a>
         <a href="#repairs">Repairs</a>
+        <a href="#reconstruction">Reconstruction</a>
         <a href="#pricing-example">How pricing works</a>
       </nav>
 
@@ -61,6 +62,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
                 <h3>{service.name}</h3><strong>{displayPrice(service.price)}</strong>
               </div>
               <p>{service.description}</p>
+              <span class="pricing-card__meta">{service.duration}</span>
               {service.id === 'structured' && <span class="pricing-card__meta">Short natural-nail length included</span>}
             </article>
           ))}
@@ -75,7 +77,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           <p>A structured gel fill is more than a colour change: existing product is assessed, lifted material is removed when suitable, and the grown-out structure is rebalanced.</p>
         </div>
         <div class="pricing-list" role="list">
-          {prices.fills.map((service) => (
+          {[...prices.fills,prices.naturalMaintenance].map((service) => (
             <article class="pricing-list__item" role="listitem">
               <div><h3>{service.name}</h3><p>{service.detail}</p></div>
               <strong>{displayPrice(service.price)}</strong>
@@ -150,9 +152,18 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <p class="pricing-caption">We do not apply gel over a nail that is bleeding, painful or showing signs of infection or significant separation. Cosmetic repairs depend on nail condition.</p>
       </section>
 
+      <section id="reconstruction" class="pricing-section pricing-section--cream" aria-labelledby="reconstruction-title">
+        <div class="pricing-intro"><p class="eyebrow">06 · Corrective work</p><h2 id="reconstruction-title">Full-set <em>reconstruction.</em></h2>
+        <p>Optional full-set add-ons beyond routine shaping and rebalancing, subject to nail condition and consultation.</p></div>
+        <div class="pricing-card-grid pricing-card-grid--repairs">
+          {prices.reconstructionTiers.map(tier=><article class="pricing-card"><div class="pricing-card__top"><h3>{tier.name}</h3><strong>+{displayPrice(tier.price)}</strong></div><p>{tier.detail}</p><span class="pricing-card__meta">Per set · Subject to assessment</span></article>)}
+        </div>
+        <p class="pricing-caption">Do not add an individual repair charge for work already covered by a reconstruction tier. Significant corrective work may need different appointment arrangements.</p>
+      </section>
+
       <section id="pricing-example" class="pricing-section pricing-section--example" aria-labelledby="example-title">
         <div class="pricing-example__copy">
-          <p class="eyebrow">06 · A simple formula</p>
+          <p class="eyebrow">07 · A simple formula</p>
           <h2 id="example-title">No surprise <em>add-ons.</em></h2>
           <p>Your estimated price is the base structured manicure, plus any additional natural-nail length and one appropriate nail art tier.</p>
           <p>Repairs or separate removal only apply when needed. Final service and cost are always agreed before your appointment is confirmed.</p>

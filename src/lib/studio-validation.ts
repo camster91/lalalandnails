@@ -145,7 +145,10 @@ export function parseStudioCommand(raw: Record<string, unknown>) {
       text(raw.date, 10, true),
       text(raw.time, 5, true),
     );
+    const priceText=text(raw.price,20);
+    if(priceText&&(!/^\d{1,4}(?:\.\d{1,2})?$/.test(priceText)||Number(priceText)>5000))throw new StudioError('Enter an agreed price between $0 and $5,000 CAD.');
     return {
+      priceCents:priceText?Math.round(Number(priceText)*100):null,
       action: "appointment.save" as const,
       id,
       version,

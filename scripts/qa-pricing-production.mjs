@@ -1,6 +1,6 @@
 /**
- * Local production-mode safety check for proposed, unapproved prices.
- * Verifies that production routes fail closed without deploying anything.
+ * Local production-mode check for the approved pricing release.
+ * Verifies that approved routes render without deploying anything.
  * Requires npm run build to have completed. No remote Workers, D1, KV,
  * email bindings or production account changes.
  */
@@ -38,29 +38,21 @@ try {
   assert.equal(homepage.status, 200, 'Public homepage should stay accessible');
   const homeHtml = await homepage.text();
   assert.ok(homeHtml.includes('La La Land Nail Hub') || homeHtml.includes('La La Land'));
-  assert.ok(!homeHtml.includes('Services &amp; Pricing'), 'Unapproved price nav must be hidden');
-  assert.ok(!homeHtml.includes('Services & Pricing'), 'Unapproved price nav must be hidden');
-  assert.ok(!homeHtml.includes('id="pricing"'), 'Unapproved homepage teaser must be hidden');
-  assert.ok(!homeHtml.includes('href="/services-pricing"'), 'No public links to draft route');
-  assert.ok(!homeHtml.includes('Signature Structured Gel Manicure'), 'Proposed offer hidden');
-  console.log('PASS production homepage remains public with all draft pricing links/teaser hidden');
-
+  assert.ok(homeHtml.includes('id="pricing"'), 'Approved homepage teaser visible');
+  assert.ok(homeHtml.includes('href="/services-pricing"'), 'Approved menu linked');
+  assert.ok(homeHtml.includes('Signature Structured Gel Manicure'));
   for (const path of ['/services-pricing', '/services-pricing?source=qa']) {
     const response = await respond(path);
-    assert.equal(response.status, 404, 'Draft route should return HTTP 404 in production mode: ' + path);
+    assert.equal(response.status, 200);
     const html = await response.text();
-    assert.ok(!html.includes('Tier 4 — Bespoke'), 'Draft art prices not leaked in body');
-    assert.ok(!html.includes('pricing-proposal'), 'Draft content not leaked in body');
-    console.log('PASS production draft route blocked', path);
+    assert.ok(html.includes('Tier 4 — Bespoke'));
+    assert.ok(!html.includes('Pricing draft for studio review.'));
   }
+  // A noncanonical local preview must not advertise URLs for indexing.
+  const sitemap = await (await respond('/sitemap.xml')).text();
+  assert.ok(!sitemap.includes('<loc>'));
+  console.log('PASS approved pricing is public in production; preview sitemap stays empty');
 
-  const sitemap = await respond('/sitemap.xml');
-  assert.equal(sitemap.status, 200, 'Sitemap remains accessible');
-  const sitemapXml = await sitemap.text();
-  assert.ok(!sitemapXml.includes('/services-pricing'), 'Draft route should not be in sitemap');
-  console.log('PASS sitemap excludes draft pricing route');
-
-  console.log('PASS production safety smoke test completed without making remote requests');
 } finally {
   if (child.pid) {
     try {
