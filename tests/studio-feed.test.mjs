@@ -28,3 +28,9 @@ test('private feed can be rotated and revoked without persisting its bearer toke
  assert.equal(sql.prepare('SELECT count(*) n FROM studio_activity').get().n,3);
  sql.close();
 });
+
+test('requested blocks publish tentative events that keep their UID on confirmation',()=>{
+ const row={id:'request-123',version:Date.parse('2026-10-23T12:00Z'),start_at:Date.parse('2026-10-26T14:00Z'),end_at:Date.parse('2026-10-26T16:00Z'),status:'tentative'};
+ assert.ok(createCalendarFeed([row]).includes('STATUS:TENTATIVE'));
+ assert.ok(createCalendarFeed([{...row,status:'confirmed'}]).includes('UID:request-123@lalalandnails.ca'));
+});

@@ -31,7 +31,7 @@ export async function initializeDatabase(d1: D1Database): Promise<void> {
   ]);
 
   // Additive migration: preserve all existing enquiry records.
-  for (const [name, type] of [['contact_method', 'TEXT'], ['follow_up_date', 'TEXT'], ['archived_at', 'INTEGER'], ['lead_source', 'TEXT']]) {
+  for (const [name, type] of [['contact_method', 'TEXT'], ['follow_up_date', 'TEXT'], ['archived_at', 'INTEGER'], ['lead_source', 'TEXT'], ['requested_start','INTEGER'], ['requested_end','INTEGER'], ['requested_day_start','INTEGER'], ['requested_day_end','INTEGER'], ['capacity_released','INTEGER NOT NULL DEFAULT 0']]) {
     const columns = await d1.prepare('PRAGMA table_info(booking_requests)').all<{ name: string }>();
     if (columns.results.some((column) => column.name === name)) continue;
     try {

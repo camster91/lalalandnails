@@ -1,11 +1,13 @@
 import { normalizePhone } from '../lib/phone';
 import { detectLeadSource } from '../lib/lead-source';
+import {startBookingCalendar} from './booking-calendar';
 export function startBooking() {
   const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
   const dialog = document.querySelector<HTMLDialogElement>('[data-booking-dialog]');
   const home = document.querySelector<HTMLElement>('[data-booking-home]');
   const dialogBody = dialog?.querySelector<HTMLElement>('[data-booking-dialog-body]');
   if (!form || !dialog || !home || !dialogBody) return;
+  const calendar=startBookingCalendar(form);
   const sourceInput=form.elements.namedItem('leadSource') as HTMLInputElement;
   sourceInput.value=detectLeadSource(location.href,document.referrer);
   if (typeof dialog.showModal === 'function') document.querySelectorAll('a[href="#booking"]').forEach(link=> { link.setAttribute('aria-haspopup','dialog'); link.setAttribute('aria-controls','booking-dialog'); });
@@ -53,14 +55,16 @@ export function startBooking() {
   const showErrors = (errors: Record<string,string>) => {
     let first: HTMLElement | null = null;
     for (const [name,message] of Object.entries(errors)) {
-      if (!["name","phone","contactMethod","consent"].includes(name)) continue;
+      if (!["preferredDate","preferredTime","name","phone","contactMethod","consent"].includes(name)) continue;
       const field=form.elements.namedItem(name);
       const hint=form.querySelector<HTMLElement>(`[data-field-error="${name}"]`);
       if (hint) hint.textContent=message;
-      if (field instanceof HTMLElement) { field.setAttribute('aria-invalid','true'); first ??= field; }
+      if (name==="preferredDate" || name==="preferredTime") { first ??= form.querySelector<HTMLElement>('[data-booking-calendar]'); }
+      if (field instanceof HTMLElement && !(field instanceof HTMLInputElement && field.type==="hidden")) { field.setAttribute('aria-invalid','true'); first ??= field; }
     }
     status.textContent='Please check the highlighted fields.';
-    first?.focus();
+    if(first?.hasAttribute("data-booking-calendar") || first?.getAttribute("name")==="preferredTime") calendar.focus();
+    else first?.focus();
     window.plausible?.('booking_validation_error');
   };
   const trackStart = () => {
@@ -83,6 +87,8 @@ export function startBooking() {
     clearErrors();
     const data=new FormData(form);
     const errors: Record<string,string>={};
+    if(!data.get('preferredDate'))errors.preferredDate='Choose an available weekday.';
+    if(!data.get('preferredTime'))errors.preferredTime='Choose a two-hour block.';
     if(String(data.get('name')||'').trim().length<2) errors.name='Please enter your name.';
     if(!normalizePhone(String(data.get('phone')||''))) errors.phone='Enter a Canadian or US phone number, including area code.';
     if(!['call','text'].includes(String(data.get('contactMethod')))) errors.contactMethod='Choose a call or text back.';
@@ -95,9 +101,9 @@ export function startBooking() {
       const response=await fetch(form.action,{method:'POST',body:data});
       if (!response.headers.get('content-type')?.includes('application/json')) throw Error('The request could not be sent. Please try again shortly. Your details are still here.');
       const result=await response.json() as {ok?:boolean;message?:string;errors?:Record<string,string>};
-      if(result.errors) {showErrors(result.errors);return;}
+      if(result.errors) {if(response.status===409)await calendar.refresh();showErrors(result.errors);return;}
       if(!response.ok || !result.ok) throw Error(result.message || 'The request could not be sent. Please try again shortly.');
-      form.reset();sourceInput.value=detectLeadSource(location.href,document.referrer);started=false;
+      form.reset();calendar.reset();sourceInput.value=detectLeadSource(location.href,document.referrer);started=false;
       status.textContent=result.message || 'Your request has been received.';
       status.tabIndex=-1;status.focus();
       window.plausible?.('booking_request_submitted');

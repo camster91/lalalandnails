@@ -35,8 +35,12 @@ test('schema answers match every visible FAQ without invented commercial claims'
   const schema = buildSchema(siteConfig);
   const faq = schema['@graph'].find((node) => node['@type'] === 'FAQPage');
   assert.deepEqual(faq.mainEntity.map((item) => [item.name, item.acceptedAnswer.text]), siteConfig.faqs.map((item) => [item.question, item.answer]));
+  const business=schema['@graph'].find(node=>node['@type']==='BeautySalon');
+  assert.equal(business.openingHoursSpecification.opens,'10:00');
+  assert.equal(business.openingHoursSpecification.closes,'15:00');
+  assert.equal(business.openingHoursSpecification.dayOfWeek.length,5);
   const json = JSON.stringify(schema);
-  for (const field of ['aggregateRating', 'reviewRating', 'priceRange', 'openingHoursSpecification', 'streetAddress', 'postalCode']) {
+  for (const field of ['aggregateRating', 'reviewRating', 'priceRange', 'streetAddress', 'postalCode']) {
     assert.equal(json.includes(`"${field}"`), false, field);
   }
 });

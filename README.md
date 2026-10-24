@@ -25,6 +25,7 @@ npm run build
 - Responsive homepage with full-width sections and content contained to 1440px.
 - Sliding inspiration gallery, section motion and reduced-motion support.
 - Local service content, visit guidance and FAQs driven by verified site configuration.
+- Two-hour appointment request calendar, Mon–Fri 10 a.m.–3 p.m. Toronto time, one held request/appointment per day.
 - Booking request API and authenticated admin interface backed by Cloudflare D1.
 - Optional concierge and analytics configured through environment variables and verified settings.
 - Metadata, structured data, robots and sitemap routes with explicit public-route indexing. The canonical homepage is indexable; staff, API, preview and privacy routes remain noindex.
