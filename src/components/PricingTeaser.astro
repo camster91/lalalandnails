@@ -18,6 +18,10 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
       </article>
     ))}
   </div>
+  <div class="pricing-teaser__extras" aria-label="Returning clients and nail repairs">
+    <p>Coming back? <a href="/services-pricing#fills">Fills from {displayPrice(prices.fills[0].price)}</a></p>
+    <p>Need a nail fixed? <a href="/services-pricing#repairs">Repairs from {displayPrice(Math.min(...prices.repairs.map((repair) => repair.price)))} per nail</a></p>
+  </div>
   <div class="pricing-teaser__bottom">
     <p>{prices.approved ? 'Starting prices in CAD. Length, art and repairs may be additional.' : 'Proposed starting prices in CAD · Pending studio approval.'}</p>
     <a class="button" href="/services-pricing">Explore all services & pricing</a>
@@ -34,6 +38,10 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
   .pricing-teaser__card h3 { font-size: 1.1rem; line-height: 1.45; }
   .pricing-teaser__card strong { margin-top: 1.4rem; font: 400 clamp(2rem,3vw,3rem)/1 var(--serif); }
   .pricing-teaser__card p { margin: 1.2rem 0 0; line-height: 1.6; }
+  .pricing-teaser__extras { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem 2rem; margin-top: 1.5rem; border-top: 1px solid rgba(51,5,5,.24); padding-top: 1.25rem; }
+  .pricing-teaser__extras p { margin: 0; font-size: .9rem; line-height: 1.6; }
+  .pricing-teaser__extras a { font-weight: 700; text-underline-offset: .25em; }
+  .pricing-teaser__extras a:focus-visible { outline: 3px solid var(--burgundy); outline-offset: 3px; }
   .pricing-teaser__bottom { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; margin-top: 2rem; }
   .pricing-teaser__bottom p { margin: 0; font-size: .875rem; line-height: 1.6; }
   @media (max-width: 900px) { .pricing-teaser__heading { grid-template-columns: 1fr; gap: 1.2rem; } }
