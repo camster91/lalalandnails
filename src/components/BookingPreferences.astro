@@ -4,33 +4,26 @@ import {bookingPackages,reconstructionTiers,repairOptions} from '../lib/booking-
 ---
 <fieldset data-booking-step="1">
   <legend tabindex="-1">2. Choose your service</legend>
-  <p class="field-hint">Build an estimate from the <a href="/services-pricing" target="_blank" rel="noopener">Services & Pricing menu</a>. Bianca checks your selection before confirming.</p>
-  {!pricingDraft.approved && <p class="booking-draft">Preview only · proposed prices awaiting approval.</p>}
-  <label>Service package *<select name="package" aria-describedby="package-error" required><option value="">Choose a service</option>{bookingPackages.map(p=><option value={p.id}>{p.name} · ${p.price} CAD</option>)}</select></label>
+  <p class="field-hint">Choose what you know, or ask Bianca to help. <a href="/services-pricing" target="_blank" rel="noopener">View the service menu</a>.</p>
+  {!pricingDraft.approved && <p class="field-hint">Proposed prices · awaiting approval.</p>}
+  <label>Service package *<select name="package" aria-describedby="package-error" required><option value="">Choose a service</option><option value="unsure">Not sure — help me choose</option>{bookingPackages.map(p=><option value={p.id}>{p.name} · ${p.price} CAD</option>)}</select></label>
   <p data-package-description class="field-hint"></p>
-  <label data-length-label>Nail length<select name="length"><option value="short">Short · included</option><option value="medium">Medium · +${pricingDraft.lengths[1].addOn}</option><option value="long">Long · +${pricingDraft.lengths[2].addOn}</option><option value="extra-long">Extra long · consultation</option></select></label>
-  <p class="field-hint">Length add-ons apply to new structured gel. Fill packages already include their stated length.</p>
+  <div data-service-options>
+  <label data-length-label>Nail length<select name="length"><option value="unsure">Not sure — discuss with Bianca</option><option value="short">Short · included</option><option value="medium">Medium · +${pricingDraft.lengths[1].addOn}</option><option value="long">Long · +${pricingDraft.lengths[2].addOn}</option><option value="extra-long">Extra long · consultation</option></select></label>
+  <p class="field-hint">Fill prices already include their stated length.</p>
+  <label>Nail art<select name="art"><option value="none">Solid colour / no art · included</option><option value="unsure">Not sure — help me choose</option>{pricingDraft.artTiers.map((p,i)=><option value={i+1}>{p.name} · +${p.addOn}{'startingAt' in p?'+':''}</option>)}</select></label>
+  <details class="booking-optional" data-additional-needs>
+  <summary>Additional needs — optional</summary>
+  <p class="field-hint">Repairs, reconstruction or a preferred shape. Bianca confirms what is suitable and any additional cost.</p>
   <label>Nail shape<select name="shape"><option>Not sure</option>{pricingDraft.shapes.map(s=><option>{s}</option>)}</select></label>
-  <label>Nail art<select name="art"><option value="none">Solid colour / no art · included</option>{pricingDraft.artTiers.map((p,i)=><option value={i+1}>{p.name} · +${p.addOn}{'startingAt' in p?'+':''}</option>)}</select></label>
   <label>Full-set reconstruction<select name="reconstruction"><option value="none">None</option>{reconstructionTiers.map(p=><option value={p.id}>{p.name} · +${p.price}</option>)}</select></label>
   <label>Individual repair<select name="repair"><option value="none">None</option>{repairOptions.map(p=><option value={p.id}>{p.name} · ${p.price} per nail</option>)}</select></label>
   <label>Number of nails to repair<input name="repairCount" type="number" min="0" max="10" step="1" value="0" inputmode="numeric" /></label>
   <p class="field-hint">Choose reconstruction or individual repairs. We will not charge twice for the same work.</p>
+  </details>
+  </div>
   <span id="package-error" class="field-error" data-field-error="package"></span>
   <output class="booking-estimate" data-booking-estimate aria-live="polite">Choose a service to see an estimate.</output>
-  <p class="field-hint">CAD, before applicable taxes. Detailed work may need a custom quote or different appointment arrangements. A two-hour request does not guarantee every design will fit.</p>
-  <div class="booking-step-actions"><button type="button" class="text-link" data-step-back="0">Back to time</button><button type="button" class="button" data-step-next="2">Continue to inspiration</button></div>
-</fieldset>
-<fieldset data-booking-step="2">
-  <legend tabindex="-1">3. Share your inspiration</legend>
-  <p class="field-hint">Optional. Paste a Pinterest or Instagram link, choose images, or paste a copied image here.</p>
-  <label>Inspiration links<textarea name="inspirationLinks" rows="3" maxlength="1800" placeholder="https://pin.it/…" aria-describedby="inspirationLinks-error"></textarea></label>
-  <p class="field-hint">Up to three public HTTPS links, one per line. We do not load or copy content from these websites automatically.</p>
-  <span id="inspirationLinks-error" class="field-error" data-field-error="inspirationLinks"></span>
-  <label>Inspiration images<input name="inspirationImages" type="file" accept="image/jpeg,image/png,image/webp" multiple aria-describedby="inspirationImages-error" /></label>
-  <p class="field-hint">Up to two images, JPEG, PNG or WebP. Images are resized for your request and shared privately with studio staff. Please use nail inspiration only, without faces or sensitive personal details.</p>
-  <div data-inspiration-previews class="booking-inspiration-previews"></div>
-  <p data-image-status role="status" class="field-hint"></p>
-  <span id="inspirationImages-error" class="field-error" data-field-error="inspirationImages"></span>
-  <div class="booking-step-actions"><button type="button" class="text-link" data-step-back="1">Back to service</button><button type="button" class="button" data-step-next="3">Continue to your details</button></div>
+  <p class="field-hint">Bianca confirms the final price and timing. Detailed work may need a custom quote.</p>
+  <div class="booking-step-actions"><button type="button" class="text-link" data-step-back="0">Back to time</button><button type="button" class="button" data-step-next="2">Continue to your details</button></div>
 </fieldset>

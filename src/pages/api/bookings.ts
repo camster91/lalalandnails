@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import {readBookingBody} from '../../lib/booking-body';
-import {quoteBooking,parseInspirationLinks,validateInspirationImage,inspirationLimits} from '../../lib/booking-options';
+import {quoteBooking,formatBookingEstimate,parseInspirationLinks,validateInspirationImage,inspirationLimits} from '../../lib/booking-options';
 import {pricingDraft} from '../../data/pricing';
 import { env } from 'cloudflare:workers';
 import { getD1 } from '../../lib/db';
@@ -75,7 +75,7 @@ export const POST: APIRoute = async ({ request }) => {
           `Name: ${name}`,
           `Phone: ${phone}`,
           `Requested block: ${preferredDate} at ${preferredTime}, 2 hours (America/Toronto)`,
-          `Service estimate: ${selection!.serviceName} · $${selection!.total.toFixed(2)} CAD before applicable taxes`,
+          `Service estimate: ${selection!.serviceName} · ${formatBookingEstimate(selection!)}`,
           `Selected options: ${selection!.lines.map(l=>l.label).join(' + ')}; shape: ${selection!.shape}`,
           `Consultation required: ${selection!.needsConsultation?'Yes':'Confirm suitability and timing'}`,
           `Inspiration: ${links.length} link(s), ${images.length} private image(s). Review in the staff workspace.`,

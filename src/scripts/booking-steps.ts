@@ -1,4 +1,4 @@
-import {bookingPackages,quoteBooking,parseInspirationLinks,inspirationLimits} from '../lib/booking-options';
+import {bookingPackages,quoteBooking,formatBookingEstimate,parseInspirationLinks,inspirationLimits} from '../lib/booking-options';
 export function startBookingSteps(form:HTMLFormElement){
  const panels=Array.from(form.querySelectorAll<HTMLFieldSetElement>('[data-booking-step]'));
  const output=form.querySelector<HTMLOutputElement>('[data-booking-estimate]')!;
@@ -7,10 +7,15 @@ export function startBookingSteps(form:HTMLFormElement){
  const previews=form.querySelector<HTMLElement>('[data-inspiration-previews]')!;
  const imageStatus=form.querySelector<HTMLElement>('[data-image-status]')!;
  let images:File[]=[],busy=false,activeStep=0;
+ const seen=new Set<number>();let viewed=false;
+ const track=()=>{if(!viewed||seen.has(activeStep))return;seen.add(activeStep);window.plausible?.(['booking_step_time_viewed','booking_step_service_viewed','booking_step_details_viewed'][activeStep]);};
+ form.addEventListener('booking:opened',()=>{viewed=true;track();});
  const raw=()=>Object.fromEntries(new FormData(form));
  function estimate(){
   const service=bookingPackages.find(p=>p.id===Array.from(form.querySelectorAll('select')).find(el=>el.name==='package')!.value);
-  form.querySelector<HTMLElement>('[data-package-description]')!.textContent=service?.description||'';
+  const unsure=Array.from(form.querySelectorAll('select')).find(el=>el.name==='package')!.value==='unsure';
+  form.querySelector<HTMLElement>('[data-package-description]')!.textContent=unsure?'No problem. Bianca will discuss your nails, recommend a service and confirm the price.':service?.description||'';
+  form.querySelector<HTMLElement>('[data-service-options]')!.hidden=!service;
   const length=Array.from(form.querySelectorAll('select')).find(el=>el.name==='length')!;
   length.disabled=!service?.structured;
   form.querySelector<HTMLElement>('[data-length-label]')!.hidden=!service?.structured;
@@ -21,15 +26,24 @@ export function startBookingSteps(form:HTMLFormElement){
   if(reconstruction.value!=='none'){repair.value='none';repair.disabled=true;}
   const count=form.querySelector<HTMLInputElement>('[name="repairCount"]')!;count.disabled=repair.value==='none';if(count.disabled)count.value='0';else if(count.value==='0')count.value='1';
   const input=raw();
-  try {const q=quoteBooking(input);output.textContent=`${q.needsConsultation?'From / subject to consultation: ':''}$${q.total.toFixed(2)} CAD estimated · before applicable taxes${q.approved?'':' · proposed pricing'}`;return q;}
+  try {const q=quoteBooking(input);output.textContent=formatBookingEstimate(q);return q;}
   catch(e){output.textContent=e instanceof Error?e.message:'Choose a service.';return null;}
+ }
+ function updateReview(){
+  const input=raw(),q=estimate();
+  const date=String(input.preferredDate||''),time=String(input.preferredTime||'');
+  const dateLabel=date?new Intl.DateTimeFormat('en-CA',{month:'short',day:'numeric',weekday:'short',timeZone:'UTC'}).format(new Date(date+'T12:00Z')):'';
+  let links='';try{const count=parseInspirationLinks(String(input.inspirationLinks||'')).length;if(count)links=` ${count} inspiration link(s).`;}catch{links=' Check your inspiration links below.';}
+  review.textContent=`${dateLabel} at ${time} · 2 hours · Toronto. ${q?.serviceName||''}. ${output.textContent}${links}${images.length?` ${images.length} inspiration image(s).`:''} Bianca confirms your appointment by call or text.`;
  }
  function go(step:number,focus=true){
   activeStep=step;
+  const description=document.getElementById('booking-dialog-description');
+  if(description)description.textContent=['Choose a two-hour block. Bianca will call or text to confirm.','Choose what you know. Bianca can help with the rest.','Leave your number and any inspiration. Bianca confirms your appointment.'][step];
   panels.forEach((p,i)=>p.hidden=i!==step);
   form.querySelectorAll<HTMLElement>('[data-progress]').forEach((p,i)=>{if(i===step)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');});
   if(step===0)form.querySelector<HTMLDetailsElement>('[data-booking-calendar] details')!.open=true;
-  if(step===3){const input=raw(),q=estimate();review.textContent=`Requested: ${input.preferredDate} at ${input.preferredTime} · 2 hours · Toronto. ${q?q.lines.map(l=>l.label).join(' + '):''}. ${output.textContent} Inspiration: ${parseInspirationLinks(String(input.inspirationLinks||'')).length} link(s), ${images.length} image(s). Confirmed only after Bianca agrees on the details.`;}
+  if(step===2)updateReview();track();
   if(focus){panels[step].querySelector<HTMLElement>('legend')?.focus({preventScroll:true});const dialog=form.closest('dialog');if(dialog?.open)dialog.scrollTop=0;else panels[step].scrollIntoView({block:'start',behavior:'instant'});}
  }
  function error(name:string,message:string){const target=form.querySelector<HTMLElement>(`[data-field-error="${name}"]`);if(target)target.textContent=message;}
@@ -38,13 +52,13 @@ export function startBookingSteps(form:HTMLFormElement){
  form.querySelectorAll<HTMLElement>('[data-step-next]').forEach(b=>b.addEventListener('click',()=>{
   const next=Number(b.dataset.stepNext);
   if(next===2&&!estimate()){error('package',output.textContent||'Choose a service.');Array.from(form.querySelectorAll('select')).find(el=>el.name==='package')?.focus();return;}
-  if(next===3){if(busy)return;try{parseInspirationLinks(String(raw().inspirationLinks||''));error('inspirationLinks','');}catch(e){error('inspirationLinks',(e as Error).message);form.querySelector<HTMLTextAreaElement>('[name="inspirationLinks"]')?.focus();return;}}
   error('package','');go(next);
  }));
- form.addEventListener('change',()=>estimate());
+ form.addEventListener('change',()=>{estimate();if(activeStep===2)updateReview();});
+ form.querySelector('[name="inspirationLinks"]')!.addEventListener('input',()=>{if(activeStep===2)updateReview();});
  function renderImages(){
   previews.replaceChildren();images.forEach((file,i)=>{const wrap=document.createElement('figure'),img=document.createElement('img'),remove=document.createElement('button');
-   const url=URL.createObjectURL(file);img.src=url;img.alt=`Inspiration image ${i+1}`;img.addEventListener('load',()=>URL.revokeObjectURL(url),{once:true});remove.type='button';remove.textContent=`Remove image ${i+1}`;remove.addEventListener('click',()=>{images.splice(i,1);renderImages();});wrap.appendChild(img);wrap.appendChild(remove);previews.appendChild(wrap);});
+   const url=URL.createObjectURL(file);img.src=url;img.alt=`Inspiration image ${i+1}`;img.addEventListener('load',()=>URL.revokeObjectURL(url),{once:true});remove.type='button';remove.textContent=`Remove image ${i+1}`;remove.addEventListener('click',()=>{images.splice(i,1);renderImages();updateReview();});wrap.appendChild(img);wrap.appendChild(remove);previews.appendChild(wrap);});
  }
  async function addFiles(files:File[]){
   if(busy)return;busy=true;imageStatus.textContent='Preparing images…';error('inspirationImages','');
@@ -62,12 +76,12 @@ export function startBookingSteps(form:HTMLFormElement){
     if(!blob||blob.size>inspirationLimits.bytes)throw Error('This image is too large. Choose a smaller version.');
     prepared.push(new File([blob],`inspiration-${images.length+prepared.length+1}.jpg`,{type:'image/jpeg'}));
    }
-   images.push(...prepared);renderImages();imageStatus.textContent=images.length?`${images.length} image(s) ready.`:'';
+   images.push(...prepared);renderImages();updateReview();imageStatus.textContent=images.length?`${images.length} image(s) ready.`:'';
   }catch(e){imageStatus.textContent='';error('inspirationImages',e instanceof Error?e.message:'Unable to prepare image.');}
   finally{busy=false;imageInput.value='';}
  }
  imageInput.addEventListener('change',()=>void addFiles(Array.from(imageInput.files||[])));
- panels[2].addEventListener('paste',e=>{const files=Array.from(e.clipboardData?.files||[]);if(files.length){e.preventDefault();void addFiles(files);}});
+ form.querySelector<HTMLElement>('[data-booking-inspiration]')!.addEventListener('paste',e=>{const files=Array.from(e.clipboardData?.files||[]);if(files.length){e.preventDefault();void addFiles(files);}});
  go(0,false);estimate();
- return {go,isFinal:()=>activeStep===3,next:()=>{const button=activeStep===0?form.querySelector<HTMLButtonElement>('[data-calendar-use]'):panels[activeStep].querySelector<HTMLButtonElement>('[data-step-next]');button?.click();},ready:()=>!busy,appendImages:(data:FormData)=>{data.delete('inspirationImages');images.forEach(file=>data.append('inspirationImages',file));},reset:()=>{images=[];previews.replaceChildren();imageStatus.textContent='';go(0,false);estimate();}};
+ return {go,isFinal:()=>activeStep===2,next:()=>{const button=activeStep===0?form.querySelector<HTMLButtonElement>('[data-calendar-use]'):panels[activeStep].querySelector<HTMLButtonElement>('[data-step-next]');button?.click();},ready:()=>!busy,appendImages:(data:FormData)=>{data.delete('inspirationImages');images.forEach(file=>data.append('inspirationImages',file));},reset:()=>{images=[];previews.replaceChildren();imageStatus.textContent='';seen.clear();viewed=false;go(0,false);estimate();}};
 }

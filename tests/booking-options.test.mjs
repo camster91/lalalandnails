@@ -1,7 +1,7 @@
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-import {quoteBooking,parseInspirationLinks,validateInspirationImage} from '../src/lib/booking-options.ts';
+import {quoteBooking,formatBookingEstimate,parseInspirationLinks,validateInspirationImage} from '../src/lib/booking-options.ts';
 const pick=(extra={})=>({package:'structured',length:'short',art:'none',reconstruction:'none',repair:'none',repairCount:'0',shape:'Almond',...extra});
 test('package estimate includes length and art once; fill prices already include length',()=>{
  assert.equal(quoteBooking(pick({length:'medium',art:'2'})).total,105);
@@ -50,4 +50,14 @@ test('JPEG cannot hide oversized dimensions behind a duplicate small frame heade
  const sof=jpeg.findIndex((b,i)=>b===255&&jpeg[i+1]===192),length=(jpeg[sof+2]<<8)|jpeg[sof+3],end=sof+2+length;
  const duplicate=new Uint8Array(jpeg.length+length+2);duplicate.set(jpeg.slice(0,end));duplicate.set(jpeg.slice(sof,end),end);duplicate.set(jpeg.slice(end),end+length+2);duplicate[sof+5]=255;duplicate[sof+6]=255;
  assert.throws(()=>validateInspirationImage(duplicate,'image/jpeg'));
+});
+
+test('help-me-choose requests have no invented price and remain valid without technical options',()=>{
+ const quote=quoteBooking({package:'unsure'});
+ assert.equal(quote.serviceId,'unsure');assert.equal(quote.total,null);
+ assert.equal(quote.needsConsultation,true);assert.deepEqual(quote.lines,[]);assert.doesNotMatch(formatBookingEstimate(quote),/\$/);
+});
+test('unknown length or art retains only a starting estimate for consultation',()=>{
+ const quote=quoteBooking(pick({length:'unsure',art:'unsure'}));
+ assert.equal(quote.total,75);assert.equal(quote.needsConsultation,true);
 });

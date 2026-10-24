@@ -19,11 +19,12 @@ export const repairOptions=[
  {...pricingDraft.repairs[2],id:'broken'},
 ];
 export function quoteBooking(input:Record<string,unknown>){
+ if(input.package==='unsure')return {serviceId:'unsure',serviceName:'Not sure — help me choose',length:'unsure',art:'unsure',reconstruction:'none',repair:'none',repairCount:0,shape:'Not sure',lines:[] as {label:string;amount:number}[],total:null,currency:'CAD',approved:pricingDraft.approved,needsConsultation:true};
  const service=bookingPackages.find(p=>p.id===input.package);
  if(!service)throw Error('Choose a service package.');
  const length=String(input.length||'short'),art=String(input.art||'none'),reconstruction=String(input.reconstruction||'none'),repair=String(input.repair||'none'),shape=String(input.shape||'Not sure');
- if(!['short','medium','long','extra-long'].includes(length))throw Error('Choose a nail length.');
- if(!['none','1','2','3','4'].includes(art))throw Error('Choose an art tier.');
+ if(!['short','medium','long','extra-long','unsure'].includes(length))throw Error('Choose a nail length.');
+ if(!['none','1','2','3','4','unsure'].includes(art))throw Error('Choose an art tier.');
  if(!['none','1','2','3','4'].includes(reconstruction))throw Error('Choose a reconstruction tier.');
  if(!['Not sure',...pricingDraft.shapes].includes(shape))throw Error('Choose a nail shape.');
  const countText=String(input.repairCount??'0');
@@ -35,15 +36,19 @@ export function quoteBooking(input:Record<string,unknown>){
  const hasGel=!['dry','maintenance','removal'].includes(service.id);
  if(!hasGel&&(art!=='none'||reconstruction!=='none'||repair!=='none'))throw Error('Art and gel repairs need a gel service.');
  const effectiveLength=service.structured?length:'included';
- const lengthCharge=service.structured?({short:pricingDraft.lengths[0].addOn,medium:pricingDraft.lengths[1].addOn,long:pricingDraft.lengths[2].addOn,'extra-long':0}[length]||0):0;
- const artItem=art==='none'?null:pricingDraft.artTiers[Number(art)-1];
+ const lengthCharge=service.structured?({short:pricingDraft.lengths[0].addOn,medium:pricingDraft.lengths[1].addOn,long:pricingDraft.lengths[2].addOn,'extra-long':0,unsure:0}[length]||0):0;
+ const artItem=['none','unsure'].includes(art)?null:pricingDraft.artTiers[Number(art)-1];
  const reconstructionItem=reconstructionTiers.find(p=>p.id===reconstruction);
  const lines:{label:string;amount:number}[]=[{label:service.name,amount:service.price}];
  if(service.structured)lines.push({label:`${length} length`,amount:lengthCharge});
  if(artItem)lines.push({label:artItem.name,amount:artItem.addOn});
  if(reconstructionItem)lines.push({label:reconstructionItem.name,amount:reconstructionItem.price});
  if(repairItem&&repairCount)lines.push({label:`${repairItem.name} × ${repairCount}`,amount:repairItem.price*repairCount});
- return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:art==='4'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
+ return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:art==='unsure'||length==='unsure'||art==='4'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
+}
+export function formatBookingEstimate(quote:{total:number|null;needsConsultation:boolean;approved:boolean}){
+ if(quote.total===null)return 'Bianca will help you choose and confirm your quote.';
+ return `${quote.needsConsultation?'From ':''}$${quote.total.toFixed(2)} CAD estimated · before applicable taxes${quote.needsConsultation?' · final quote after consultation':''}${quote.approved?'':' · proposed pricing'}`;
 }
 export function parseInspirationLinks(value:unknown){
  if(typeof value!=='string')throw Error('Paste inspiration links, one per line.');

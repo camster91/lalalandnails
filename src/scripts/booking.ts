@@ -49,6 +49,7 @@ export function startBooking() {
     dialog.scrollTop=0;
     // Focus the heading/close control, avoiding an unexpected mobile keyboard.
     dialog.querySelector<HTMLButtonElement>('[data-booking-close]')?.focus({preventScroll:true});
+    form.dispatchEvent(new CustomEvent('booking:opened'));
     window.plausible?.('booking_form_viewed');
   });
   const clearErrors = () => {
@@ -69,14 +70,16 @@ export function startBooking() {
     }
     status.textContent='Please check the highlighted fields.';
     const firstName=priority.find(n=>n in errors)!;
-    steps.go(['preferredDate','preferredTime'].includes(firstName)?0:firstName==='package'?1:['inspirationLinks','inspirationImages'].includes(firstName)?2:3);
+    steps.go(['preferredDate','preferredTime'].includes(firstName)?0:firstName==='package'?1:2);
     if(first?.hasAttribute("data-booking-calendar") || first?.getAttribute("name")==="preferredTime") calendar.focus();
-    else first?.focus();
+    else {if(firstName==='package')form.querySelector<HTMLDetailsElement>('[data-additional-needs]')!.open=true;
+      if(['inspirationLinks','inspirationImages'].includes(firstName))form.querySelector<HTMLDetailsElement>('[data-booking-inspiration]')!.open=true;
+      first?.focus();}
     window.plausible?.('booking_validation_error');
   };
   const trackStart = () => {
     if (started) return;
-    started=true;
+    started=true;form.dispatchEvent(new CustomEvent('booking:opened'));
     window.plausible?.('booking_request_started');
   };
   form.addEventListener('input',trackStart);
@@ -84,6 +87,7 @@ export function startBooking() {
   if ('IntersectionObserver' in window) {
     const observer=new IntersectionObserver(entries=> {
       if (!entries.some(e=>e.isIntersecting)) return;
+      form.dispatchEvent(new CustomEvent('booking:opened'));
       window.plausible?.('booking_form_viewed'); observer.disconnect();
     },{threshold:.25});observer.observe(form);
   }
