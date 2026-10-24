@@ -1,0 +1,93 @@
+---
+import { pricingDraft as prices, displayPrice } from '../data/pricing';
+
+const structured = prices.manicures.find((service) => service.id === 'structured')!;
+const lengths = prices.lengths.filter((length) => length.addOn !== null);
+const designs = [{ name: 'Solid colour — no nail art', addOn: 0 }, ...prices.artTiers];
+const initialLength = 10;
+const initialDesign = 20;
+const initialTotal = structured.price + initialLength + initialDesign;
+---
+<div class="estimate-card" data-price-estimator data-base-price={structured.price}>
+  <h3>Estimate your structured manicure</h3>
+  <p class="estimate-card__intro">Start with a new structured gel manicure, then choose your natural-nail length and design detail.</p>
+  <div class="estimate-card__controls">
+    <label>
+      <span>Natural nail length</span>
+      <select name="estimate-length" data-estimate-length>
+        {lengths.map((item) => (
+          <option value={item.addOn} selected={item.addOn === initialLength}>
+            {item.name} · {item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn!)}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label>
+      <span>Nail art</span>
+      <select name="estimate-art" data-estimate-art>
+        {designs.map((item) => (
+          <option value={item.addOn} selected={item.addOn === initialDesign}>
+            {item.name} · {item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn) + ('startingAt' in item ? '+' : '')}
+          </option>
+        ))}
+      </select>
+    </label>
+  </div>
+  <dl class="estimate-card__breakdown">
+    <div><dt>Structured gel manicure (base)</dt><dd>{displayPrice(structured.price)}</dd></div>
+    <div><dt>Length add-on</dt><dd data-estimate-length-line>+{displayPrice(initialLength)}</dd></div>
+    <div><dt>Design add-on</dt><dd data-estimate-art-line>+{displayPrice(initialDesign)}</dd></div>
+  </dl>
+  <div class="estimate-card__total">
+    <span>Estimated total · CAD</span>
+    <output data-estimate-total aria-live="polite" aria-atomic="true">{displayPrice(initialTotal)}</output>
+  </div>
+  <p class="estimate-card__note" data-estimate-note>Suggested prices only. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.</p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-price-estimator]').forEach((container) => {
+    const length = container.querySelector<HTMLSelectElement>('[data-estimate-length]');
+    const art = container.querySelector<HTMLSelectElement>('[data-estimate-art]');
+    const lengthLine = container.querySelector<HTMLElement>('[data-estimate-length-line]');
+    const artLine = container.querySelector<HTMLElement>('[data-estimate-art-line]');
+    const output = container.querySelector<HTMLOutputElement>('[data-estimate-total]');
+    const note = container.querySelector<HTMLElement>('[data-estimate-note]');
+    if (!length || !art || !lengthLine || !artLine || !output || !note) return;
+    const base = Number(container.dataset.basePrice);
+    const format = (amount: number) => '$' + amount.toFixed(0);
+    const update = () => {
+      const lengthPrice = Number(length.value);
+      const artPrice = Number(art.value);
+      if (![base, lengthPrice, artPrice].every(Number.isFinite)) return;
+      const total = base + lengthPrice + artPrice;
+      lengthLine.textContent = lengthPrice ? '+' + format(lengthPrice) : 'Included';
+      artLine.textContent = artPrice ? '+' + format(artPrice) : 'Included';
+      output.textContent = format(total) + (art.selectedOptions[0]?.textContent?.includes('Tier 4') ? '+' : '');
+      note.textContent = art.selectedOptions[0]?.textContent?.includes('Tier 4')
+        ? 'Tier 4 artwork begins at this price. Bianca reviews your reference photo and confirms the final price and time before booking. Taxes and separate repairs/removal may be additional.'
+        : 'Suggested prices only. Before any applicable taxes or separate repairs/removal. Bianca confirms the final price before your appointment.';
+    };
+    length.addEventListener('change', update);
+    art.addEventListener('change', update);
+    update();
+  });
+</script>
+
+<style>
+  .estimate-card { align-self: center; min-width: 0; padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid rgba(51,5,5,.2); border-radius: var(--radius); background: var(--paper); }
+  .estimate-card h3 { margin-bottom: .55rem; font-size: 1.28rem; line-height: 1.45; }
+  .estimate-card__intro { margin: 0 0 1.4rem; font-size: .94rem; line-height: 1.6; }
+  .estimate-card__controls { display: grid; gap: 1rem; }
+  .estimate-card__controls label { display: grid; min-width: 0; gap: .4rem; font-size: .85rem; font-weight: 700; }
+  .estimate-card__controls select { display: block; width: 100%; min-width: 0; min-height: 3rem; padding: .75rem 2rem .75rem .85rem; border: 1px solid rgba(51,5,5,.5); border-radius: .6rem; background: #fff; color: var(--burgundy); font: 500 1rem/1.3 var(--sans); text-overflow: ellipsis; }
+  .estimate-card__controls select:focus-visible { outline: 3px solid var(--plum); outline-offset: 2px; }
+  .estimate-card__breakdown { margin: 1.6rem 0 0; }
+  .estimate-card__breakdown > div { display: flex; gap: 1rem; align-items: baseline; justify-content: space-between; padding: .75rem 0; border-bottom: 1px solid rgba(51,5,5,.16); font-size: .9rem; }
+  .estimate-card__breakdown dt, .estimate-card__breakdown dd { margin: 0; }
+  .estimate-card__breakdown dd { font-weight: 700; white-space: nowrap; }
+  .estimate-card__total { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem; margin-top: 1.5rem; }
+  .estimate-card__total span { font-weight: 700; }
+  .estimate-card__total output { font-family: var(--serif); font-size: clamp(2rem, 3vw, 3rem); line-height: 1.1; }
+  .estimate-card__note { margin: 1.2rem 0 0; font-size: .85rem; line-height: 1.6; }
+</style>
