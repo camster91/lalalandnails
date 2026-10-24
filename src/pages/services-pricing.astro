@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../data/site';
+import { pricingDraft as prices, displayPrice } from '../data/pricing';
+
+const structured = prices.manicures.find((service) => service.id === 'structured')!;
+const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTiers[1].addOn;
+---
+<BaseLayout
+  site={siteConfig}
+  title="European Manicures & Structured Gel Pricing in Scarborough | La La Land Nail Hub"
+  description="Explore proposed European manicure, structured gel, fill, nail art and nail repair prices for La La Land Nail Hub in Scarborough. Final service and price are confirmed before an appointment."
+>
+  <div id="top" class="page-shell">
+    <Header site={siteConfig} />
+    <main id="main" class="pricing-page">
+      <section class="pricing-hero" aria-labelledby="pricing-title">
+        <div class="pricing-hero__copy">
+          <p class="eyebrow">La La Land Nail Hub · Scarborough</p>
+          <h1 id="pricing-title">Nails you love.<br/><em>Pricing you understand.</em></h1>
+          <p>European-style precision manicures and structured gel for natural nails. Choose your service, length and nail-art detail.</p>
+          <a class="button button--cream" href="/#booking" data-analytics-events="booking_request_view">Request an appointment</a>
+          <p class="pricing-hero__fine">Appointments are requested first, then Bianca confirms your service, price and visit details.</p>
+        </div>
+        <figure class="pricing-hero__photo">
+          <img src="/images/generated/neutral-1440.webp" srcset="/images/generated/neutral-720.webp 720w, /images/generated/neutral-1440.webp 1440w" sizes="(max-width: 800px) 100vw, 45vw" alt="AI-generated blush manicure inspiration on natural-looking short nails" width="1440" height="960" loading="eager" />
+          <figcaption>AI-generated inspiration · Not client work</figcaption>
+        </figure>
+      </section>
+
+      {!prices.approved && (
+        <div class="pricing-proposal" role="note">
+          <strong>Pricing draft for studio review.</strong> These suggested launch rates have not been approved for public publication. Final prices and service availability must be confirmed with Bianca.
+        </div>
+      )}
+
+      <nav class="pricing-index" aria-label="On this page">
+        <a href="#manicures">Manicures</a>
+        <a href="#fills">Fills & maintenance</a>
+        <a href="#length">Lengths & shapes</a>
+        <a href="#art">Nail art</a>
+        <a href="#repairs">Repairs</a>
+        <a href="#pricing-example">How pricing works</a>
+      </nav>
+
+      <section id="manicures" class="pricing-section" aria-labelledby="manicures-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">01 · Signature services</p>
+          <h2 id="manicures-title">Start with your <em>manicure.</em></h2>
+          <p>Every service begins with detailed nail shaping and careful dry manicure preparation. Structured gel adds a supportive overlay to natural nails, rather than creating an extension.</p>
+        </div>
+        <div class="pricing-card-grid">
+          {prices.manicures.map((service) => (
+            <article class:list={['pricing-card', { 'pricing-card--featured': service.id === 'structured' }]}>
+              <div class="pricing-card__top">
+                <h3>{service.name}</h3><strong>{displayPrice(service.price)}</strong>
+              </div>
+              <p>{service.description}</p>
+              {service.id === 'structured' && <span class="pricing-card__meta">Short natural-nail length included</span>}
+            </article>
+          ))}
+        </div>
+        <p class="pricing-caption">Detailed art, additional length and certain repairs are priced separately. Each manicure includes standard shaping where suitable.</p>
+      </section>
+
+      <section id="fills" class="pricing-section pricing-section--cream" aria-labelledby="fills-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">02 · Returning clients</p>
+          <h2 id="fills-title">Fills & <em>maintenance.</em></h2>
+          <p>A structured gel fill is more than a colour change: existing product is assessed, lifted material is removed when suitable, and the grown-out structure is rebalanced.</p>
+        </div>
+        <div class="pricing-list" role="list">
+          {prices.fills.map((service) => (
+            <article class="pricing-list__item" role="listitem">
+              <div><h3>{service.name}</h3><p>{service.detail}</p></div>
+              <strong>{displayPrice(service.price)}</strong>
+            </article>
+          ))}
+          <article class="pricing-list__item" role="listitem">
+            <div><h3>{prices.standaloneRemoval.name}</h3><p>Product removal and basic natural-nail shaping, without a new manicure.</p></div>
+            <strong>{displayPrice(prices.standaloneRemoval.price)}</strong>
+          </article>
+        </div>
+        <p class="pricing-caption">Routine preparation and removal of compatible old product is included in our own structured gel fills. Work from another technician may need a consultation and a different service.</p>
+      </section>
+
+      <section id="length" class="pricing-section" aria-labelledby="length-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">03 · Your natural nails</p>
+          <h2 id="length-title">Choose your <em>length.</em></h2>
+          <p>Length add-ons apply to new structured gel manicures. A shape change alone is not an added charge; the shape must suit your natural nails.</p>
+        </div>
+        <div class="pricing-length-grid">
+          {prices.lengths.map((item) => (
+            <article class="pricing-length">
+              <h3>{item.name}</h3>
+              <strong>{item.addOn === null ? 'Consultation' : item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn)}</strong>
+              <p>{item.detail}</p>
+            </article>
+          ))}
+        </div>
+        <div class="pricing-shapes"><strong>Included nail shapes (when suitable):</strong><p>{prices.shapes.join(' · ')}</p></div>
+      </section>
+
+      <section id="art" class="pricing-section pricing-section--blush" aria-labelledby="art-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">04 · Add your detail</p>
+          <h2 id="art-title">Nail art <em>tiers.</em></h2>
+          <p>Choose one tier based on complexity across the full set. Send an inspiration photo when requesting detailed art so we can confirm the right price and time.</p>
+        </div>
+        <div class="pricing-art-layout">
+          <div class="pricing-list" role="list">
+            {prices.artTiers.map((tier) => (
+              <article class="pricing-list__item" role="listitem">
+                <div><h3>{tier.name}</h3><p>{tier.detail}</p></div>
+                <strong>+{displayPrice(tier.addOn)}{'startingAt' in tier ? '+' : ''}</strong>
+              </article>
+            ))}
+          </div>
+          <figure class="pricing-art-photo">
+            <img src="/images/generated/colour-1440.webp" srcset="/images/generated/colour-720.webp 720w, /images/generated/colour-1440.webp 1440w" sizes="(max-width: 800px) 100vw, 35vw" alt="AI-generated rose manicure inspiration on a hand" width="1440" height="960" loading="lazy" />
+            <figcaption>AI inspiration only · Design-tier example photos to be approved</figcaption>
+          </figure>
+        </div>
+        <p class="pricing-caption">French tips, chrome or similar effects already included in your selected art tier are not charged again separately.</p>
+      </section>
+
+      <section id="repairs" class="pricing-section" aria-labelledby="repairs-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">05 · Individual nails</p>
+          <h2 id="repairs-title">Repairs & <em>fixes.</em></h2>
+          <p>Damaged product and broken nails need different treatment. Send a clear photo so Bianca can advise which service, if any, is suitable.</p>
+        </div>
+        <div class="pricing-card-grid pricing-card-grid--repairs">
+          {prices.repairs.map((repair) => (
+            <article class="pricing-card">
+              <div class="pricing-card__top"><h3>{repair.name}</h3><strong>{displayPrice(repair.price)}</strong></div>
+              <p>{repair.detail}</p><span class="pricing-card__meta">Per nail · Subject to assessment</span>
+            </article>
+          ))}
+        </div>
+        <p class="pricing-caption">We do not apply gel over a nail that is bleeding, painful or showing signs of infection or significant separation. Cosmetic repairs depend on nail condition.</p>
+      </section>
+
+      <section id="pricing-example" class="pricing-section pricing-section--example" aria-labelledby="example-title">
+        <div class="pricing-example__copy">
+          <p class="eyebrow">06 · A simple formula</p>
+          <h2 id="example-title">No surprise <em>add-ons.</em></h2>
+          <p>Your estimated price is the base structured manicure, plus any additional natural-nail length and one appropriate nail art tier.</p>
+          <p>Repairs or separate removal only apply when needed. Final service and cost are always agreed before your appointment is confirmed.</p>
+        </div>
+        <div class="pricing-example__receipt" aria-label="Example structured gel manicure quote">
+          <h3>Example: medium nails + Tier 2 art</h3>
+          <dl>
+            <div><dt>Signature structured gel</dt><dd>{displayPrice(structured.price)}</dd></div>
+            <div><dt>Medium length</dt><dd>+{displayPrice(prices.lengths[1].addOn ?? 0)}</dd></div>
+            <div><dt>Tier 2 nail art</dt><dd>+{displayPrice(prices.artTiers[1].addOn)}</dd></div>
+            <div class="pricing-example__total"><dt>Estimated total (CAD)</dt><dd>{displayPrice(example)}</dd></div>
+          </dl>
+          <p>Prices shown are suggested, before any applicable taxes, and subject to studio confirmation.</p>
+        </div>
+      </section>
+
+      <section class="pricing-cta" aria-labelledby="pricing-cta-title">
+        <p class="eyebrow">Your next manicure</p>
+        <h2 id="pricing-cta-title">Have a look <em>in mind?</em></h2>
+        <p>Tell Bianca about your natural nail length, current products and the look you want. Choose a two-hour request block; your appointment isn't confirmed until you hear back.</p>
+        <a class="button button--cream" href="/#booking" data-analytics-events="booking_request_view">Request an appointment</a>
+        <p>By appointment in Scarborough · Welcoming clients from across the GTA and Durham Region</p>
+      </section>
+    </main>
+    <Footer site={siteConfig}/>
+  </div>
+</BaseLayout>
+
+<style>
+  .pricing-page { background: var(--paper); }
+  .pricing-hero { display: grid; grid-template-columns: 1fr 0.9fr; align-items: stretch; min-height: 39rem; background: var(--burgundy); color: var(--cream); }
+  .pricing-hero__copy { padding: clamp(5rem, 8vw, 8rem) var(--page-gutter); align-self: center; }
+  .pricing-hero h1 { max-width: 14ch; font-size: clamp(3rem, 6vw, 6.3rem); }
+  .pricing-hero h1 em, .pricing-cta em { color: var(--blush); }
+  .pricing-hero__copy > p:not(.eyebrow) { max-width: 35rem; font-size: 1.05rem; line-height: 1.75; }
+  .pricing-hero__copy .button { margin: 1.25rem 0 .65rem; }
+  .pricing-hero__fine { font-size: .85rem !important; }
+  .pricing-hero__photo { margin: 1rem 1rem 1rem 0; overflow: hidden; border-radius: var(--radius); position: relative; }
+  .pricing-hero__photo img { width: 100%; height: 100%; object-fit: cover; }
+  .pricing-hero__photo figcaption, .pricing-art-photo figcaption { position: absolute; bottom: 1rem; left: 1rem; right: 1rem; width: max-content; max-width: calc(100% - 2rem); padding: .5rem .75rem; border-radius: 1rem; background: rgba(51,5,5,.9); color: var(--cream); font-size: .75rem; }
+  .pricing-proposal { padding: 1.1rem var(--page-gutter); background: #fff0c8; color: var(--burgundy); line-height: 1.6; border-block: 2px solid #7d395d; }
+  .pricing-index { display: flex; flex-wrap: wrap; gap: .65rem; padding: 1.4rem var(--page-gutter); border-bottom: 1px solid rgba(51,5,5,.2); }
+  .pricing-index a { display: inline-flex; align-items: center; padding: .65rem 1rem; border: 1px solid rgba(51,5,5,.3); border-radius: 999px; font-size: .85rem; font-weight: 600; text-decoration: none; }
+  .pricing-index a:hover, .pricing-index a:focus-visible { background: var(--blush-light); }
+  .pricing-section { padding: clamp(4rem, 8vw, 7rem) var(--page-gutter); }
+  .pricing-intro { max-width: 60rem; margin-bottom: 2.5rem; }
+  .pricing-intro h2, .pricing-example__copy h2 { font-size: clamp(2.6rem, 5.5vw, 5.4rem); }
+  .pricing-intro > p:last-child, .pricing-example__copy p { max-width: 52rem; font-size: 1.04rem; line-height: 1.75; }
+  .pricing-card-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+  .pricing-card { padding: clamp(1.4rem,2.8vw,2.4rem); border: 1px solid rgba(51,5,5,.22); border-radius: var(--radius); background: #fff; }
+  .pricing-card--featured { background: var(--burgundy); color: var(--cream); }
+  .pricing-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .pricing-card h3, .pricing-list h3 { font-size: 1.2rem; line-height: 1.4; }
+  .pricing-card__top strong { flex-shrink: 0; font-family: var(--serif); font-size: 2rem; font-weight: 400; }
+  .pricing-card p { margin: 1.5rem 0 0; line-height: 1.7; }
+  .pricing-card__meta { display: inline-block; margin-top: 1.25rem; font-size: .78rem; font-weight: 700; }
+  .pricing-caption { max-width: 65rem; margin: 1.4rem 0 0; line-height: 1.65; font-size: .875rem; }
+  .pricing-section--cream { background: var(--cream); }
+  .pricing-section--blush { background: var(--blush-light); }
+  .pricing-list { border-top: 1px solid rgba(51,5,5,.25); }
+  .pricing-list__item { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid rgba(51,5,5,.25); align-items: start; }
+  .pricing-list__item h3 { margin-bottom: .5rem; }
+  .pricing-list__item p { margin: 0; max-width: 45rem; line-height: 1.6; }
+  .pricing-list__item strong { white-space: nowrap; font-family: var(--serif); font-size: 1.6rem; font-weight: 400; }
+  .pricing-length-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1rem; }
+  .pricing-length { background: var(--blush-light); border-radius: var(--radius); padding: 1.5rem; }
+  .pricing-length h3 { margin-bottom: 1rem; }
+  .pricing-length strong { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; }
+  .pricing-length p { line-height: 1.6; }
+  .pricing-shapes { margin-top: 2rem; line-height: 1.7; }
+  .pricing-shapes p { margin: .35rem 0 0; }
+  .pricing-art-layout { display: grid; grid-template-columns: 1.35fr .7fr; gap: 2rem; }
+  .pricing-art-photo { min-height: 30rem; margin: 0; position: relative; overflow: hidden; border-radius: var(--radius); }
+  .pricing-art-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .pricing-card-grid--repairs { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .pricing-section--example { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: var(--cream); }
+  .pricing-example__receipt { align-self: center; padding: clamp(1.4rem,3vw,2.5rem); border-radius: var(--radius); background: var(--paper); }
+  .pricing-example__receipt h3 { margin-bottom: 1.3rem; font-size: 1.15rem; }
+  .pricing-example__receipt dl { margin: 0; }
+  .pricing-example__receipt dl div { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(51,5,5,.2); }
+  .pricing-example__receipt dt, .pricing-example__receipt dd { margin: 0; }
+  .pricing-example__total { font-weight: 700; font-size: 1.2rem; }
+  .pricing-example__receipt p { margin: 1rem 0 0; font-size: .83rem; line-height: 1.6; }
+  .pricing-cta { padding: clamp(5rem,9vw,9rem) var(--page-gutter); text-align: center; color: var(--cream); background: var(--burgundy); }
+  .pricing-cta h2 { font-size: clamp(3rem, 6vw, 6rem); }
+  .pricing-cta p { max-width: 43rem; margin: 1.5rem auto; line-height: 1.75; }
+  .pricing-cta .button { margin-top: 1rem; }
+  a:focus-visible { outline: 3px solid var(--plum); outline-offset: 3px; }
+  @media(max-width: 900px) {
+    .pricing-hero { grid-template-columns: 1fr; }
+    .pricing-hero__photo { min-height: 23rem; margin: 0 1rem 1rem; }
+    .pricing-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .pricing-length-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .pricing-art-layout, .pricing-section--example { grid-template-columns: 1fr; }
+    .pricing-art-photo { min-height: 18rem; max-height: 24rem; }
+  }
+  @media(max-width: 600px) {
+    .pricing-hero__copy { padding-top: 5rem; }
+    .pricing-card-grid, .pricing-card-grid--repairs, .pricing-length-grid { grid-template-columns: 1fr; }
+    .pricing-card__top { gap: .5rem; }
+    .pricing-card__top strong { font-size: 1.75rem; }
+    .pricing-index { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+    .pricing-index a { flex-shrink: 0; }
+    .pricing-list__item strong { font-size: 1.35rem; }
+  }
+  @media(prefers-reduced-motion: reduce) { .pricing-index { scroll-behavior: auto; } }
+</style>
