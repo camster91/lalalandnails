@@ -86,11 +86,17 @@ try {
     assert.deepEqual(layout.visibleErrors, [], size.name + ': elements overflow viewport');
     assert.ok(layout.documentWidth <= size.width + 2, size.name + ': document width overflow ' + JSON.stringify(layout));
     assert.deepEqual(errors, [], size.name + ': browser script errors');
+    if (size.width <= 900) {
+      await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
+    }
 
     const artLink = page.locator('.pricing-index a[href="#art"]');
     await artLink.click();
     assert.equal(new URL(page.url()).hash, '#art', size.name + ': art anchor');
     assert.equal(await page.locator('a[href="/#booking"]').count() >= 1, true, size.name + ': pricing CTA exists');
+    if (size.width <= 900) {
+      await page.waitForFunction(() => !document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
+    }
 
     if (size.width <= 900) {
       const menu = page.locator('.menu-toggle');
@@ -106,7 +112,14 @@ try {
       assert.equal(await menu.getAttribute('aria-expanded'), 'false', size.name + ': menu closes');
     }
 
-    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => {
+      const index = document.querySelector('.pricing-index');
+      if (index) index.scrollLeft = 0;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+    if (size.width <= 900) {
+      await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
+    }
     await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important }' });
     await page.screenshot({ path: 'qa-artifacts/pricing-' + size.name + '.png', fullPage: true, animations: 'disabled', timeout: 30000 });
     console.log('PASS', size.name, size.width + 'x' + size.height, 'section/visual/navigation/overflow/noindex checks');
