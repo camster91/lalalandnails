@@ -8,17 +8,17 @@ import { pricingDraft } from '../data/pricing';
 <section class="request-booking section" id="booking" aria-labelledby="request-title">
   <div class="request-booking__intro reveal">
     <p class="eyebrow">Request an appointment</p>
-    <h2 id="request-title">Your next manicure <em>starts here.</em></h2>
-    <p>Choose your time, select a manicure and any length or art extras, then share your contact details. Inspiration links and images are optional.</p>
+    <h2 id="request-title">Request your <em>manicure appointment.</em></h2>
+    <p>Choose an available time and a service, then leave your number for a call or text from Bianca. Not sure which manicure to choose? Select “help me choose”.</p>
 
-    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>Three simple steps.</strong><br />Choose a two-hour request block, select your manicure and design, then add your details and optional inspiration. Bianca reviews the estimate before confirming your appointment.</p></div>
+    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>See your estimate before you send.</strong><br />Inspiration is optional, and no online payment is taken. Bianca reviews your choices and agrees the final price and visit details with you.</p></div>
     <SectionPhoto photo="neutral" caption="Your next manicure starts with a conversation. " aspect="wide" />
   </div>
 
   <div class="booking-form-home" data-booking-home>
   <form class="booking-form" data-booking-form action="/api/bookings" method="post" enctype="multipart/form-data" novalidate>
     <input type="hidden" name="leadSource" value="unknown" />
-    <p class="booking-form__intro">Monday–Friday, 10 a.m.–3 p.m. Toronto time. One appointment per day. Fields marked * are required.</p>
+    <p class="booking-form__intro">Two-hour requests, Monday–Friday. Starts at 10 a.m., 11 a.m., noon or 1 p.m., Toronto time. One appointment per day. Fields marked * are required.</p>
     <ol class="booking-progress" aria-label="Appointment request steps"><li data-progress="0" aria-current="step">Time</li><li data-progress="1">Service</li><li data-progress="2">Your details</li></ol>
     <fieldset data-booking-step="0"><legend tabindex="-1">1. Choose a time</legend>
     {(import.meta.env.DEV || pricingDraft.approved) && <p class="field-hint"><a href="/services-pricing">View services and pricing</a></p>}
@@ -97,7 +97,7 @@ import { pricingDraft } from '../data/pricing';
     <div><p class="eyebrow">La La Land Nail Hub</p><h2 id="booking-dialog-title">Request an appointment</h2></div>
     <button type="button" class="booking-dialog__close" data-booking-close aria-label="Close appointment request">×</button>
   </div>
-  <p id="booking-dialog-description" class="booking-dialog__description">Choose a time, service and optional extras, then send your details. Bianca confirms the appointment after reviewing your request.</p>
+  <p id="booking-dialog-description" class="booking-dialog__description">Time, service, then your details. No online payment. Bianca calls or texts to confirm your service, final price and visit details.</p>
   <div data-booking-dialog-body></div>
 </dialog>
 

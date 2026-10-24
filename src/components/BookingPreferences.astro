@@ -4,7 +4,7 @@ import {bookingPackages,reconstructionTiers,repairOptions} from '../lib/booking-
 ---
 <fieldset data-booking-step="1">
   <legend tabindex="-1">2. Choose your service</legend>
-  <p class="field-hint">Choose what you know, or ask Bianca to help. <a href="/services-pricing" target="_blank" rel="noopener">View the service menu</a>.</p>
+  <p class="field-hint">Choose a service for an estimate, or select “Not sure” for help. <a href="/services-pricing" target="_blank" rel="noopener">View the service menu</a>.</p>
   {!pricingDraft.approved && <p class="field-hint">Proposed prices · awaiting approval.</p>}
   <label>Service package *<select name="package" aria-describedby="package-error" required><option value="">Choose a service</option><option value="unsure">Not sure — help me choose</option>{bookingPackages.map(p=><option value={p.id}>{p.name} · ${p.price} CAD</option>)}</select></label>
   <p data-package-description class="field-hint"></p>
@@ -24,6 +24,6 @@ import {bookingPackages,reconstructionTiers,repairOptions} from '../lib/booking-
   </div>
   <span id="package-error" class="field-error" data-field-error="package"></span>
   <output class="booking-estimate" data-booking-estimate aria-live="polite">Choose a service to see an estimate.</output>
-  <p class="field-hint">Bianca confirms the final price and timing. Detailed work may need a custom quote.</p>
+  <p class="field-hint">Estimates are in CAD, before applicable taxes. Bianca confirms the final price and timing; detailed art may need a custom quote.</p>
   <div class="booking-step-actions"><button type="button" class="text-link" data-step-back="0">Back to time</button><button type="button" class="button" data-step-next="2">Continue to your details</button></div>
 </fieldset>

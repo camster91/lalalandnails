@@ -39,7 +39,7 @@ export function startBookingSteps(form:HTMLFormElement){
  function go(step:number,focus=true){
   activeStep=step;
   const description=document.getElementById('booking-dialog-description');
-  if(description)description.textContent=['Choose a two-hour block. Bianca will call or text to confirm.','Choose what you know. Bianca can help with the rest.','Leave your number and any inspiration. Bianca confirms your appointment.'][step];
+  if(description)description.textContent=['Choose a two-hour weekday block. Next: your service and estimate.','Choose your manicure and extras for an estimate, or ask Bianca to help.','Leave your number and optional inspiration. No online payment. Bianca calls or texts to confirm.'][step];
   panels.forEach((p,i)=>p.hidden=i!==step);
   form.querySelectorAll<HTMLElement>('[data-progress]').forEach((p,i)=>{if(i===step)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');});
   if(step===0)form.querySelector<HTMLDetailsElement>('[data-booking-calendar] details')!.open=true;

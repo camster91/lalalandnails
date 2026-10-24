@@ -97,7 +97,7 @@ export const siteConfig: SiteConfig = {
   provider: {
     name: 'Bianca Ashley',
     role: 'Owner and gel manicurist',
-    bio: 'Bianca Ashley is the owner and gel manicurist behind La La Land Nail Hub in Scarborough. You speak with Bianca directly about your nail ideas and appointment, from the first call or text through to your visit.',
+    bio: 'Bianca Ashley is the owner and gel manicurist behind La La Land Nail Hub in Scarborough. Discuss your preferred shape, everyday nail length and design with the person who will carry out your manicure. Bianca reviews your service choices and inspiration, then agrees the final price and visit details with you.',
     credentials: [],
   },
   location: {
@@ -161,16 +161,16 @@ export const siteConfig: SiteConfig = {
   gallery: [],
   reviews: [],
   faqs: [
-    { question: 'How do I request a European manicure in Scarborough?', answer: 'Choose an available two-hour block in the request calendar, choose your service, then leave your name and phone number and choose a call or text back. Requests are Monday–Friday within 10 a.m.–3 p.m. Toronto time, with one appointment per day. Bianca will confirm the service, price and visit details.' },
-    { question: 'Where is La La Land Nail Hub based?', answer: 'La La Land Nail Hub is based in Scarborough, Toronto. We welcome appointment requests from Scarborough, Durham Region and the wider GTA. Appointments take place in Scarborough.' },
-    { question: 'What can I book at La La Land?', answer: 'Choose a European dry manicure without polish, a European gel manicure, or natural-nail structured gel. Returning clients can select fills, maintenance or removal. Nail-art tiers and suitable individual repairs are add-ons. See Services & Pricing to compare the options.' },
-    { question: 'Can I visit from Pickering, Ajax or elsewhere in Durham?', answer: 'Yes. You can request an appointment if you are travelling from Durham Region or elsewhere in the GTA. The studio is in Scarborough; please confirm the appointment and visit details before arranging your journey.' },
-    { question: 'How do I find out the price and appointment length?', answer: 'The Services & Pricing page shows current introductory prices in CAD. Choose your service, natural-nail length and optional design in the request form to see an estimate before applicable taxes. A two-hour calendar block is a request, not a guarantee that complex art fits; Bianca confirms the final price and timing.' },
-    { question: 'Should I mention existing gel or extensions?', answer: 'Yes. Let Bianca know what is currently on your nails, including gel, extensions or another product. This helps you discuss the appropriate appointment and whether removal needs to be arranged.' },
-    { question: 'Can I bring a Pinterest inspiration photo?', answer: 'Yes. Add up to three public HTTPS inspiration links or two images in the optional inspiration section of your request. Show the shape, length, colour or detail you like; Bianca reviews what is achievable before confirming.' },
-    { question: 'Is my appointment confirmed when I submit the form?', answer: 'No. Your submitted request reserves that day for review, with one appointment per day. Bianca will call or text to agree on the service, price and visit details before confirming your appointment.' },
-    { question: 'Can I walk in without an appointment?', answer: 'La La Land works by appointment. Please send a request and agree on a confirmed time and visit details with Bianca before travelling to the studio.' },
-    { question: 'Are the inspiration images Bianca’s client work?', answer: 'The inspiration images currently shown are AI-generated using real manicure references. They are visual ideas, not photographs of clients or the studio, Bianca’s portfolio, or a promise of a particular result.' },
+    { question: 'What can I book at La La Land Nail Hub?', answer: 'Choose a European dry manicure, gel manicure or structured gel manicure for your natural nails. The menu also includes fills, natural nail maintenance, gel removal, nail art and suitable repairs. Your appointment is with Bianca Ashley in Scarborough.' },
+    { question: 'What is the difference between a European manicure and structured gel?', answer: 'European-style dry manicure preparation focuses on cuticle care and nail shaping. Our dry manicure has no polish; our gel manicure adds solid gel colour. A structured gel manicure adds a builder-gel overlay and solid colour to your natural nails. The structured service does not create nail extensions.' },
+    { question: 'What are your manicure prices?', answer: `Our introductory European dry manicure is $${pricingDraft.manicures[0].price} CAD, European gel manicure $${pricingDraft.manicures[1].price} CAD and Signature Structured Gel Manicure $${pricingDraft.manicures[2].price} CAD with short length and solid colour. Medium or long length, nail art and necessary repairs can cost extra. Prices are before applicable taxes; Bianca confirms your final quote.` },
+    { question: 'Where is the studio, and can I visit from Durham Region?', answer: 'La La Land Nail Hub is in Scarborough, Toronto, Ontario. Clients from Pickering, Ajax, Whitby, Durham Region and the wider GTA are welcome to request an appointment. All appointments take place in Scarborough; confirm your visit details with Bianca before travelling.' },
+    { question: 'What appointment times can I request?', answer: 'Request a two-hour block starting at 10 a.m., 11 a.m., noon or 1 p.m., Monday–Friday, Toronto time. Blocks finish by 3 p.m., with one appointment per day. The calendar shows available dates; Bianca reviews whether your chosen service and design fit the requested time.' },
+    { question: 'How do I request an appointment, and is it confirmed straight away?', answer: 'Choose an available time, select a service and send your name, phone number and call-or-text preference. You can ask Bianca to help you choose a service. No online payment is taken. Your submitted request holds the day for review; the appointment is confirmed only after Bianca agrees the service, final price and visit details with you.' },
+    { question: 'Can I request a fill with gel from another nail technician?', answer: 'Tell Bianca what product is on your nails and who applied it. Product from another technician needs assessment before a fill is accepted; removal and a new application may be more suitable. The service menu shows separate prices for fills, removal and repairs.' },
+    { question: 'Can I add Pinterest inspiration links or nail images?', answer: 'Yes. Add up to three public HTTPS links or two images in the optional inspiration section. A shape, colour or detail is enough to start the discussion. Images are shared privately with authorised studio staff, and Bianca confirms what is achievable before your appointment.' },
+    { question: 'Do you accept walk-ins?', answer: 'La La Land works by appointment. Use the request calendar and wait for Bianca to confirm your time and visit details before travelling to the studio.' },
+    { question: 'Are the website images Bianca’s client work?', answer: 'The manicure inspiration images currently shown are AI-generated using real manicure references. They show ideas for colour, shape and finish; they are not client photographs, Bianca’s portfolio or photographs of the studio.' },
   ],
   policies: [
     'Appointments are requests until Bianca confirms the service, price and visit details.',
@@ -203,3 +203,8 @@ export const launchBlockers = [
 siteConfig.launchReady = launchBlockers.length === 0;
 
 export const approvedReviews = siteConfig.reviews.filter((review) => review.publicationApproved);
+
+export const homeMetadata = {
+  title: 'European & Structured Gel Nails in Scarborough | La La Land',
+  description: `European dry manicures from $${pricingDraft.manicures[0].price} CAD and structured gel from $${pricingDraft.manicures[2].price} CAD in Scarborough. Compare services and request a weekday appointment with Bianca.`,
+};
