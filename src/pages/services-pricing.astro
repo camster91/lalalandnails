@@ -5,10 +5,8 @@ import Footer from '../components/Footer.astro';
 import { siteConfig } from '../data/site';
 import NailLengthIllustration from '../components/NailLengthIllustration.astro';
 import NailArtIllustration from '../components/NailArtIllustration.astro';
+import PriceEstimator from '../components/PriceEstimator.astro';
 import { pricingDraft as prices, displayPrice } from '../data/pricing';
-
-const structured = prices.manicures.find((service) => service.id === 'structured')!;
-const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTiers[1].addOn;
 
 // Fail closed for public requests; development QA may still inspect the draft.
 if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', { status: 404 });
@@ -159,16 +157,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           <p>Your estimated price is the base structured manicure, plus any additional natural-nail length and one appropriate nail art tier.</p>
           <p>Repairs or separate removal only apply when needed. Final service and cost are always agreed before your appointment is confirmed.</p>
         </div>
-        <div class="pricing-example__receipt" aria-label="Example structured gel manicure quote">
-          <h3>Example: medium nails + Tier 2 art</h3>
-          <dl>
-            <div><dt>Signature structured gel</dt><dd>{displayPrice(structured.price)}</dd></div>
-            <div><dt>Medium length</dt><dd>+{displayPrice(prices.lengths[1].addOn ?? 0)}</dd></div>
-            <div><dt>Tier 2 nail art</dt><dd>+{displayPrice(prices.artTiers[1].addOn)}</dd></div>
-            <div class="pricing-example__total"><dt>Estimated total (CAD)</dt><dd>{displayPrice(example)}</dd></div>
-          </dl>
-          <p>Prices shown are suggested, before any applicable taxes, and subject to studio confirmation.</p>
-        </div>
+        <PriceEstimator />
       </section>
 
       <section class="pricing-section pricing-section--faq" aria-labelledby="pricing-faq-title">
@@ -271,13 +260,6 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
   .pricing-art-card p { line-height: 1.65; margin-bottom: 0; }
   .pricing-card-grid--repairs { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .pricing-section--example { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: var(--cream); }
-  .pricing-example__receipt { align-self: center; padding: clamp(1.4rem,3vw,2.5rem); border-radius: var(--radius); background: var(--paper); }
-  .pricing-example__receipt h3 { margin-bottom: 1.3rem; font-size: 1.15rem; }
-  .pricing-example__receipt dl { margin: 0; }
-  .pricing-example__receipt dl div { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(51,5,5,.2); }
-  .pricing-example__receipt dt, .pricing-example__receipt dd { margin: 0; }
-  .pricing-example__total { font-weight: 700; font-size: 1.2rem; }
-  .pricing-example__receipt p { margin: 1rem 0 0; font-size: .83rem; line-height: 1.6; }
   .pricing-section--faq { background: var(--paper); }
   .pricing-faq { max-width: 60rem; }
   .pricing-faq details { border-top: 1px solid rgba(51,5,5,.23); }
