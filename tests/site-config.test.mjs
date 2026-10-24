@@ -21,8 +21,9 @@ test('existing site describes its services and the three-step request accurately
   assert.match(siteConfig.process[2].description, /inspiration/);
   assert.ok(siteConfig.policies.some((note) => /confirm/i.test(note)));
   const faqTitles = siteConfig.faqs.map((faq) => faq.question.toLowerCase()).join(' ');
-  for (const topic of ['structured gel', 'fill', 'broken nail', 'HEMA-free', 'nail art']) {
-    assert.ok(faqTitles.includes(topic.toLowerCase()), topic);
+  for (const topic of ['what can i book', 'price', 'inspiration']) {
+    assert.ok(faqTitles.includes(topic), topic);
   }
+  assert.ok(siteConfig.faqs.length <= 10, 'keep homepage FAQ focused on appointment questions');
   assert.equal(siteConfig.location.streetAddress, null);
 });
