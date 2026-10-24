@@ -1,16 +1,16 @@
 # La La Land Nail Hub launch packet
 
-The website keeps all unapproved fields hidden and remains `noindex` until every launch blocker in `src/data/site.ts` has a verified value.
+The canonical homepage is live and indexable. Unapproved business fields stay hidden. The checklist below records remaining business inputs; it does not describe the current hosting or indexing state. See docs/studio/SITE-REVIEW-FIXES.md for the latest fixes.
 
 ## Booking and contact
 
-- [ ] Booking platform URL
+- [x] Simple call/text request form, popup and private staff workspace
 - [ ] Public fallback email or phone number
-- [ ] Confirmation that the booking platform is ready to accept appointments
+- [ ] Authenticated live enquiry handling and email delivery verification
 
 ## Location and availability
 
-- [ ] Approved city, neighbourhood, or service-area wording
+- [x] Approved Scarborough base and Durham/GTA catchment wording
 - [ ] Address-display preference
 - [ ] Public hours
 - [ ] Parking, accessibility, or arrival details, if applicable
@@ -36,7 +36,7 @@ The website keeps all unapproved fields hidden and remains `noindex` until every
 
 - [ ] Approved Instagram or other public portfolio links
 - [ ] Google Business Profile URL, if active
-- [ ] Approved custom domain
+- [x] lalalandnails.ca deployed on Cloudflare
 - [ ] Plausible domain/site access
 - [ ] Final content and visual approval
 - [ ] Explicit approval for public access and DNS changes

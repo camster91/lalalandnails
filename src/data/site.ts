@@ -95,7 +95,7 @@ export const siteConfig: SiteConfig = {
   provider: {
     name: 'Bianca Ashley',
     role: 'Owner and gel manicurist',
-    bio: 'Bianca Ashley is the owner and gel manicurist behind La La Land Nail Hub.',
+    bio: 'Bianca Ashley is the owner and gel manicurist behind La La Land Nail Hub in Scarborough. You speak with Bianca directly about your nail ideas and appointment, from the first call or text through to your visit.',
     credentials: [],
   },
   location: {
@@ -120,7 +120,7 @@ export const siteConfig: SiteConfig = {
   services: [
     {
       name: 'European manicure',
-      description: 'European manicure appointments in Scarborough with Bianca Ashley. Share your preferred shape, length and finish, then discuss the service, price and time needed before confirming your visit.',
+      description: 'European manicures with Bianca Ashley in Scarborough. Start with the shape, length and finish you love, whether you have a clear reference or need help explaining your ideas.',
       priceDisplay: null,
       duration: null,
       availability: 'By appointment',
@@ -137,12 +137,12 @@ export const siteConfig: SiteConfig = {
     },
     {
       number: '02',
-      title: 'We review your request',
+      title: 'Talk through your nails',
       description: 'Bianca will call or text to discuss your nails and find a time that works.',
     },
     {
       number: '03',
-      title: 'Hear back from La La Land',
+      title: 'Confirm your visit',
       description: 'Agree on the service, price and visit details with Bianca before your appointment is confirmed.',
     },
   ],

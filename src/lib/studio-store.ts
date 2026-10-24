@@ -34,6 +34,7 @@ export async function saveStudioCommand(
           "name",
           "phone",
           "contact_method",
+          "lead_source",
           "preferred_date",
           "preferred_time",
           "notes",
@@ -46,6 +47,7 @@ export async function saveStudioCommand(
           c.name,
           c.phone,
           c.contactMethod,
+          c.source.toLowerCase(),
           "",
           "",
           `Source: ${c.source}\n${c.notes}`,
@@ -336,7 +338,7 @@ export async function studioSnapshot(
     end,
   );
   const attention = await all(
-    "SELECT id,name,phone,email,contact_method contactMethod,notes,status,created_at createdAt,updated_at updatedAt,admin_note adminNote,follow_up_date followUpDate FROM booking_requests WHERE archived_at IS NULL AND (status='pending' OR (follow_up_date<=? AND status NOT IN ('completed','declined','confirmed'))) ORDER BY CASE WHEN follow_up_date<=? THEN 0 ELSE 1 END,created_at DESC LIMIT 10",
+    "SELECT id,name,phone,email,contact_method contactMethod,lead_source leadSource,notes,status,created_at createdAt,updated_at updatedAt,admin_note adminNote,follow_up_date followUpDate FROM booking_requests WHERE archived_at IS NULL AND (status='pending' OR (follow_up_date<=? AND status NOT IN ('completed','declined','confirmed'))) ORDER BY CASE WHEN follow_up_date<=? THEN 0 ELSE 1 END,created_at DESC LIMIT 10",
     date,
     date,
   );

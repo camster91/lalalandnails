@@ -664,3 +664,30 @@ html, body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   .section-photo__frame > img, .hero__media img, .lookbook__image img, .process__visual > img { transform: none !important; will-change: auto; }
 }
+
+/* One form moves into a native dialog, preserving drafts and avoiding duplicate IDs. */
+.booking-form-home { min-width: 0; width: 100%; }
+.booking-dialog { max-width: none; width: min(38rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; border: 1px solid var(--burgundy); border-radius: var(--radius); padding: 0; color: var(--burgundy); background: var(--blush); overscroll-behavior: contain; }
+.booking-dialog::backdrop { background: rgba(36, 2, 4, .72); backdrop-filter: blur(4px); }
+.booking-dialog__header { position: sticky; top: 0; z-index: 1; background: var(--blush); display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding: 1.5rem 1.5rem .5rem; }
+.booking-dialog__header h2 { font-size: clamp(1.6rem, 5vw, 2rem); line-height: 1.15; }
+.booking-dialog__header .eyebrow { font-size: .65rem; margin: 0 0 .5rem; }
+.booking-dialog__close { flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; border: 1px solid currentColor; border-radius: 50%; background: transparent; color: inherit; font: 1.75rem/1 var(--sans); cursor: pointer; }
+.booking-dialog__description { padding: 0 1.5rem; font-size: .9375rem; line-height: 1.5; }
+.booking-dialog .booking-form { max-width: none; padding: 1rem 1.5rem 1.5rem; gap: .8rem; }
+.booking-dialog .booking-form__intro { display: none; }
+.booking-dialog .booking-form textarea { min-height: 5rem; }
+.booking-dialog .booking-form .button { width: 100%; }
+.booking-dialog :focus-visible { outline: 3px solid var(--burgundy); outline-offset: 3px; }
+.booking-modal-open { overflow: hidden; }
+.field-error { color: var(--burgundy); font-size: .875rem; font-weight: 700; line-height: 1.4; }
+.field-error:empty { display: none; }
+.booking-form [aria-invalid="true"] { border: 2px solid var(--burgundy); }
+@media (max-width: 900px) {
+  .request-booking .booking-form-home { grid-row: 1; }
+  .booking-dialog { width: min(38rem, calc(100% - 1rem)); max-height: calc(100dvh - 1rem); }
+}
+
+.chat-dialog input { font-size: 1rem; }
+
+@media (max-width: 480px) { .booking-dialog__header { padding: 1rem 1rem .5rem; } .booking-dialog__description { padding: 0 1rem; } .booking-dialog .booking-form { padding: 1rem; } }

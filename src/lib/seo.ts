@@ -10,7 +10,7 @@ export function isIndexable(site: SiteConfig, url: URL): boolean {
 
 export function buildRobots(site: SiteConfig, url: URL): string {
   if (!isPublicOrigin(site, url)) return 'User-agent: *\nDisallow: /\n';
-  return `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /signin-with-chatgpt\nSitemap: ${site.approvedDomain}/sitemap.xml\n`;
+  return `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /calendar/\nDisallow: /signin-with-chatgpt\nSitemap: ${site.approvedDomain}/sitemap.xml\n`;
 }
 
 export function buildSchema(site: SiteConfig) {
