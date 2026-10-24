@@ -91,6 +91,7 @@ try {
       const menu = page.locator('.menu-toggle');
       await menu.click();
       assert.equal(await menu.getAttribute('aria-expanded'), 'true', size.name + ': menu opens');
+      await page.locator('.site-nav a[href="/services-pricing"]').waitFor({ state: 'visible', timeout: 3000 });
       assert.equal(await page.locator('.site-nav a[href="/services-pricing"]').isVisible(), true, size.name + ': pricing link in menu');
       const navScrollable = await page.locator('.site-nav').evaluate(el =>
         ({ height: el.clientHeight, scrollHeight: el.scrollHeight, overflowY: getComputedStyle(el).overflowY })
