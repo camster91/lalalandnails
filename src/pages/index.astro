@@ -29,12 +29,12 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
         <div class="hero__copy reveal">
           <p class="eyebrow">Scarborough nail studio · By appointment</p>
           <h1 id="hero-title">European manicures.<br /><em>In Scarborough.</em></h1>
-          <p class="hero__intro">Manicure appointments with Bianca Ashley in Scarborough, Toronto. Welcoming clients from Durham Region and across the GTA.</p>
+          <p class="hero__intro">European/Russian-style precision manicures, natural-nail structured gel and refined nail art with Bianca in Scarborough. Welcoming clients from Toronto and Durham Region.</p>
           <div class="hero__actions">
             <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
             <a class="text-link" href="#service">Explore the service <span aria-hidden="true">↘</span></a>
           </div>
-          <p class="hero__reassurance">Choose a two-hour weekday block, then a call or text back. Bianca confirms your service and price.</p>
+          <p class="hero__reassurance">Choose a time, pick your manicure and any extras, then share your details. Bianca confirms the final price and appointment.</p>
         </div>
         <figure class="hero__media reveal">
           <img src="/images/generated/red-1440.webp" srcset="/images/generated/red-720.webp 720w, /images/generated/red-1440.webp 1440w" sizes="(max-width: 900px) 100vw, 50vw" alt="AI-generated burgundy almond manicure on hands resting on ivory linen" width="1440" height="1800" fetchpriority="high" />
@@ -71,11 +71,11 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
             {locationLabel && <div><dt>Location</dt><dd>{locationLabel}</dd></div>}
           </dl>
           <div class="service__decision">
-            <h3>Existing gel or extensions?</h3>
-            <p>Tell Bianca what is currently on your nails. Removal, maintenance and a new set may need different appointment arrangements.</p>
-            <p>Ask about the price, what is included and how long to allow. These details are agreed before your appointment is confirmed.</p>
-            <a class="button" href="#booking" data-analytics-events="booking_request_view">Ask about your manicure</a>
-            <a class="text-link" href="#faq">Read the appointment FAQs <span aria-hidden="true">↗</span></a>
+            <h3>Which manicure is right for you?</h3>
+            <p><strong>European dry:</strong> detailed shaping and dry preparation without polish. <strong>European gel:</strong> the same precision with gel colour. <strong>Structured gel:</strong> a builder-gel overlay for your natural nails, finished with solid colour.</p>
+            <p>Already wearing gel, returning for a fill or need one nail fixed? These options have their own prices and may require an assessment.</p>
+            <a class="button" href="/services-pricing">Compare services &amp; pricing</a>
+            <a class="text-link" href="#booking" data-analytics-events="booking_request_view">Request an appointment <span aria-hidden="true">↗</span></a>
           </div>
           {service.inclusions.length > 0 && (
             <div class="service__detail-list">
