@@ -1,3 +1,4 @@
+import { normalizePhone } from "./phone.ts";
 export class StudioError extends Error {
   status: number;
   constructor(message: string, status = 400) {
@@ -32,10 +33,7 @@ export const uuid = (v: unknown): string =>
     ? String(v)
     : invalid("Invalid record identifier.");
 export function phoneKey(value: string): string {
-  const digits = value.replace(/[\s()+.\-]/g, "");
-  if (!/^(?:1)?[2-9]\d{9}$/.test(digits))
-    invalid("Enter a Canadian or US phone number, including area code.");
-  return "+1" + digits.slice(-10);
+  return normalizePhone(value) ?? invalid("Enter a Canadian or US phone number, including area code.");
 }
 export function torontoInstant(date: string, time: string): number {
   if (

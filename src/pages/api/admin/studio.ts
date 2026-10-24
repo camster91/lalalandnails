@@ -61,8 +61,10 @@ async function handle(request: Request) {
         )
         .bind(torontoDate())
         .first();
+      const sources = await getD1().prepare("SELECT COALESCE(lead_source,'unknown') source,COUNT(*) total,SUM(CASE WHEN EXISTS(SELECT 1 FROM studio_appointments a WHERE a.lead_id=b.id AND a.status!='cancelled') THEN 1 ELSE 0 END) converted FROM booking_requests b GROUP BY COALESCE(lead_source,'unknown') ORDER BY total DESC").all();
       return json({
         ...data,
+        sources: sources.results,
         counts,
         staff: access.user.email,
         integrations: {

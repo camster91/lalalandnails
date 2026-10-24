@@ -1,17 +1,20 @@
 ---
 import SectionPhoto from './SectionPhoto.astro';
+import { siteConfig } from '../data/site';
 ---
 <section class="request-booking section" id="booking" aria-labelledby="request-title">
   <div class="request-booking__intro reveal">
     <p class="eyebrow">Request an appointment</p>
     <h2 id="request-title">Your next manicure <em>starts here.</em></h2>
-    <p>Leave your number and choose a call or text back. We’ll help you find an appointment that works.</p>
+    <p>A shape you love. A colour you keep saving. Tell Bianca what you have in mind.</p>
 
-    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>Let’s find your appointment.</strong><br />No need to choose a day now. Bianca will follow up to discuss availability and confirm the details.</p></div>
+    <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>One conversation to get started.</strong><br />No day or time to choose now. Use the form for an appointment request or a question about your nails.</p></div>
     <SectionPhoto photo="neutral" caption="Your next manicure starts with a conversation. " aspect="wide" />
   </div>
 
-  <form class="booking-form reveal" data-booking-form action="/api/bookings" method="post" novalidate>
+  <div class="booking-form-home" data-booking-home>
+  <form class="booking-form" data-booking-form action="/api/bookings" method="post" novalidate>
+    <input type="hidden" name="leadSource" value="unknown" />
     <p class="booking-form__intro">A request, then a conversation. No day or time to choose now. Fields marked * are required.</p>
     <div class="booking-form__honeypot" aria-hidden="true">
       <label>Website <input name="website" tabindex="-1" autocomplete="off" /></label>
@@ -19,22 +22,26 @@ import SectionPhoto from './SectionPhoto.astro';
 
     <label>
       Full name <span aria-hidden="true">*</span>
-      <input name="name" autocomplete="name" maxlength="80" required />
+      <input name="name" autocomplete="name" minlength="2" maxlength="80" required aria-describedby="name-error" />
+      <span id="name-error" class="field-error" data-field-error="name"></span>
     </label>
 
     <label>
       Phone number <span aria-hidden="true">*</span>
-      <input name="phone" type="tel" autocomplete="tel" maxlength="40" required aria-describedby="contact-hint" />
+      <input name="phone" type="tel" autocomplete="tel" maxlength="40" required aria-describedby="contact-hint phone-error" />
     </label>
-    <p class="field-hint" id="contact-hint">Use a mobile number if you’d like a text back.</p>
+    <span id="phone-error" class="field-error" data-field-error="phone"></span>
+    <p class="field-hint" id="contact-hint">Canadian or US number, including area code. Use a mobile number for a text back.</p>
 
     <label>
       How should we get back to you? <span aria-hidden="true">*</span>
-      <select name="contactMethod" required>
+      <select name="contactMethod" required aria-describedby="contactMethod-error">
         <option value="text">Text me</option>
         <option value="call">Call me</option>
       </select>
     </label>
+
+    <span id="contactMethod-error" class="field-error" data-field-error="contactMethod"></span>
 
     <label>
       What do you have in mind? <span class="field-optional">Optional</span>
@@ -42,71 +49,30 @@ import SectionPhoto from './SectionPhoto.astro';
     </label>
 
     <label class="booking-form__consent">
-      <input name="consent" type="checkbox" required />
+      <input name="consent" type="checkbox" required aria-describedby="consent-error" />
       <span>I agree that La La Land may use these details to respond to this appointment request. <span aria-hidden="true">*</span></span>
     </label>
 
+    <span id="consent-error" class="field-error" data-field-error="consent"></span>
     <p class="field-hint">Please keep notes appointment-related and leave out medical information.</p>
     <button class="button button--cream" type="submit">Request a call or text</button>
     <p class="field-hint">Your appointment is confirmed only after you agree on the details with Bianca.</p>
+    <p class="field-hint">Read our <a href="/privacy">privacy notice</a>.</p>
+    {siteConfig.contact && <p class="field-hint">Prefer to contact us directly? <a href={siteConfig.contact.href}>{siteConfig.contact.label}</a></p>}
     <p class="booking-form__status" data-booking-status role="status" aria-live="polite"></p>
   </form>
+  </div>
 </section>
+<dialog id="booking-dialog" class="booking-dialog" data-booking-dialog aria-labelledby="booking-dialog-title" aria-describedby="booking-dialog-description">
+  <div class="booking-dialog__header">
+    <div><p class="eyebrow">La La Land Nail Hub</p><h2 id="booking-dialog-title">Request an appointment</h2></div>
+    <button type="button" class="booking-dialog__close" data-booking-close aria-label="Close appointment request">×</button>
+  </div>
+  <p id="booking-dialog-description" class="booking-dialog__description">Leave your number. Bianca will call or text to discuss your manicure.</p>
+  <div data-booking-dialog-body></div>
+</dialog>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
-  const status = form?.querySelector<HTMLElement>('[data-booking-status]');
-  let started = false;
-  const trackStart = () => {
-    if (started) return;
-    started = true;
-    window.plausible?.('booking_request_started');
-  };
-  form?.addEventListener('input', trackStart);
-  form?.addEventListener('change', trackStart);
-  if (form && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      window.plausible?.('booking_form_viewed');
-      observer.disconnect();
-    }, { threshold: .25 });
-    observer.observe(form);
-  }
-
-  form?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const phone = form.elements.namedItem('phone') as HTMLInputElement | null;
-    const validPhone = (phone?.value.replace(/\D/g, '').length ?? 0) >= 10 && (phone?.value.replace(/\D/g, '').length ?? 0) <= 15;
-    phone?.setAttribute('aria-invalid', String(!validPhone));
-    if (!validPhone) {
-      window.plausible?.('booking_validation_error');
-      if (status) status.textContent = 'Enter a valid phone number so we can call or text you.';
-      phone?.focus();
-      return;
-    }
-    if (!form.reportValidity()) {
-      window.plausible?.('booking_validation_error');
-      return;
-    }
-
-    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-    if (submit) submit.disabled = true;
-    if (status) status.textContent = 'Sending your request…';
-
-    try {
-      const response = await fetch(form.action, { method: 'POST', body: new FormData(form) });
-      const result = await response.json() as { ok?: boolean; message?: string; errors?: Record<string, string> };
-      if (!response.ok || !result.ok) throw new Error(result.message || Object.values(result.errors ?? {})[0] || 'The request could not be sent.');
-
-      form.reset();
-      started = false;
-      if (status) status.textContent = result.message ?? 'Your request has been received.';
-      window.plausible?.('booking_request_submitted');
-    } catch (error) {
-      window.plausible?.('booking_request_failed');
-      if (status) status.textContent = error instanceof Error ? error.message : 'The request could not be sent.';
-    } finally {
-      if (submit) submit.disabled = false;
-    }
-  });
+  import { startBooking } from '../scripts/booking';
+  startBooking();
 </script>

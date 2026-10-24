@@ -2,7 +2,9 @@
 
 Astro website for a Scarborough nail studio serving clients across the GTA and Durham Region.
 
-Current preview: https://lala-land-nails.cameron91.chatgpt.site
+Live site: https://lalalandnails.ca/
+
+Staff workspace: https://lalalandnails.ca/admin
 
 ## Development
 
@@ -22,27 +24,30 @@ npm run build
 
 - Responsive homepage with full-width sections and content contained to 1440px.
 - Sliding inspiration gallery, section motion and reduced-motion support.
-- Local service content, comparisons, visit guidance and eight FAQs.
+- Local service content, visit guidance and FAQs driven by verified site configuration.
 - Booking request API and authenticated admin interface backed by Cloudflare D1.
 - Optional concierge and analytics configured through environment variables and verified settings.
-- Metadata, structured data, robots and sitemap routes controlled by launch-readiness settings.
+- Metadata, structured data, robots and sitemap routes with explicit public-route indexing. The canonical homepage is indexable; staff, API, preview and privacy routes remain noindex.
+- Appointment CTAs open a native request dialog, with a single shared form and inline fallback.
+- Private calendar subscription feed with token rotation/revocation; no Google OAuth required.
+- Privacy notice and general lead-source labels in CRM reports.
 
 ## Configuration and publishing
 
-Edit verified business facts in `src/data/site.ts`. Copy `.env.example` to a local environment file when configuring optional integrations. Keep keys and local database files out of git. Cloudflare D1 must be bound as `DB`; the local Wrangler configuration contains a placeholder database ID. Apply the SQL migration in `drizzle/` to the intended environment as part of deployment setup.
+Edit verified business facts in `src/data/site.ts`. Copy `.env.example` to a local environment file when configuring optional integrations. Keep keys and local database files out of git. Cloudflare D1 must be bound as `DB`; the Wrangler configuration identifies the intended binding. Verify the target account/database before applying any migration.
 
-The current website is hosted through Sites. This repository is a source snapshot and has no automatic deployment workflow. Hosting credentials, production database records and environment secrets are not included.
+The live site is hosted on Cloudflare Workers. Cloudflare Workers Builds deploys the GitHub main branch using npm run build and npx wrangler deploy. Production secrets and database records are not stored in git. The initializer in src/lib/db-schema.ts applies additive enquiry schema changes; studio tables initialize separately.
 
 ## Photography and assets
 
-Current homepage photography uses real Pexels images as inspiration, not the studio's client portfolio. See `public/images/photography/CREDITS.md` for source attribution. Font licence files are included in `public/fonts/`.
+Current homepage imagery is AI-generated inspiration, clearly labelled; it is not client work, a studio photograph or a verified result. Earlier Pexels assets retain their attribution in public/images/photography/CREDITS.md. Font licence files are included in public/fonts/.
 
-Earlier generated campaign assets remain in `asset-pack/`, `source-assets/` and the older image directories for project history; they are not the current homepage photography.
+Earlier assets remain in asset-pack/, source-assets/ and older image directories for project history.
 
 ## Review and launch status
 
 Read `docs/Lala-Land-Growth-Review.html`, `AUDIENCE_COPY_AUDIT.md` and `LAUNCH_PACKET.md` before launch. The growth review is an evidence-based readiness assessment, not a ranking or lead-generation guarantee.
 
-The preview currently uses a noindex gate. Confirm pricing, appointment duration, inclusions, contact details, visit logistics, approved domain, authentic portfolio and client proof. Verify booking delivery, notifications and analytics before turning on indexing or paid acquisition.
+The canonical homepage is public and indexable. Remaining business inputs and verification limits are tracked in docs/studio/SITE-REVIEW-FIXES.md. The older growth review and original Sites snapshot describe historical states; current code and release notes take precedence.
 
 Snapshot source: Sites commit `b1019658c011c3bc81944760b833c02468be97c0` (23 October 2026).

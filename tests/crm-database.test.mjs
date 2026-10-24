@@ -26,7 +26,7 @@ test('migration preserves old enquiries, adds nullable CRM fields, and can run t
   await initializeDatabase(d1);
   const row = sqlite.prepare('SELECT * FROM booking_requests').get();
   assert.equal(row.name, 'Existing enquiry');
-  for(const column of ['contact_method','follow_up_date','archived_at']) assert.equal(row[column], null);
+  for(const column of ['contact_method','follow_up_date','archived_at','lead_source']) assert.equal(row[column], null);
   sqlite.close();
 });
 

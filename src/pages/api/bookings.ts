@@ -3,6 +3,10 @@ import { env } from 'cloudflare:workers';
 import { bookingRequests } from '../../../db/schema';
 import { ensureDatabase, getD1, getDb } from '../../lib/db';
 
+import { normalizePhone, recentPhoneSql } from '../../lib/phone';
+
+import { leadSource } from '../../lib/lead-source';
+
 const CONTACT_METHODS = new Set(['call', 'text']);
 
 export const POST: APIRoute = async ({ request }) => {
@@ -15,24 +19,22 @@ export const POST: APIRoute = async ({ request }) => {
     if (String(input.website ?? '').trim()) return json({ ok: true }, 202);
 
     const name = clean(input.name, 80);
-    const phone = clean(input.phone, 40);
+    const phone = normalizePhone(clean(input.phone, 40));
     const contactMethod = clean(input.contactMethod, 10);
     const notes = clean(input.notes, 600);
     const consent = input.consent === true || input.consent === 'on' || input.consent === 'true';
 
     const errors: Record<string, string> = {};
     if (name.length < 2) errors.name = 'Please enter your name.';
-    const phoneDigits = phone.replace(/\D/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) errors.phone = 'Please enter a valid phone number.';
+    if (!phone) errors.phone = 'Enter a Canadian or US phone number, including area code.';
     if (!CONTACT_METHODS.has(contactMethod)) errors.contactMethod = 'Choose a call or text back.';
     if (!consent) errors.consent = 'Consent is required so La La Land can respond.';
 
     if (Object.keys(errors).length > 0) return json({ ok: false, errors }, 400);
 
     await ensureDatabase();
-    const duplicate = await getD1().prepare(`SELECT id FROM booking_requests
-      WHERE created_at > ? AND ((email IS NOT NULL AND email = ?) OR (phone IS NOT NULL AND phone = ?))
-      LIMIT 1`).bind(Date.now() - 10 * 60 * 1000, '__none__', phone).first();
+    const duplicate = await getD1().prepare(recentPhoneSql)
+      .bind(Date.now() - 10 * 60 * 1000, phone!.slice(-10)).first();
 
     if (duplicate) {
       return json({ ok: false, message: 'A recent request already uses those contact details. Please wait before trying again.' }, 429);
@@ -49,6 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
       email: null,
       phone: phone || null,
       contactMethod,
+      leadSource: leadSource(input.leadSource),
       preferredDate: '',
       preferredTime: '',
       notes,
