@@ -35,7 +35,7 @@ const onPricing = Astro.url.pathname === '/services-pricing';
   </nav>
 </header>
 
-<a class="mobile-booking" href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">
+<a class:list={['mobile-booking', { 'is-hidden': onPricing }]} href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">
   Request an appointment
 </a>
 
@@ -92,21 +92,23 @@ const onPricing = Astro.url.pathname === '/services-pricing';
 
   const header = document.querySelector<HTMLElement>('[data-header]');
   const mobileBooking = document.querySelector<HTMLElement>('.mobile-booking');
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const booking = document.querySelector<HTMLElement>('#booking');
+  const heroAndBookingTargets = Array.from(document.querySelectorAll<HTMLElement>(
+    '.hero, .pricing-hero, #booking, .pricing-cta',
+  ));
   const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
   updateHeader();
   window.addEventListener('scroll', updateHeader, { passive: true });
 
-  if (mobileBooking && hero && booking && 'IntersectionObserver' in window) {
+  // Hide the duplicate floating CTA while the first or final booking CTA is
+  // already available. The pricing page has different section names to home.
+  if (mobileBooking && heroAndBookingTargets.length && 'IntersectionObserver' in window) {
     const visible = new Set<Element>();
     const updateBooking = () => mobileBooking.classList.toggle('is-hidden', visible.size > 0);
     const bookingObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target));
       updateBooking();
     }, { threshold: .08 });
-    bookingObserver.observe(hero);
-    bookingObserver.observe(booking);
+    heroAndBookingTargets.forEach((target) => bookingObserver.observe(target));
   }
 </script>
 
