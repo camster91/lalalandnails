@@ -34,3 +34,9 @@ jobs:
         run: npm run check
       - name: Build Astro/Cloudflare output without deployment
         run: npm run build
+      - name: Install headless browser QA dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Check pricing and booking links on responsive viewports
+        run: node scripts/qa-pricing-browser.mjs
