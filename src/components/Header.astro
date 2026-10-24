@@ -93,7 +93,7 @@ const onPricing = Astro.url.pathname === '/services-pricing';
   const header = document.querySelector<HTMLElement>('[data-header]');
   const mobileBooking = document.querySelector<HTMLElement>('.mobile-booking');
   const heroAndBookingTargets = Array.from(document.querySelectorAll<HTMLElement>(
-    '.hero, .pricing-hero, #booking, .pricing-cta',
+    '.hero, .pricing-hero, #pricing, #booking, .pricing-cta',
   ));
   const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
   updateHeader();
