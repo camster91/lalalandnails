@@ -3,6 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../data/site';
+import NailLengthIllustration from '../components/NailLengthIllustration.astro';
+import NailArtIllustration from '../components/NailArtIllustration.astro';
 import { pricingDraft as prices, displayPrice } from '../data/pricing';
 
 const structured = prices.manicures.find((service) => service.id === 'structured')!;
@@ -95,12 +97,14 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
         <div class="pricing-length-grid">
           {prices.lengths.map((item) => (
             <article class="pricing-length">
+              <NailLengthIllustration length={item.name} />
               <h3>{item.name}</h3>
               <strong>{item.addOn === null ? 'Consultation' : item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn)}</strong>
               <p>{item.detail}</p>
             </article>
           ))}
         </div>
+        <p class="pricing-caption">These are illustrated length references, not photos or exact measurements. Free-edge length and structural suitability are assessed individually.</p>
         <div class="pricing-shapes"><strong>Included nail shapes (when suitable):</strong><p>{prices.shapes.join(' · ')}</p></div>
       </section>
 
@@ -110,19 +114,20 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
           <h2 id="art-title">Nail art <em>tiers.</em></h2>
           <p>Choose one tier based on complexity across the full set. Send an inspiration photo when requesting detailed art so we can confirm the right price and time.</p>
         </div>
-        <div class="pricing-art-layout">
-          <div class="pricing-list" role="list">
-            {prices.artTiers.map((tier) => (
-              <article class="pricing-list__item" role="listitem">
-                <div><h3>{tier.name}</h3><p>{tier.detail}</p></div>
+        <div class="pricing-art-cards">
+          {prices.artTiers.map((tier, index) => (
+            <article class="pricing-art-card">
+              <figure>
+                <NailArtIllustration tier={(index + 1) as 1 | 2 | 3 | 4} />
+                <figcaption>Illustrative design motifs · Not Bianca’s client work</figcaption>
+              </figure>
+              <div class="pricing-art-card__title">
+                <h3>{tier.name}</h3>
                 <strong>+{displayPrice(tier.addOn)}{'startingAt' in tier ? '+' : ''}</strong>
-              </article>
-            ))}
-          </div>
-          <figure class="pricing-art-photo">
-            <img src="/images/generated/colour-1440.webp" srcset="/images/generated/colour-720.webp 720w, /images/generated/colour-1440.webp 1440w" sizes="(max-width: 800px) 100vw, 35vw" alt="AI-generated rose manicure inspiration on a hand" width="1440" height="960" loading="lazy" />
-            <figcaption>AI inspiration only · Design-tier example photos to be approved</figcaption>
-          </figure>
+              </div>
+              <p>{tier.detail}</p>
+            </article>
+          ))}
         </div>
         <p class="pricing-caption">French tips, chrome or similar effects already included in your selected art tier are not charged again separately.</p>
       </section>
@@ -163,6 +168,39 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
         </div>
       </section>
 
+      <section class="pricing-section pricing-section--faq" aria-labelledby="pricing-faq-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">Questions before booking</p>
+          <h2 id="pricing-faq-title">Good to <em>know.</em></h2>
+        </div>
+        <div class="pricing-faq">
+          <details>
+            <summary>Should I book a fill or a new structured gel manicure?</summary>
+            <p>A fill maintains suitable existing builder gel and rebalances the grown-out structure. If you have extensive lifting, damage or unknown product, Bianca may recommend removal and a new application instead.</p>
+          </details>
+          <details>
+            <summary>How often will I need structured gel maintenance?</summary>
+            <p>Many clients return in approximately two to four weeks. Nail growth, length, lifestyle, lifting and the product’s condition determine when maintenance is appropriate. Contact the studio sooner if you notice lifting or damage.</p>
+          </details>
+          <details>
+            <summary>Does routine fill pricing include removal of the old gel?</summary>
+            <p>Routine preparation and removal of lifted or grown-out compatible product from your existing La La Land structured set are included in the fill. Full standalone removal and work from another technician may require a different service.</p>
+          </details>
+          <details>
+            <summary>Can you repair a broken nail?</summary>
+            <p>Minor product repairs and suitable cosmetic free-edge reconstructions may be available per nail. Please describe the issue when requesting your appointment; no gel work is performed over painful, bleeding, infected or significantly separated nails.</p>
+          </details>
+          <details>
+            <summary>Are HEMA-free gels allergy-free?</summary>
+            <p>No. HEMA-free products can still contain other acrylates and may cause reactions. Specific product formulations must be verified; correct application, curing and minimizing skin exposure remain important.</p>
+          </details>
+          <details>
+            <summary>Is my appointment confirmed when I choose a time?</summary>
+            <p>No. You request a two-hour block, then Bianca contacts you to confirm the service, design, final price and visit details. Detailed designs may require a different amount of time.</p>
+          </details>
+        </div>
+      </section>
+
       <section class="pricing-cta" aria-labelledby="pricing-cta-title">
         <p class="eyebrow">Your next manicure</p>
         <h2 id="pricing-cta-title">Have a look <em>in mind?</em></h2>
@@ -186,7 +224,7 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
   .pricing-hero__fine { font-size: .85rem !important; }
   .pricing-hero__photo { margin: 1rem 1rem 1rem 0; overflow: hidden; border-radius: var(--radius); position: relative; }
   .pricing-hero__photo img { width: 100%; height: 100%; object-fit: cover; }
-  .pricing-hero__photo figcaption, .pricing-art-photo figcaption { position: absolute; bottom: 1rem; left: 1rem; right: 1rem; width: max-content; max-width: calc(100% - 2rem); padding: .5rem .75rem; border-radius: 1rem; background: rgba(51,5,5,.9); color: var(--cream); font-size: .75rem; }
+  .pricing-hero__photo figcaption { position: absolute; bottom: 1rem; left: 1rem; right: 1rem; width: max-content; max-width: calc(100% - 2rem); padding: .5rem .75rem; border-radius: 1rem; background: rgba(51,5,5,.9); color: var(--cream); font-size: .75rem; }
   .pricing-proposal { padding: 1.1rem var(--page-gutter); background: #fff0c8; color: var(--burgundy); line-height: 1.6; border-block: 2px solid #7d395d; }
   .pricing-index { display: flex; flex-wrap: wrap; gap: .65rem; padding: 1.4rem var(--page-gutter); border-bottom: 1px solid rgba(51,5,5,.2); }
   .pricing-index a { display: inline-flex; align-items: center; padding: .65rem 1rem; border: 1px solid rgba(51,5,5,.3); border-radius: 999px; font-size: .85rem; font-weight: 600; text-decoration: none; }
@@ -212,15 +250,22 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
   .pricing-list__item p { margin: 0; max-width: 45rem; line-height: 1.6; }
   .pricing-list__item strong { white-space: nowrap; font-family: var(--serif); font-size: 1.6rem; font-weight: 400; }
   .pricing-length-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1rem; }
-  .pricing-length { background: var(--blush-light); border-radius: var(--radius); padding: 1.5rem; }
+  .pricing-length { background: var(--blush-light); border-radius: var(--radius); padding: 1.5rem; display:flex; flex-direction:column; }
+  .pricing-length :global(svg) { margin-bottom: 1.25rem; }
+  .pricing-length p { margin-bottom:0; }
   .pricing-length h3 { margin-bottom: 1rem; }
   .pricing-length strong { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; }
   .pricing-length p { line-height: 1.6; }
   .pricing-shapes { margin-top: 2rem; line-height: 1.7; }
   .pricing-shapes p { margin: .35rem 0 0; }
-  .pricing-art-layout { display: grid; grid-template-columns: 1.35fr .7fr; gap: 2rem; }
-  .pricing-art-photo { min-height: 30rem; margin: 0; position: relative; overflow: hidden; border-radius: var(--radius); }
-  .pricing-art-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .pricing-art-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .pricing-art-card { min-width: 0; border: 1px solid rgba(51,5,5,.18); border-radius: var(--radius); padding: clamp(1rem, 2vw, 1.6rem); background: var(--paper); }
+  .pricing-art-card figure { margin: 0; }
+  .pricing-art-card figcaption { margin: .7rem 0 0; color: #623947; font-size: .77rem; line-height: 1.5; }
+  .pricing-art-card__title { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap:wrap; gap: .7rem; margin-top: 1.3rem; }
+  .pricing-art-card__title h3 { font-size: 1.15rem; line-height: 1.5; }
+  .pricing-art-card__title strong { font-family: var(--serif); font-size: 1.85rem; font-weight: 400; white-space: nowrap; }
+  .pricing-art-card p { line-height: 1.65; margin-bottom: 0; }
   .pricing-card-grid--repairs { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .pricing-section--example { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: var(--cream); }
   .pricing-example__receipt { align-self: center; padding: clamp(1.4rem,3vw,2.5rem); border-radius: var(--radius); background: var(--paper); }
@@ -230,6 +275,12 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
   .pricing-example__receipt dt, .pricing-example__receipt dd { margin: 0; }
   .pricing-example__total { font-weight: 700; font-size: 1.2rem; }
   .pricing-example__receipt p { margin: 1rem 0 0; font-size: .83rem; line-height: 1.6; }
+  .pricing-section--faq { background: var(--paper); }
+  .pricing-faq { max-width: 60rem; }
+  .pricing-faq details { border-top: 1px solid rgba(51,5,5,.23); }
+  .pricing-faq details:last-child { border-bottom: 1px solid rgba(51,5,5,.23); }
+  .pricing-faq summary { cursor: pointer; min-height: 3.25rem; padding: 1.15rem 1rem 1.15rem 0; font-weight: 700; font-size: 1.05rem; line-height: 1.45; }
+  .pricing-faq details p { margin: 0; padding: 0 1.5rem 1.5rem 0; max-width: 50rem; line-height: 1.7; }
   .pricing-cta { padding: clamp(5rem,9vw,9rem) var(--page-gutter); text-align: center; color: var(--cream); background: var(--burgundy); }
   .pricing-cta h2 { font-size: clamp(3rem, 6vw, 6rem); }
   .pricing-cta p { max-width: 43rem; margin: 1.5rem auto; line-height: 1.75; }
@@ -240,12 +291,11 @@ const example = structured.price + (prices.lengths[1].addOn ?? 0) + prices.artTi
     .pricing-hero__photo { min-height: 23rem; margin: 0 1rem 1rem; }
     .pricing-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .pricing-length-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .pricing-art-layout, .pricing-section--example { grid-template-columns: 1fr; }
-    .pricing-art-photo { min-height: 18rem; max-height: 24rem; }
+    .pricing-section--example { grid-template-columns: 1fr; }
   }
   @media(max-width: 600px) {
     .pricing-hero__copy { padding-top: 5rem; }
-    .pricing-card-grid, .pricing-card-grid--repairs, .pricing-length-grid { grid-template-columns: 1fr; }
+    .pricing-card-grid, .pricing-card-grid--repairs, .pricing-length-grid, .pricing-art-cards { grid-template-columns: 1fr; }
     .pricing-card__top { gap: .5rem; }
     .pricing-card__top strong { font-size: 1.75rem; }
     .pricing-index { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
