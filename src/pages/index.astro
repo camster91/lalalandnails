@@ -11,6 +11,7 @@ import VisitGuide from '../components/VisitGuide.astro';
 import LocalSection from '../components/LocalSection.astro';
 import MotionExperience from '../components/MotionExperience.astro';
 import SectionPhoto from '../components/SectionPhoto.astro';
+import PricingTeaser from '../components/PricingTeaser.astro';
 import { env } from 'cloudflare:workers';
 import { approvedReviews, siteConfig } from '../data/site';
 
@@ -83,6 +84,8 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
           )}
         </div>
       </section>
+
+      <PricingTeaser />
 
       <VisitGuide />
 
