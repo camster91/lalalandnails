@@ -1,9 +1,12 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { bookingRequests } from '../../../db/schema';
-import { ensureDatabase, getD1, getDb } from '../../lib/db';
+import { getD1 } from '../../lib/db';
+import { studioReady } from '../../lib/studio-db';
+import { requestWindow,saveTimedRequest,BookingSlotError } from '../../lib/booking-availability';
 
 import { normalizePhone, recentPhoneSql } from '../../lib/phone';
+
+import { allowBookingRequest } from '../../lib/booking-rate-limit';
 
 import { leadSource } from '../../lib/lead-source';
 
@@ -11,6 +14,7 @@ const CONTACT_METHODS = new Set(['call', 'text']);
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    if(Number(request.headers.get('content-length')||0)>16384)return json({ok:false,message:'Please shorten your request.'},413);
     const contentType = request.headers.get('content-type') ?? '';
     const input = contentType.includes('application/json')
       ? await request.json() as Record<string, unknown>
@@ -30,9 +34,14 @@ export const POST: APIRoute = async ({ request }) => {
     if (!CONTACT_METHODS.has(contactMethod)) errors.contactMethod = 'Choose a call or text back.';
     if (!consent) errors.consent = 'Consent is required so La La Land can respond.';
 
+    const preferredDate=clean(input.preferredDate,10), preferredTime=clean(input.preferredTime,5);
+    try {requestWindow(preferredDate,preferredTime);} catch(error) {if(error instanceof BookingSlotError)errors[error.field]=error.message;else throw error;}
     if (Object.keys(errors).length > 0) return json({ ok: false, errors }, 400);
 
-    await ensureDatabase();
+    await studioReady();
+    const address=request.headers.get('CF-Connecting-IP') || (import.meta.env.DEV?'local-preview':null);
+    if(!address)return json({ok:false,message:'Please try again shortly.'},503);
+    if(!await allowBookingRequest(getD1(),address))return json({ok:false,message:'Too many requests from this connection today. Please try again tomorrow.'},429);
     const duplicate = await getD1().prepare(recentPhoneSql)
       .bind(Date.now() - 10 * 60 * 1000, phone!.slice(-10)).first();
 
@@ -41,25 +50,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const now = Date.now();
-    const id = crypto.randomUUID();
-
-    await getDb().insert(bookingRequests).values({
-      id,
-      createdAt: now,
-      updatedAt: now,
-      name,
-      email: null,
-      phone: phone || null,
-      contactMethod,
-      leadSource: leadSource(input.leadSource),
-      preferredDate: '',
-      preferredTime: '',
-      notes,
-      serviceSlug: 'european-manicure',
-      status: 'pending',
-      adminNote: '',
-      consentAt: now,
-    });
+    const saved=await saveTimedRequest(getD1(),{name,phone:phone!,contactMethod,notes,leadSource:leadSource(input.leadSource),preferredDate,preferredTime},now);
+    const id=saved.id;
 
     // Save the request first so an email outage cannot lose a client's enquiry.
     try {
@@ -67,12 +59,13 @@ export const POST: APIRoute = async ({ request }) => {
       await env.BOOKING_EMAIL.send({
         from: { email: 'requests@lalalandnails.ca', name: 'La La Land Nail Hub' },
         to: 'bianca@ashbi.ca',
-        subject: `New La La Land ${contactMethod === 'text' ? 'text' : 'call'}-back request`,
+        subject: `New La La Land time request · ${contactMethod === 'text' ? 'text' : 'call'}-back request`,
         text: [
           'A client has requested a European manicure appointment.',
           '',
           `Name: ${name}`,
           `Phone: ${phone}`,
+          `Requested block: ${preferredDate} at ${preferredTime}, 2 hours (America/Toronto)`,
           `Reply by: ${contactMethod === 'text' ? 'Text message' : 'Phone call'}`,
           `Message: ${notes || 'No message provided.'}`,
           '',
@@ -87,9 +80,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({
       ok: true,
       id,
-      message: `Thanks! Bianca will ${contactMethod === 'text' ? 'text' : 'call'} you to discuss your appointment. Your appointment is confirmed after you agree on the details.`,
+      message: `Your two-hour block on ${preferredDate} at ${preferredTime} (Toronto time) is reserved for review. Bianca will ${contactMethod === 'text' ? 'text' : 'call'} you. Your appointment is confirmed only after you agree on the details.`,
     }, 201);
   } catch (error) {
+    if(error instanceof BookingSlotError)return json({ok:false,errors:{[error.field]:error.message}},409);
     console.error('booking_request_failed', error instanceof Error ? error.message : 'unknown');
     return json({ ok: false, message: 'The request could not be sent. Please try again shortly.' }, 500);
   }

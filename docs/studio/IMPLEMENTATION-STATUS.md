@@ -16,7 +16,7 @@ The selected direction is the first displayed mobile mockup (Studio Today). This
 - Manual payment records; monthly completed booking value and separately recorded payments. Historic appointment prices remain stable after service edits.
 - Private JSON export, staff activity log and recovery of archived records. Export is not a database backup or a verified restore.
 - Development-only sample preview and side-by-side reference comparison. Production preview pages return 404 and production JavaScript contains no sample-client fixtures.
-- 27 Node tests, Astro type check (zero errors/warnings/hints), production build, and production dependency audit (zero known vulnerabilities).
+- 41 Node tests, Astro type check (zero errors/warnings/hints), production build, and production dependency audit (zero known vulnerabilities).
 
 ## Completed but awaiting live verification
 
@@ -28,7 +28,7 @@ The selected direction is the first displayed mobile mockup (Studio Today). This
 | Capability | Dependency and remaining work |
 | --- | --- |
 | Calendar subscription | Implemented: Settings → Manage calendar feed → Create private link. Add the URL in Google Calendar on desktop under Other calendars → From URL. Calendar apps refresh on their own schedules. Rotation revokes the old link; disabling stops future reads. |
-| Public online booking | Confirm salon hours, advance notice, cancellation rules and final prices/durations. Implement public availability, reservation lifecycle and anti-abuse protection before enabling. Existing call/text enquiry form is preserved. |
+| Public appointment requests | Implemented: two-hour blocks, weekdays 10–15 Toronto time, next 90 days, one request/appointment per day. Start times 10:00/11:00/12:00/13:00. Submission holds the whole day until staff confirm or decline. Prices, service scope and visit details are agreed by call/text before confirmation. |
 | Stripe deposits/refunds | Salon Stripe connection, approved deposit/refund rules, webhook verification and reconciliation. Manual payment records do not call Stripe. |
 | Transactional reminders | Verified sending service that can deliver to clients, approved templates and delivery/retry records. Existing enquiry forwarding to Bianca is a separate flow requiring delivery verification. |
 | SMS | Owner-selected provider, billing approval and consent rules. Call/text links open the staff device; they do not send automatically. |
@@ -38,6 +38,14 @@ The selected direction is the first displayed mobile mockup (Studio Today). This
 
 ## Deployment and rollback
 
-Public homepage, lead capture and SEO are outside the UI change. New tables are additive and created only following authenticated staff access. Revert the focused application change to roll back; preserve the new tables and Access guard. Never restore the earlier identity-header authentication.
+The public request calendar initializes the additive availability schema without exposing staff records. Staff mutations remain Access protected. Revert the focused application change to roll back; preserve the new tables and Access guard. Never restore the earlier identity-header authentication.
 
-Private calendar feed: includes appointments and blocked time, with stable IDs, UTC instants, revision metadata and cancelled events. Client names, contact details, notes and block labels are excluded. Only a SHA-256 token digest is stored. This is one-way subscription, not two-way calendar editing. Old downloaded copies cannot be remotely erased.
+Private calendar feed: includes tentative requested blocks, appointments and blocked time, with stable IDs, UTC instants, revision metadata and cancelled events. Client names, contact details, notes and block labels are excluded. Only a SHA-256 token digest is stored. This is one-way subscription, not two-way calendar editing. Old downloaded copies cannot be remotely erased.
+
+## Public calendar policy — 2026-10-24
+
+The owner approved Monday–Friday, 10 a.m.–3 p.m., two-hour blocks and one appointment per day. Submitted requests atomically hold the whole Toronto calendar day. Decline releases an unconverted request; archive only organizes it. Conversion transfers the claim to a two-hour appointment in the same transaction; cancellation frees the day. Blocks remove overlapping public options. The private feed preserves the request UID on conversion and marks unconfirmed requests tentative.
+
+Server validation covers weekends, past starts, the 90-day horizon and Toronto DST. D1 indexes/triggers arbitrate concurrent requests, staff appointments and blocks. Public availability returns dates/times only. Validated submissions are limited to three per daily network bucket using a daily SHA-256 identifier; the trusted Cloudflare address is never stored raw. Expired buckets are cleared on the next request. Honeypot and existing per-phone duplicate controls remain. No live test request or client notification was sent.
+
+Verified with 41 Node tests, Astro check and production build. Browser QA covers calendar selection, popup draft preservation, month navigation and narrow responsive layouts. Live staff write/email delivery remain separate operational checks.

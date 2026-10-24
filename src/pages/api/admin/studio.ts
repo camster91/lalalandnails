@@ -4,8 +4,9 @@ import {
   isSameOriginWrite,
   privateHeaders,
 } from "../../../lib/auth";
-import { ensureDatabase, getD1 } from "../../../lib/db";
-import { initializeStudio } from "../../../lib/studio-schema";
+import { getD1 } from "../../../lib/db";
+import { studioReady } from "../../../lib/studio-db";
+export { studioReady } from "../../../lib/studio-db";
 import { saveStudioCommand, studioSnapshot } from "../../../lib/studio-store";
 import {
   parseStudioCommand,
@@ -13,15 +14,6 @@ import {
 } from "../../../lib/studio-validation";
 import { torontoDate } from "../../../lib/crm";
 export const prerender = false;
-let initialized: Promise<void> | null = null;
-export async function studioReady() {
-  await ensureDatabase();
-  initialized ??= initializeStudio(getD1()).catch((e) => {
-    initialized = null;
-    throw e;
-  });
-  await initialized;
-}
 async function handle(request: Request) {
   const json = (data: unknown, status = 200) =>
     Response.json(data, { status, headers: privateHeaders });
@@ -62,8 +54,10 @@ async function handle(request: Request) {
         .bind(torontoDate())
         .first();
       const sources = await getD1().prepare("SELECT COALESCE(lead_source,'unknown') source,COUNT(*) total,SUM(CASE WHEN EXISTS(SELECT 1 FROM studio_appointments a WHERE a.lead_id=b.id AND a.status!='cancelled') THEN 1 ELSE 0 END) converted FROM booking_requests b GROUP BY COALESCE(lead_source,'unknown') ORDER BY total DESC").all();
+      const requestedBlocks=await getD1().prepare("SELECT id,name,phone,notes,status,contact_method contactMethod,preferred_date preferredDate,preferred_time preferredTime,updated_at updatedAt,lead_source leadSource FROM booking_requests WHERE requested_start IS NOT NULL AND capacity_released=0 AND status!='declined' AND preferred_date LIKE ? ORDER BY preferred_date").bind(date.slice(0,7)+'-%').all();
       return json({
         ...data,
+        requestedBlocks: requestedBlocks.results,
         sources: sources.results,
         counts,
         staff: access.user.email,

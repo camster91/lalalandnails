@@ -1,3 +1,5 @@
+import {requestWindow,BookingSlotError} from './booking-availability.ts';
+import {torontoDate} from './crm.ts';
 import {
   StudioError,
   torontoInstant,
@@ -153,20 +155,29 @@ export async function saveStudioCommand(
         throw new StudioError(
           "Choose an active client and a configured service.",
         );
-      if (c.leadId) {
-        const lead = await db
-          .prepare(
-            "SELECT id FROM booking_requests WHERE id=? AND archived_at IS NULL",
-          )
-          .bind(c.leadId)
-          .first();
-        if (!lead) throw new StudioError("This enquiry is unavailable.", 409);
+      let linkedRequest=c.leadId;
+      let previousStart: number|undefined;
+      if(c.id){const previous=await db.prepare('SELECT lead_id,start_at FROM studio_appointments WHERE id=?').bind(c.id).first<{lead_id:string|null;start_at:number}>();linkedRequest=previous?.lead_id||null;previousStart=previous?.start_at;}
+      let publicBlock=false;
+      if(linkedRequest){
+        const lead=await db.prepare('SELECT id,requested_start FROM booking_requests WHERE id=? AND archived_at IS NULL').bind(linkedRequest).first<{id:string;requested_start:number|null}>();
+        if(!lead)throw new StudioError('This enquiry is unavailable.',409);
+        publicBlock=lead.requested_start!=null;
       }
+      if(publicBlock){
+        if(service.duration>120)throw new StudioError('Choose a service that fits within the two-hour request block.');
+        if(previousStart!==c.start){
+          const localTime=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Toronto',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(c.start));
+          try{requestWindow(torontoDate(new Date(c.start)),localTime);}catch(error){throw new StudioError(error instanceof BookingSlotError?error.message:'Choose a valid two-hour block.');}
+        }
+      }
+      const duration=publicBlock?120:service.duration;
       const cols = [
         "version",
         "client_id",
         "service_id",
         "start_at",
+        "local_date",
         "end_at",
         "blocked_until",
         "service_name",
@@ -178,8 +189,9 @@ export async function saveStudioCommand(
         c.clientId,
         c.serviceId,
         c.start,
-        c.start + service.duration * 60000,
-        c.start + (service.duration + service.buffer) * 60000,
+        torontoDate(new Date(c.start)),
+        c.start + duration * 60000,
+        c.start + (duration + service.buffer) * 60000,
         service.name,
         service.price_cents,
         c.notes,
@@ -270,7 +282,7 @@ export async function saveStudioCommand(
       statements.push(
         db
           .prepare(
-            "UPDATE booking_requests SET status='confirmed',updated_at=? WHERE id=?",
+            "UPDATE booking_requests SET status='confirmed',capacity_released=1,updated_at=? WHERE id=?",
           )
           .bind(now, c.leadId),
       );
@@ -283,6 +295,7 @@ export async function saveStudioCommand(
     return { id, version: now };
   } catch (error) {
     if (error instanceof StudioError) throw error;
+    if (String(error).includes("booking_day_unavailable")) throw new StudioError("That day or block is unavailable. Review the existing request or choose another day.",409);
     const message = String(error);
     if (message.includes("studio_overlap"))
       throw new StudioError(
@@ -338,7 +351,7 @@ export async function studioSnapshot(
     end,
   );
   const attention = await all(
-    "SELECT id,name,phone,email,contact_method contactMethod,lead_source leadSource,notes,status,created_at createdAt,updated_at updatedAt,admin_note adminNote,follow_up_date followUpDate FROM booking_requests WHERE archived_at IS NULL AND (status='pending' OR (follow_up_date<=? AND status NOT IN ('completed','declined','confirmed'))) ORDER BY CASE WHEN follow_up_date<=? THEN 0 ELSE 1 END,created_at DESC LIMIT 10",
+    "SELECT id,name,phone,email,contact_method contactMethod,lead_source leadSource,preferred_date preferredDate,preferred_time preferredTime,notes,status,created_at createdAt,updated_at updatedAt,admin_note adminNote,follow_up_date followUpDate FROM booking_requests WHERE archived_at IS NULL AND (status='pending' OR (follow_up_date<=? AND status NOT IN ('completed','declined','confirmed'))) ORDER BY CASE WHEN follow_up_date<=? THEN 0 ELSE 1 END,created_at DESC LIMIT 10",
     date,
     date,
   );

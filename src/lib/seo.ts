@@ -1,3 +1,4 @@
+import {bookingPolicy} from './booking-policy.ts';
 import type { SiteConfig } from '../data/site';
 
 export function isPublicOrigin(site: SiteConfig, url: URL): boolean {
@@ -23,6 +24,7 @@ export function buildSchema(site: SiteConfig) {
     logo: `${origin}/brand/logo-main.svg`,
     description: 'European manicure appointments with Bianca Ashley in Scarborough, Toronto, Ontario. Welcoming clients from Durham Region and the GTA.',
     areaServed: ['Scarborough', 'Durham Region', 'Greater Toronto Area'],
+    openingHoursSpecification: {'@type':'OpeningHoursSpecification',dayOfWeek:['Monday','Tuesday','Wednesday','Thursday','Friday'],opens:`${bookingPolicy.openHour}:00`,closes:`${bookingPolicy.closeHour}:00`},
     address: {
       '@type': 'PostalAddress', addressLocality: site.location.locality,
       addressRegion: site.location.region, addressCountry: site.location.country,

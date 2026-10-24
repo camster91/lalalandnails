@@ -14,6 +14,7 @@ export type Snapshot = {
   attention?: Row[];
   report?: { completed: number; booking_value: number };
   serviceReport?: Row[];
+  requestedBlocks?: Row[];
   sources?: {source: string; total: number; converted: number}[];
   paid?: { total: number };
   counts: { new_enquiries: number; follow_ups: number };

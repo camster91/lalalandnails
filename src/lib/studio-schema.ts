@@ -1,3 +1,5 @@
+import {capacitySchema} from './booking-availability.ts';
+import {torontoDate} from './crm.ts';
 // Additive, idempotent tables. Production records are never seeded with demo data.
 export const studioSchema = [
   `CREATE TABLE IF NOT EXISTS studio_clients (
@@ -13,7 +15,7 @@ export const studioSchema = [
 )`,
   `CREATE TABLE IF NOT EXISTS studio_appointments (
  id TEXT PRIMARY KEY, version INTEGER NOT NULL, client_id TEXT NOT NULL REFERENCES studio_clients(id),
- service_id TEXT NOT NULL REFERENCES studio_services(id), lead_id TEXT UNIQUE,
+ service_id TEXT NOT NULL REFERENCES studio_services(id), lead_id TEXT UNIQUE, local_date TEXT,
  start_at INTEGER NOT NULL, end_at INTEGER NOT NULL, blocked_until INTEGER NOT NULL,
  service_name TEXT NOT NULL, price_cents INTEGER NOT NULL, notes TEXT NOT NULL DEFAULT '',
  status TEXT NOT NULL DEFAULT 'confirmed' CHECK(status IN ('confirmed','completed','cancelled','no-show')),
@@ -43,4 +45,12 @@ export const studioSchema = [
 ];
 export async function initializeStudio(db: D1Database) {
   await db.batch(studioSchema.map((sql) => db.prepare(sql)));
+  const columns=await db.prepare('PRAGMA table_info(studio_appointments)').all<{name:string}>();
+  if(!columns.results.some(c=>c.name==='local_date')) {
+    try { await db.prepare('ALTER TABLE studio_appointments ADD COLUMN local_date TEXT').run(); }
+    catch(error) {const current=await db.prepare('PRAGMA table_info(studio_appointments)').all<{name:string}>();if(!current.results.some(c=>c.name==='local_date'))throw error;}
+  }
+  const old=await db.prepare('SELECT id,start_at FROM studio_appointments WHERE local_date IS NULL').all<{id:string;start_at:number}>();
+  if(old.results.length)await db.batch(old.results.map(a=>db.prepare('UPDATE studio_appointments SET local_date=? WHERE id=? AND local_date IS NULL').bind(torontoDate(new Date(a.start_at)),a.id)));
+  await db.batch(capacitySchema.map(sql=>db.prepare(sql)));
 }

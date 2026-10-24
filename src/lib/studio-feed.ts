@@ -12,7 +12,7 @@ export function createCalendarFeed(events: FeedEvent[]): string {
   for (const e of events) {
     // IDs are internal UUIDs. Never interpolate client data, labels or private notes.
     const id = e.id.replace(/[^a-zA-Z0-9-]/g, '');
-    lines.push('BEGIN:VEVENT', `UID:${e.kind === 'block' ? 'block-' : ''}${id}@lalalandnails.ca`, `DTSTAMP:${stamp(e.version)}`, `LAST-MODIFIED:${stamp(e.version)}`, `SEQUENCE:${Math.floor(e.version / 1000)}`, `DTSTART:${stamp(e.start_at)}`, `DTEND:${stamp(e.end_at)}`, `SUMMARY:${e.kind === 'block' ? 'Studio unavailable' : 'La La Land Nail Hub appointment'}`, `STATUS:${e.status === 'cancelled' ? 'CANCELLED' : 'CONFIRMED'}`, 'TRANSP:OPAQUE','END:VEVENT');
+    lines.push('BEGIN:VEVENT', `UID:${e.kind === 'block' ? 'block-' : ''}${id}@lalalandnails.ca`, `DTSTAMP:${stamp(e.version)}`, `LAST-MODIFIED:${stamp(e.version)}`, `SEQUENCE:${Math.floor(e.version / 1000)}`, `DTSTART:${stamp(e.start_at)}`, `DTEND:${stamp(e.end_at)}`, `SUMMARY:${e.kind === 'block' ? 'Studio unavailable' : 'La La Land Nail Hub appointment'}`, `STATUS:${e.status === 'cancelled' ? 'CANCELLED' : e.status === 'tentative' ? 'TENTATIVE' : 'CONFIRMED'}`, 'TRANSP:OPAQUE','END:VEVENT');
   }
   return [...lines, 'END:VCALENDAR', ''].join('\r\n');
 }

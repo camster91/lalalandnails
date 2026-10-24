@@ -10,7 +10,7 @@ import { siteConfig } from '../data/site';
     <h1>Privacy notice</h1>
     <p>This notice explains the appointment request form and staff workspace on this website.</p>
     <h2>What the form collects</h2>
-    <p>Your name, phone number, call or text preference, optional appointment note and the time you give permission to be contacted. The website also records a general source label, such as Google or Instagram, when available. This label does not include the referring page, search terms or campaign identifiers.</p>
+    <p>Your name, phone number, call or text preference, requested date and two-hour time block, optional appointment note and the time you give permission to be contacted. The website also records a general source label, such as Google or Instagram, when available. This label does not include the referring page, search terms or campaign identifiers.</p>
     <h2>Why we use it</h2>
     <p>Bianca uses your request to respond, discuss your nails and arrange an appointment. Permission to respond to an enquiry does not sign you up for promotional messages. Please leave medical information, payment card details and other sensitive information out of the note.</p>
     <h2>Where requests go</h2>
@@ -18,10 +18,11 @@ import { siteConfig } from '../data/site';
     <h2>Saved records</h2>
     <p>Enquiry and appointment records remain in the staff workspace after a request is handled; closing or archiving a request does not erase it. If you want to ask about access, correction, withdrawal of contact permission or deletion, contact Bianca through the request form and mention that you have a privacy question. You do not need to include private details in that message.</p>
     <h2>Website operation</h2>
-    <p>The hosting provider processes technical request information to deliver and protect the website. Staff sign-in is restricted using Cloudflare Access. A private studio calendar subscription contains appointment times and generic event titles; it excludes client names, contact details and private notes.</p>
+    <p>The hosting provider processes technical request information to deliver and protect the website. Staff sign-in is restricted using Cloudflare Access. A private studio calendar subscription contains appointment times and generic event titles; it excludes client names, contact details and private notes. Requested blocks appear as tentative events.</p>
+    <p>To protect availability, requests are limited per network connection using a daily hashed network identifier. The limit expires within 24 hours, and expired identifiers are cleared when the next form request is processed. We do not store your raw IP address in the booking database.</p>
     <a class="button" href="/#booking">Contact Bianca</a>
     <a class="text-link" href="/">Back to the website</a>
-  </main>
+</main>
 </BaseLayout>
 <style>
   .privacy-page { max-width: 48rem; margin: auto; padding: 2rem 1.5rem 5rem; }
