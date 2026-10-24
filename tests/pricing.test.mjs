@@ -12,6 +12,10 @@ test('draft pricing does not accidentally become a published, verified business 
   assert.equal(siteConfig.services[0].priceDisplay, null);
   assert.equal(siteConfig.launchReady, false);
   assert.match(readSource('src/pages/services-pricing.astro'), /pricing-proposal/);
+  assert.match(readSource('src/pages/services-pricing.astro'), /!import\.meta\.env\.DEV && !prices\.approved/);
+  for (const path of ['src/pages/index.astro','src/components/Header.astro','src/components/Footer.astro','src/components/BookingRequest.astro']) {
+    assert.match(readSource(path), /import\.meta\.env\.DEV \|\| pricingDraft\.approved|const showPricing = import\.meta\.env\.DEV \|\| pricingDraft\.approved/, path);
+  }
   assert.match(readSource('src/components/PricingTeaser.astro'), /Proposed starting prices/);
 });
 
