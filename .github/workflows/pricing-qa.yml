@@ -24,13 +24,15 @@ jobs:
     steps:
       - name: Check out the site
         uses: actions/checkout@v4
-      - name: Set up Node.js 22
+      - name: Set up supported Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.23.4'
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Audit all dependencies including server and build tooling
+        run: npm audit --audit-level=moderate
       - name: Run Node regression tests
         run: node --test tests/*.test.mjs
       - name: Run Astro type checks
