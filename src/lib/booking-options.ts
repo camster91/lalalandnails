@@ -46,7 +46,10 @@ export function parseInspirationLinks(value:unknown){
  if(links.length>3)throw Error('Add up to three inspiration links.');
  return [...new Set(links.map(link=>{
   let url:URL;try{url=new URL(link);}catch{throw Error('Use a complete HTTPS inspiration link.');}
-  if(url.protocol!=='https:'||url.username||url.password||url.port||!url.hostname.includes('.')||/^[\d.:]+$/.test(url.hostname)||/(^|\.)(localhost|local|internal|test|invalid)$/.test(url.hostname)||url.hostname.startsWith('['))throw Error('Use a public HTTPS inspiration link.');
+  if (url.username || url.password) throw Error('Use a public HTTPS inspiration link.');
+  const privateHost = !url.hostname.includes('.') || /^[\d.:]+$/.test(url.hostname)
+    || /(^|\.)(localhost|local|internal|test|invalid)$/.test(url.hostname) || url.hostname.startsWith('[');
+  if (url.protocol !== 'https:' || url.port || privateHost) throw Error('Use a public HTTPS inspiration link.');
   return url.href;
  }))];
 }
