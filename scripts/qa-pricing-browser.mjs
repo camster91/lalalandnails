@@ -64,11 +64,12 @@ try {
     }
     assert.equal(await page.locator('.pricing-length svg').count(), 4, size.name + ': 4 length visuals');
     assert.equal(await page.locator('.pricing-art-card svg').count(), 4, size.name + ': 4 art tiers');
+    assert.equal(await page.locator('[data-estimate-total]').textContent(), '$105', size.name + ': initial estimate matches 75+10+20');
 
     const layout = await page.evaluate(() => {
       const select = [
         '.pricing-card', '.pricing-length', '.pricing-art-card',
-        '.pricing-list__item', '.pricing-example__receipt', '.pricing-cta',
+        '.pricing-list__item', '.estimate-card', '.pricing-cta',
       ];
       const failures = [];
       for (const element of document.querySelectorAll(select.join(','))) {
@@ -99,6 +100,16 @@ try {
       timeout: 30000,
     });
 
+    // Check price estimator through real select changes on each viewport.
+    await page.locator('[data-estimate-length]').selectOption('20');
+    await page.locator('[data-estimate-art]').selectOption('35');
+    assert.equal(await page.locator('[data-estimate-total]').textContent(), '$130', size.name + ': long + tier 3 estimate');
+    await page.locator('[data-estimate-length]').selectOption('0');
+    await page.locator('[data-estimate-art]').selectOption('0');
+    assert.equal(await page.locator('[data-estimate-total]').textContent(), '$75', size.name + ': short + solid colour estimate');
+    await page.locator('[data-estimate-art]').selectOption('50');
+    assert.equal(await page.locator('[data-estimate-total]').textContent(), '$125+', size.name + ': tier 4 starts-at estimate');
+    assert.match(await page.locator('[data-estimate-note]').textContent(), /begins at this price/);
     const artLink = page.locator('.pricing-index a[href="#art"]');
     await artLink.click();
     assert.equal(new URL(page.url()).hash, '#art', size.name + ': art anchor');
