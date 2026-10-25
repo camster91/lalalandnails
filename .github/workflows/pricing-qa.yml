@@ -59,6 +59,7 @@ jobs:
             sleep 1
           done
           node scripts/qa-site-browser.mjs
+          node scripts/qa-studio-dialog-browser.mjs
       - name: Preserve visual pricing review screenshots
         if: always()
         uses: actions/upload-artifact@v4

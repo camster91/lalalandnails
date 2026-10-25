@@ -299,6 +299,11 @@ export async function startStudio() {
     title.textContent = name;
     body.innerHTML = html;
     if (!dialog.open) dialog.showModal();
+    else if (!dialog.contains(document.activeElement)) {
+      // Replacing dialog content can remove the focused control (for example,
+      // after creating or disabling a calendar link). Keep keyboard focus inside.
+      dialog.querySelector<HTMLButtonElement>("[data-close]")?.focus();
+    }
   }
   async function open(kind: string, id = "") {
     const client = state.clients.find((c) => c.id === id),
