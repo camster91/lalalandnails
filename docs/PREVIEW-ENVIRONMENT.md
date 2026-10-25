@@ -16,6 +16,6 @@ Deploy a feature branch with the existing Cloudflare Workers Builds preview trig
 
 For a synthetic saved-request check, label the test clearly, use a reserved fictional contact, and record its request ID. After verification, remove only that exact synthetic request and its `booking_request_details` / `booking_inspiration` rows from the preview database, children first. Confirm the preview slot becomes available again. Never run this cleanup against production or real client records.
 
-Build-managed previews have `auto_delete` enabled: deleting a retired feature branch removes its Preview. Keep the branch while its review URL is needed. The shared nonproduction KV namespace and database remain available for other preview branches; remove them only after all previews and configuration references have been retired.
+The repair preview was verified with `auto_delete` enabled: deleting its feature branch removes that Preview. Confirm this setting on each build-managed preview before relying on branch deletion for cleanup. Keep the branch while its review URL is needed. The shared nonproduction KV namespace and database remain available for other preview branches; remove them only after all previews and configuration references have been retired.
 
 Rollback the preview configuration by restoring the saved pre-change configuration or reverting this change. Do not replace preview IDs with production IDs to make a preview deploy pass. Existing production deployment and booking data do not need to change.
