@@ -33,5 +33,24 @@
     {
       "name": "BOOKING_EMAIL"
     }
-  ]
+  ],
+  "previews": {
+    "kv_namespaces": [
+      {
+        "binding": "SESSION",
+        "id": "4de6fb2d65914c7ba0f1031f5afe0153"
+      }
+    ],
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "lalalandnails-preview",
+        "database_id": "f5786b9a-aee7-40f0-a63b-7d5e414773b6"
+      }
+    ],
+    "images": {
+      "binding": "IMAGES"
+    },
+    "send_email": []
+  }
 }

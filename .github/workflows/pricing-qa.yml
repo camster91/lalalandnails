@@ -39,6 +39,8 @@ jobs:
         run: npm run check
       - name: Build Astro/Cloudflare output without deployment
         run: npm run build
+      - name: Verify source and built preview isolation
+        run: node scripts/qa-preview-config.mjs
       - name: Verify approved pricing in local production mode
         run: node scripts/qa-pricing-production.mjs
       - name: Install headless browser QA dependencies
