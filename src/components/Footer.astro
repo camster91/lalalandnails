@@ -21,7 +21,6 @@ const showPricing = import.meta.env.DEV || pricingDraft.approved;
     <a href={onHome ? '#service' : '/#service'}>Manicure options</a>
     {showPricing && <a href="/services-pricing">Services &amp; Pricing</a>}
     <a href={onHome ? '#about' : '/#about'}>About Bianca</a>
-    <a href={onHome ? '#visit' : '/#visit'}>Visiting from the GTA</a>
     <a href={onHome ? '#booking' : '/#booking'} data-analytics-events="booking_request_view">Request an appointment</a>
     <a href="/privacy">Privacy notice</a>
     {site.socials.map((social) => <a href={social.href}>{social.label}</a>)}

@@ -33,7 +33,7 @@ export function quoteBooking(input:Record<string,unknown>){
  if(artItem)lines.push({label:artItem.name,amount:artItem.addOn});
  if(reconstructionItem)lines.push({label:reconstructionItem.name,amount:reconstructionItem.price});
  if(repairItem&&repairCount)lines.push({label:`${repairItem.name} × ${repairCount}`,amount:repairItem.price*repairCount});
- return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:art==='unsure'||length==='unsure'||art==='4'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
+ return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:'startingAt' in service||art==='unsure'||length==='unsure'||art==='4'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
 }
 export function formatBookingEstimate(quote:{total:number|null;needsConsultation:boolean;approved:boolean}){
  if(quote.total===null)return 'Bianca will help you choose and confirm your quote.';

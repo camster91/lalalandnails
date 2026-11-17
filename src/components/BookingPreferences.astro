@@ -6,7 +6,7 @@ import {bookingPackages,reconstructionTiers,repairOptions} from '../lib/booking-
   <legend tabindex="-1">2. Choose your service</legend>
   <p class="field-hint">Choose a service for an estimate, or select “Not sure” for help. <a href="/services-pricing" target="_blank" rel="noopener">View the service menu</a>.</p>
   {!pricingDraft.approved && <p class="field-hint">Proposed prices · awaiting approval.</p>}
-  <label>Service package *<select name="package" aria-describedby="package-error" required><option value="">Choose a service</option><option value="unsure">Not sure — help me choose</option>{bookingPackages.map(p=><option value={p.id}>{p.name} · ${p.price} CAD</option>)}</select></label>
+  <label>Service package *<select name="package" aria-describedby="package-error" required><option value="">Choose a service</option><option value="unsure">Not sure — help me choose</option>{bookingPackages.map(p=><option value={p.id}>{p.name} · {'startingAt' in p && 'from '}${p.price} CAD</option>)}</select></label>
   <p data-package-description class="field-hint"></p>
   <div data-service-options>
   <label data-length-label>Nail length<select name="length"><option value="unsure">Not sure — discuss with Bianca</option><option value="short">Short · included</option><option value="medium">Medium · +${pricingDraft.lengths[1].addOn}</option><option value="long">Long · +${pricingDraft.lengths[2].addOn}</option><option value="extra-long">Extra long · consultation</option></select></label>

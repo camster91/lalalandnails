@@ -23,7 +23,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <div class="pricing-hero__copy">
           <p class="eyebrow">La La Land Nail Hub · Scarborough</p>
           <h1 id="pricing-title">Manicure services.<br/><em>Clear starting prices.</em></h1>
-          <p>Compare European dry manicures, gel colour, structured gel and fills in Scarborough. Choose your service, then add the length and nail art you want.</p>
+          <p>Compare European dry manicures, gel colour, structured gel, soft gel tips and fills in Scarborough. Choose your service, then add the length and nail art you want.</p>
           <a class="button button--cream" href="/#booking" data-analytics-events="booking_request_view">Request an appointment</a>
           <p class="pricing-hero__fine">Introductory prices in CAD, before applicable taxes. Request first; Bianca confirms the final price and appointment. No online payment.</p>
         </div>
@@ -53,16 +53,16 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <div class="pricing-intro">
           <p class="eyebrow">01 · Signature services</p>
           <h2 id="manicures-title">Start with your <em>manicure.</em></h2>
-          <p>Every service begins with detailed nail shaping and careful dry manicure preparation. Structured gel adds a supportive overlay to natural nails, rather than creating an extension.</p>
+          <p>Structured gel reinforces your natural nails with a builder-gel overlay. Soft gel tips add length with full-cover extensions.</p>
         </div>
         <div class="pricing-card-grid">
           {prices.manicures.map((service) => (
             <article class:list={['pricing-card', { 'pricing-card--featured': service.id === 'structured' }]}>
               <div class="pricing-card__top">
-                <h3>{service.name}</h3><strong>{service.id === 'structured' && <small>From </small>}{displayPrice(service.price)}</strong>
+                <h3>{service.name}</h3><strong>{(service.id === 'structured' || 'startingAt' in service) && <small>From </small>}{displayPrice(service.price)}</strong>
               </div>
               <p>{service.description}</p>
-              <span class="pricing-card__meta">{service.duration}</span>
+              {'duration' in service && <span class="pricing-card__meta">{service.duration}</span>}
               {service.id === 'structured' && <span class="pricing-card__meta">Short natural-nail length included</span>}
             </article>
           ))}
@@ -236,7 +236,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
   .pricing-intro { max-width: 60rem; margin-bottom: 2.5rem; }
   .pricing-intro h2, .pricing-example__copy h2 { font-size: clamp(2.6rem, 5.5vw, 5.4rem); }
   .pricing-intro > p:last-child, .pricing-example__copy p { max-width: 52rem; font-size: 1.04rem; line-height: 1.75; }
-  .pricing-card-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+  .pricing-card-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
   .pricing-card { padding: clamp(1.4rem,2.8vw,2.4rem); border: 1px solid rgba(51,5,5,.22); border-radius: var(--radius); background: #fff; }
   .pricing-card--featured { background: var(--burgundy); color: var(--cream); }
   .pricing-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
@@ -287,7 +287,6 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
     .pricing-hero { grid-template-columns: 1fr; }
     .pricing-hero__copy { padding-top: 9.5rem; }
     .pricing-hero__photo { min-height: 23rem; margin: 0 1rem 1rem; }
-    .pricing-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .pricing-length-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .pricing-section--example { grid-template-columns: 1fr; }
   }

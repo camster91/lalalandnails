@@ -63,7 +63,7 @@ test('the prices and CTAs appear in the intended page locations', () => {
   const booking = readSource('src/components/BookingRequest.astro');
   const components = ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example'];
   for (const id of components) assert.ok(page.includes('id="' + id + '"'), id);
-  assert.ok(index.indexOf('<PricingTeaser />') < index.indexOf('<VisitGuide />'), 'pricing preview precedes visit guide');
+  assert.ok(index.indexOf('<PricingTeaser />') < index.indexOf('<ProcessStory '), 'pricing preview precedes the process section');
   assert.match(index, /pricingDraft\.approved\) && <PricingTeaser \/>/, 'preview is approval-gated');
   assert.match(header, /href="\/services-pricing"/);
   assert.match(footer, /href="\/services-pricing"/);

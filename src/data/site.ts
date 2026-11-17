@@ -122,13 +122,13 @@ export const siteConfig: SiteConfig = {
   services: [
     {
       name: 'European manicures and natural-nail structured gel',
-      description: 'European/Russian-style dry manicures with Bianca in Scarborough. Choose detailed natural-nail care, gel colour or a structured builder-gel overlay. Returning clients can request fills, maintenance or nail repairs.',
+      description: 'European/Russian-style dry manicures with Bianca in Scarborough. Choose detailed natural-nail care, gel colour, a structured builder-gel overlay or soft gel tips for added length. Returning clients can request fills, maintenance or nail repairs.',
       priceDisplay: pricingDraft.approved ? 'From $' + pricingDraft.manicures[0].price + ' CAD' : null,
       duration: 'Two-hour request block',
       availability: 'One appointment per weekday',
       inclusions: [
         'Careful dry manicure preparation and natural nail shaping.',
-        'Your chosen finish: natural nails, gel colour or a structured builder-gel overlay.',
+        'Your chosen finish: natural nails, gel colour, a structured builder-gel overlay or soft gel tips.',
         'An estimated total before Bianca confirms the final service and price.',
       ],
       preparation: [
@@ -161,9 +161,9 @@ export const siteConfig: SiteConfig = {
   gallery: [],
   reviews: [],
   faqs: [
-    { question: 'What can I book at La La Land Nail Hub?', answer: 'Choose a European dry manicure, gel manicure or structured gel manicure for your natural nails. The menu also includes fills, natural nail maintenance, gel removal, nail art and suitable repairs. Your appointment is with Bianca Ashley in Scarborough.' },
+    { question: 'What can I book at La La Land Nail Hub?', answer: 'Choose a European dry manicure, gel manicure or structured gel manicure for your natural nails, or soft gel tips for added length. The menu also includes fills, natural nail maintenance, gel removal, nail art and suitable repairs. Your appointment is with Bianca Ashley in Scarborough.' },
     { question: 'What is the difference between a European manicure and structured gel?', answer: 'European-style dry manicure preparation focuses on cuticle care and nail shaping. Our dry manicure has no polish; our gel manicure adds solid gel colour. A structured gel manicure adds a builder-gel overlay and solid colour to your natural nails. The structured service does not create nail extensions.' },
-    { question: 'What are your manicure prices?', answer: `Our introductory European dry manicure is $${pricingDraft.manicures[0].price} CAD, European gel manicure $${pricingDraft.manicures[1].price} CAD and Signature Structured Gel Manicure $${pricingDraft.manicures[2].price} CAD with short length and solid colour. Medium or long length, nail art and necessary repairs can cost extra. Prices are before applicable taxes; Bianca confirms your final quote.` },
+    { question: 'What are your manicure prices?', answer: `Our introductory European dry manicure is $${pricingDraft.manicures[0].price} CAD, European gel manicure $${pricingDraft.manicures[1].price} CAD and Signature Structured Gel Manicure $${pricingDraft.manicures[2].price} CAD with short length and solid colour. Soft Gel Tips start at $${pricingDraft.manicures[3].price} CAD. Medium or long length, nail art and necessary repairs can cost extra. Prices are before applicable taxes; Bianca confirms your final quote.` },
     { question: 'Where is the studio, and can I visit from Durham Region?', answer: 'La La Land Nail Hub is in Scarborough, Toronto, Ontario. Clients from Pickering, Ajax, Whitby, Durham Region and the wider GTA are welcome to request an appointment. All appointments take place in Scarborough; confirm your visit details with Bianca before travelling.' },
     { question: 'What appointment times can I request?', answer: 'Request a two-hour block starting at 10 a.m., 11 a.m., noon or 1 p.m., Monday–Friday, Toronto time. Blocks finish by 3 p.m., with one appointment per day. The calendar shows available dates; Bianca reviews whether your chosen service and design fit the requested time.' },
     { question: 'How do I request an appointment, and is it confirmed straight away?', answer: 'Choose an available time, select a service and send your name, phone number and call-or-text preference. You can ask Bianca to help you choose a service. No online payment is taken. Your submitted request holds the day for review; the appointment is confirmed only after Bianca agrees the service, final price and visit details with you.' },

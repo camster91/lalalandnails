@@ -6,18 +6,13 @@ import ProcessStory from '../components/ProcessStory.astro';
 import OptionalContent from '../components/OptionalContent.astro';
 import BookingRequest from '../components/BookingRequest.astro';
 import ChatConcierge from '../components/ChatConcierge.astro';
-import MotionStory from '../components/MotionStory.astro';
-import VisitGuide from '../components/VisitGuide.astro';
-import LocalSection from '../components/LocalSection.astro';
 import MotionExperience from '../components/MotionExperience.astro';
-import SectionPhoto from '../components/SectionPhoto.astro';
 import PricingTeaser from '../components/PricingTeaser.astro';
 import { env } from 'cloudflare:workers';
 import { approvedReviews, siteConfig } from '../data/site';
 import { pricingDraft } from '../data/pricing';
 
 const service = siteConfig.services[0];
-const locationLabel = siteConfig.location.displayName;
 const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
 ---
 
@@ -28,80 +23,38 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__copy reveal">
           <p class="eyebrow">Scarborough nail studio · By appointment</p>
-          <h1 id="hero-title">European manicures.<br /><em>In Scarborough.</em></h1>
-          <p class="hero__intro">Detailed dry manicures, structured gel and nail art for your natural nails. Choose your shape, length and finish with Bianca Ashley in Scarborough.</p>
+          <h1 id="hero-title">Dreamy nails <em>await.</em></h1>
+          <p class="hero__intro">Get cosy in Bianca’s home studio for a one-on-one dry combi manicure with precise cuticle work and structure built around your natural nails.</p>
+          <ul class="hero__areas" aria-label="Clients welcome from"><li>Scarborough</li><li>Pickering</li><li>Ajax</li><li>Whitby</li><li>Durham Region</li><li>Greater Toronto Area</li></ul>
           <div class="hero__actions">
             <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
             <a class="text-link" href="/services-pricing">See services &amp; prices <span aria-hidden="true">↘</span></a>
           </div>
-          <p class="hero__reassurance">See your estimate before sending a request. No online payment. Bianca confirms your service, final price and appointment by call or text.</p>
         </div>
         <figure class="hero__media reveal">
-          <img src="/images/generated/red-1440.webp" srcset="/images/generated/red-720.webp 720w, /images/generated/red-1440.webp 1440w" sizes="(max-width: 900px) 100vw, 50vw" alt="AI-generated burgundy almond manicure on hands resting on ivory linen" width="1440" height="1800" fetchpriority="high" />
-          <figcaption>AI-generated inspiration · Not client work</figcaption>
-          <span class="hero__signature" aria-hidden="true"><img src="/brand/submark.svg" alt="" /></span>
+          <video class="hero__video" controls muted playsinline loop preload="none" poster="/videos/long-gel-x-poster.webp" width="720" height="1280" aria-labelledby="hero-video-caption">
+            <source src="/videos/long-gel-x.mp4" type="video/mp4" />
+          </video>
+          <figcaption id="hero-video-caption">Long Gel-X with Manicure</figcaption>
         </figure>
       </section>
 
       <div class="brand-marquee" data-marquee>
+        <span class="sr-only">OOO looks good on you</span>
         <div class="brand-marquee__track" aria-hidden="true">
           {[0, 1].map(() => <div class="brand-marquee__group">
-            <span>La La Land Nail Hub</span><img src="/brand/submark.svg" alt="" />
-            <span>European manicures</span><img src="/brand/submark.svg" alt="" />
-            <span>With Bianca</span><img src="/brand/submark.svg" alt="" />
+            {[0, 1, 2].map(() => <><span>OOO looks good on you</span><img src="/brand/submark.svg" alt="" /></>)}
           </div>)}
         </div>
         <button class="brand-marquee__pause" type="button" aria-label="Pause scrolling banner" aria-pressed="false" data-marquee-toggle><span aria-hidden="true">Ⅱ</span></button>
       </div>
 
-      <section class="service section" id="service" aria-labelledby="service-title">
-        <div class="section-heading reveal">
-          <p class="eyebrow">Dry manicure · Gel colour · Structured gel</p>
-          <h2 id="service-title">Choose the finish for <em>your natural nails.</em></h2>
-          <SectionPhoto photo="colour" caption="Colour and finish inspiration." aspect="wide" />
-        </div>
-        <div class="service__content reveal">
-          <p class="service__lead">{service.description}</p>
-          <dl class="service__facts">
-            <div><dt>Specialty</dt><dd>{siteConfig.specialty}</dd></div>
-            <div><dt>Manicurist</dt><dd>{siteConfig.provider.name}</dd></div>
-            <div><dt>Availability</dt><dd>{service.availability}</dd></div>
-            {service.priceDisplay && <div><dt>Price</dt><dd>{service.priceDisplay}</dd></div>}
-            {service.duration && <div><dt>Duration</dt><dd>{service.duration}</dd></div>}
-            {locationLabel && <div><dt>Location</dt><dd>{locationLabel}</dd></div>}
-          </dl>
-          <div class="service__decision">
-            <h3>Which manicure is right for you?</h3>
-            <p><strong>European dry manicure:</strong> cuticle preparation and shaping, without polish. <strong>Gel manicure:</strong> dry preparation with solid gel colour. <strong>Structured gel manicure:</strong> a builder-gel overlay with solid colour; short length is included.</p>
-            <p>Already wearing gel? Compare fills, removal and repairs on the menu, and mention any product from another technician when you request a time.</p>
-            <a class="button" href="/services-pricing">Compare services &amp; pricing</a>
-            <a class="text-link" href="#booking" data-analytics-events="booking_request_view">Request an appointment <span aria-hidden="true">↗</span></a>
-          </div>
-          {service.inclusions.length > 0 && (
-            <div class="service__detail-list">
-              <h3>What’s included</h3>
-              <ul>{service.inclusions.map((item) => <li>{item}</li>)}</ul>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {(import.meta.env.DEV || pricingDraft.approved) && <PricingTeaser />}
-
-      <VisitGuide />
-
-      <MotionStory />
-
       <section class="about section" id="about" aria-labelledby="about-title">
-        <div class="about__title reveal">
-          <p class="eyebrow">Your appointment with Bianca</p>
-          <h2 id="about-title">Meet <em>Bianca.</em></h2>
-          <SectionPhoto photo="detail" caption="At the manicure table. A visual reference, not Bianca’s studio or client work." aspect="wide" />
-        </div>
         <div class="about__body reveal">
-          <p class="about__lead">{siteConfig.provider.name}</p>
-          <p class="about__role">{siteConfig.provider.role}</p>
-          <p>{siteConfig.provider.bio}</p>
+          <p class="eyebrow">Nail manicurist in Scarborough</p>
+          <h2 id="about-title">Meet <em>Bianca :)</em></h2>
+          <p>I’m Bianca, a certified nail technician and the owner of La La Land Nail Hub, my home studio in Scarborough. What I enjoy most about doing nails is figuring out what works for each person. I see one client at a time, so we can talk about what you like, what’s worked for you before, and what you’d like to change.</p>
+          <p>I specialize in dry combi manicures and structured gel. If you want to keep your nails short, grow out your natural length, or find a shape that suits your hands, I can help. I take care with prep and build the gel around the natural curve of your nails, adding support where they need it.</p>
           <a class="text-link" href="#booking">Request an appointment <span aria-hidden="true">↗</span></a>
           {siteConfig.provider.credentials.length > 0 && (
             <ul class="about__credentials">
@@ -109,12 +62,52 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
             </ul>
           )}
         </div>
-        <img class="about__mark" src="/brand/submark.svg" alt="" aria-hidden="true" />
+        <img class="about__portrait" src="/images/bianca-ashley.webp" width="900" height="1200" alt="Bianca Ashley" loading="lazy" decoding="async" />
       </section>
+
+      <section class="service section" id="service" aria-labelledby="service-title">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Dry manicure · Gel colour · Structured gel · Soft gel tips</p>
+          <h2 id="service-title">Before You Book / <em>Policies</em></h2>
+          <figure class="section-photo section-photo--wide">
+            <div class="section-photo__frame manicure-comparison__frame" id="manicure-comparison">
+              <img class="manicure-comparison__after" src="/images/red-manicure-1440.webp" srcset="/images/red-manicure-720.webp 720w, /images/red-manicure-1440.webp 1440w" sizes="(max-width: 900px) 90vw, 660px" width="1440" height="1080" alt="Glossy deep-red polish on short square nails" loading="lazy" decoding="async" />
+              <img class="manicure-comparison__before" src="/images/red-manicure-before.webp" width="942" height="665" alt="Short bare nails before the manicure" loading="lazy" decoding="async" />
+              <span class="manicure-comparison__tag manicure-comparison__tag--before" aria-hidden="true">Before</span>
+              <span class="manicure-comparison__tag manicure-comparison__tag--after" aria-hidden="true">After</span>
+              <span class="manicure-comparison__divider" aria-hidden="true"></span>
+            </div>
+            <figcaption>
+              <label for="manicure-reveal">Slide to compare the manicure</label>
+              <input class="manicure-comparison__range" id="manicure-reveal" type="range" min="0" max="100" value="50" aria-controls="manicure-comparison" aria-valuetext="50% before, 50% after" />
+            </figcaption>
+          </figure>
+          <dl class="service__facts">
+            <div><dt>Specialty</dt><dd>{siteConfig.specialty}</dd></div>
+            <div><dt>Availability</dt><dd>{service.availability}</dd></div>
+            {service.duration && <div><dt>Duration</dt><dd>{service.duration}</dd></div>}
+          </dl>
+        </div>
+        <div class="service__content reveal">
+          <p class="service__lead">Take a little time for yourself with a one-on-one European-style dry manicure. Each appointment starts with detailed cuticle care and shaping that follows the natural curve of your nails.</p>
+          <div class="service__decision">
+            <p>From there, you can keep your nails bare, add gel colour, or go with a structured gel overlay for a little extra support. If you’d like more length, soft gel extensions are an option too.</p>
+            <p>If you’ve been in before, you can come back for a fill, a little upkeep, or a nail repair.</p>
+            <p>New here and wearing gel from another nail tech? Please arrive with bare nails or book a removal with your manicure. A fresh set starts on bare nails, so please mention the existing gel in your booking request so extra time can be set aside for removal.</p>
+            <a class="button button--cream" href="/services-pricing">Compare services &amp; pricing</a>
+            <a class="text-link" href="#booking" data-analytics-events="booking_request_view">Request an appointment <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="service__detail-list">
+            <h3>Deposits and cancellations</h3>
+            <p>A $30 deposit secures your booking and goes toward the cost of your appointment. If you need to cancel, please give at least 24 hours’ notice. The deposit is non-refundable if you cancel less than 24 hours before your appointment.</p>
+          </div>
+        </div>
+      </section>
+
+      {(import.meta.env.DEV || pricingDraft.approved) && <PricingTeaser />}
 
       <ProcessStory steps={siteConfig.process} />
 
-      <LocalSection />
 
       <OptionalContent
         gallery={siteConfig.gallery}
@@ -133,6 +126,23 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
 </BaseLayout>
 
 <script>
+  const comparison = document.querySelector<HTMLElement>('#manicure-comparison');
+  const reveal = document.querySelector<HTMLInputElement>('#manicure-reveal');
+  if (comparison && reveal) {
+    const updateComparison = () => {
+      comparison.style.setProperty('--reveal', `${reveal.value}%`);
+      reveal.setAttribute('aria-valuetext', `${reveal.value}% before, ${100 - reveal.valueAsNumber}% after`);
+    };
+    reveal.addEventListener('input', updateComparison);
+    updateComparison();
+  }
+
+  const heroVideo = document.querySelector<HTMLVideoElement>('.hero__video');
+  if (heroVideo && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    // Keep the poster and native play button if the browser blocks autoplay.
+    void heroVideo.play().catch(() => {});
+  }
+
   const marquee = document.querySelector('[data-marquee]');
   const pause = document.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
   pause?.addEventListener('click', () => {

@@ -7,6 +7,12 @@ test('package estimate includes length and art once; fill prices already include
  assert.equal(quoteBooking(pick({length:'medium',art:'2'})).total,105);
  assert.equal(quoteBooking(pick({package:'fill-medium',length:'long'})).total,80);
 });
+test('soft gel tips use a starting estimate without structured gel length charges',()=>{
+ const quote=quoteBooking(pick({package:'soft-gel-tips',length:'long'}));
+ assert.equal(quote.total,65);
+ assert.equal(quote.lines.length,1);
+ assert.match(formatBookingEstimate(quote),/^From \$65\.00 CAD/);
+});
 test('reconstruction and individual repairs cannot charge for the same work',()=>{
  assert.throws(()=>quoteBooking(pick({reconstruction:'2',repair:'structured',repairCount:'1'})),/repair/i);
  assert.equal(quoteBooking(pick({reconstruction:'2'})).total,95);

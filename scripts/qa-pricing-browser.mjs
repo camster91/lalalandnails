@@ -141,10 +141,10 @@ try {
   assert.equal(await page.locator('#pricing').count(), 1, 'homepage teaser exists');
   const order = await page.evaluate(() => {
     const teaser = document.querySelector('#pricing');
-    const visit = document.querySelector('.visit-guide');
-    return Boolean(teaser && visit && (teaser.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING));
+    const processSection = document.querySelector('#process');
+    return Boolean(teaser && processSection && (teaser.compareDocumentPosition(processSection) & Node.DOCUMENT_POSITION_FOLLOWING));
   });
-  assert.ok(order, 'homepage pricing teaser follows signature service and precedes visit guide');
+  assert.ok(order, 'homepage pricing teaser precedes the process section');
   await page.locator('#pricing').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));
   // Screenshot the actual component without browser-fixed chrome overlaying it.

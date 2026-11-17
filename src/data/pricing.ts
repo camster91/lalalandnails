@@ -6,6 +6,7 @@ export const pricingDraft = {
     { duration: '45–60 minutes', id: 'dry', name: 'European Dry Manicure', price: 45, description: 'Precision dry manicure preparation and natural nail shaping. No gel or colour.' },
     { duration: '75–90 minutes', id: 'gel-colour', name: 'European Gel Manicure', price: 60, description: 'Detailed dry manicure and an even application of solid gel colour, without builder reinforcement.' },
     { duration: '90–120 minutes', id: 'structured', name: 'Signature Structured Gel Manicure', price: 75, description: 'Detailed dry manicure, builder gel structure and one solid gel colour on short natural nails.' },
+    { id: 'soft-gel-tips', name: 'Soft Gel Tips', price: 65, startingAt: true, description: 'Full-cover soft gel tips to add length and shape to your nails.' },
   ],
   fills: [
     { id: 'fill-short', name: 'Short structured gel fill', price: 70, detail: 'Removal of lifted product, structure rebalance, dry manicure, reshaping and a fresh solid colour.' },

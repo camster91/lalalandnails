@@ -7,13 +7,13 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
       <p class="eyebrow">Compare your manicure options</p>
       <h2 id="pricing-teaser-title">Services & <em>pricing.</em></h2>
     </div>
-    <p>Start with natural nail care, gel colour or builder-gel structure. Add length or art only where it applies, and see an estimate before you send your request.</p>
+    <p>Start with natural nail care, gel colour, builder gel or soft gel tips. Add length or art only where it applies, and see an estimate before you send your request.</p>
   </div>
   <div class="pricing-teaser__grid">
     {prices.manicures.map((service) => (
       <article class="pricing-teaser__card">
         <h3>{service.name}</h3>
-        <strong>{displayPrice(service.price)}</strong>
+        <strong>{'startingAt' in service && 'From '}{displayPrice(service.price)}</strong>
         <p>{service.description}</p>
       </article>
     ))}
@@ -33,7 +33,7 @@ import { pricingDraft as prices, displayPrice } from '../data/pricing';
   .pricing-teaser__heading { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: end; margin-bottom: 2.5rem; }
   .pricing-teaser__heading h2 { font-size: clamp(2.8rem, 5vw, 5rem); }
   .pricing-teaser__heading > p { max-width: 33rem; margin: 0; line-height: 1.7; }
-  .pricing-teaser__grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+  .pricing-teaser__grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
   .pricing-teaser__card { display: flex; flex-direction: column; min-width: 0; padding: clamp(1.5rem,3vw,2.5rem); background: var(--paper); border-radius: var(--radius); }
   .pricing-teaser__card h3 { font-size: 1.1rem; line-height: 1.45; }
   .pricing-teaser__card strong { margin-top: 1.4rem; font: 400 clamp(2rem,3vw,3rem)/1 var(--serif); }
