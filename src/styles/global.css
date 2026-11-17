@@ -115,7 +115,7 @@ em { color: var(--plum); font-weight: 300; }
 .hero__actions .button:hover { color: var(--cream); background: transparent; }
 .hero__media { position: relative; min-height: 45rem; margin: .75rem .75rem .75rem 0; overflow: hidden; border-radius: var(--radius); }
 .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero__media figcaption { position: absolute; right: 1rem; bottom: 3.5rem; pointer-events: none; border: 1px solid rgba(255, 240, 200, .15); border-radius: 999px; padding: .6rem .85rem; color: var(--cream); background: rgba(51, 5, 5, .88); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; }
+.hero__media figcaption { position: absolute; top: 1rem; right: 1rem; max-width: calc(100% - 2rem); pointer-events: none; border: 1px solid rgba(255, 240, 200, .15); border-radius: 999px; padding: .6rem .85rem; color: var(--cream); background: rgba(51, 5, 5, .88); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; }
 .hero__mark { position: absolute; z-index: 3; right: clamp(32%, 38vw, 45%); bottom: -3rem; width: clamp(7rem, 13vw, 13rem); opacity: .98; transform: rotate(8deg); }
 .marquee { overflow: hidden; padding: 1.5rem 0 1.75rem; color: var(--burgundy); background: var(--blush); }
 .marquee div { display: flex; width: max-content; animation: marquee 22s linear infinite; }
@@ -126,6 +126,8 @@ em { color: var(--plum); font-weight: 300; }
 .service a:focus-visible { outline-color: var(--cream); }
 .service__content { align-self: start; }
 .service__lead { margin: 0 0 3.5rem; font-family: var(--serif); font-size: clamp(1.55rem, 2.8vw, 2.6rem); line-height: 1.14; letter-spacing: -.035em; }
+.service__feature-photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 62%; border-radius: var(--radius); }
+.service__lead:has(+ .service__feature-photo) { margin-bottom: 1.5rem; }
 .service__facts { margin: 2rem 0 0; border-top: 1px solid rgba(255, 240, 200, .3); }
 .service__facts div { display: grid; grid-template-columns: 1fr 1.3fr; padding: 1.15rem 0; border-bottom: 1px solid rgba(255, 240, 200, .3); }
 .service__facts dt { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -646,6 +648,7 @@ html, body { overflow-x: clip; }
 .manicure-comparison__frame { --reveal: 50%; }
 .section-photo__frame > .manicure-comparison__before,
 .section-photo__frame > .manicure-comparison__after { inset: 0; height: 100%; transform: none !important; }
+.section-photo__frame > .manicure-comparison__after { inset: -35% auto auto -8%; width: 180%; max-width: none; height: 180%; }
 .manicure-comparison__before { clip-path: inset(0 calc(100% - var(--reveal)) 0 0); }
 .manicure-comparison__divider { position: absolute; inset-block: 0; left: var(--reveal); width: 2px; background: #fff; transform: translateX(-50%); pointer-events: none; }
 .manicure-comparison__tag { position: absolute; top: .75rem; padding: .3rem .65rem; border-radius: 999px; color: var(--cream); background: var(--burgundy); font-size: .75rem; font-weight: 700; }
