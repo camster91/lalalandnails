@@ -5,9 +5,10 @@ interface Props {
   photo: 'colour' | 'neutral' | 'detail' | 'care' | 'red';
   caption: string;
   aspect?: 'wide' | 'portrait';
+  showCaption?: boolean;
 }
 
-const { photo, caption, aspect } = Astro.props;
+const { photo, caption, aspect, showCaption = true } = Astro.props;
 const image = imagery[photo];
 ---
 
@@ -15,5 +16,5 @@ const image = imagery[photo];
   <div class="section-photo__frame">
     <img src={`/images/generated/${image.id}-1440.webp`} srcset={`/images/generated/${image.id}-720.webp 720w, /images/generated/${image.id}-1440.webp 1440w`} sizes="(max-width: 900px) 90vw, 660px" width={image.width} height={image.height} alt={image.alt} loading="lazy" decoding="async" />
   </div>
-  <figcaption>{caption} <span>AI-generated inspiration.</span></figcaption>
+  {showCaption && <figcaption>{caption} <span>AI-generated inspiration.</span></figcaption>}
 </figure>

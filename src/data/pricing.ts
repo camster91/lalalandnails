@@ -24,7 +24,6 @@ export const pricingDraft = {
     { name: 'Tier 1 — Minimal', addOn: 10, detail: 'Tiny hearts, dots, delicate lines, or one or two simple accent nails.' },
     { name: 'Tier 2 — Elevated', addOn: 20, detail: 'French tips, chrome, swirls or uncomplicated flowers.' },
     { name: 'Tier 3 — Detailed', addOn: 35, detail: 'Aura effects, tortoiseshell, detailed florals or layered designs.' },
-    { name: 'Tier 4 — Bespoke', addOn: 50, startingAt: true, detail: 'Complex hand painting, sculpted 3D artwork or advanced custom sets. Quote after photo review.' },
   ],
   repairs: [
     { id: 'minor', name: 'Minor nail repair', price: 5, detail: 'Small gel chip or minor product damage, per nail.' },

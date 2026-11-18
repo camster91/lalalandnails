@@ -59,7 +59,7 @@ try {
     assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'), 'noindex, nofollow', size.name + ': preview host noindex');
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://lalalandnails.ca/services-pricing', size.name + ': expected canonical');
     assert.equal(await page.locator('main.pricing-page h1').count(), 1, size.name + ': one page heading (excluding dev toolbar)');
-    for (const section of ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example']) {
+    for (const section of ['manicures', 'fills', 'repairs', 'pricing-example']) {
       assert.equal(await page.locator('#' + section).count(), 1, size.name + ': missing section ' + section);
     }
     assert.equal(await page.locator('.pricing-length svg').count(), 4, size.name + ': 4 length visuals');
@@ -107,12 +107,10 @@ try {
     await page.locator('[data-estimate-length]').selectOption('0');
     await page.locator('[data-estimate-art]').selectOption('0');
     assert.equal(await page.locator('[data-estimate-total]').textContent(), '$75', size.name + ': short + solid colour estimate');
-    await page.locator('[data-estimate-art]').selectOption('50');
-    assert.equal(await page.locator('[data-estimate-total]').textContent(), '$125+', size.name + ': tier 4 starts-at estimate');
-    assert.match(await page.locator('[data-estimate-note]').textContent(), /begins at this price/);
-    const artLink = page.locator('.pricing-index a[href="#art"]');
-    await artLink.click();
-    assert.equal(new URL(page.url()).hash, '#art', size.name + ': art anchor');
+    assert.equal(await page.locator('[data-estimate-art] option[value="50"]').count(), 0);
+    const repairsLink = page.locator('.pricing-index a[href="#repairs"]');
+    await repairsLink.click();
+    assert.equal(new URL(page.url()).hash, '#repairs', size.name + ': repairs anchor');
     assert.equal(await page.locator('a[href="/#booking"]').count() >= 1, true, size.name + ': pricing CTA exists');
     if (size.width <= 900) {
       await page.waitForFunction(() => !document.querySelector('.mobile-booking')?.classList.contains('is-hidden'));

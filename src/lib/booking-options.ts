@@ -13,7 +13,7 @@ export function quoteBooking(input:Record<string,unknown>){
  if(!service)throw Error('Choose a service package.');
  const length=String(input.length||'short'),art=String(input.art||'none'),reconstruction=String(input.reconstruction||'none'),repair=String(input.repair||'none'),shape=String(input.shape||'Not sure');
  if(!['short','medium','long','extra-long','unsure'].includes(length))throw Error('Choose a nail length.');
- if(!['none','1','2','3','4','unsure'].includes(art))throw Error('Choose an art tier.');
+ if(!['none','1','2','3','unsure'].includes(art))throw Error('Choose an art tier.');
  if(!['none','1','2','3','4'].includes(reconstruction))throw Error('Choose a reconstruction tier.');
  if(!['Not sure',...pricingDraft.shapes].includes(shape))throw Error('Choose a nail shape.');
  const countText=String(input.repairCount??'0');
@@ -33,7 +33,7 @@ export function quoteBooking(input:Record<string,unknown>){
  if(artItem)lines.push({label:artItem.name,amount:artItem.addOn});
  if(reconstructionItem)lines.push({label:reconstructionItem.name,amount:reconstructionItem.price});
  if(repairItem&&repairCount)lines.push({label:`${repairItem.name} × ${repairCount}`,amount:repairItem.price*repairCount});
- return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:'startingAt' in service||art==='unsure'||length==='unsure'||art==='4'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
+ return {serviceId:service.id,serviceName:service.name,length:effectiveLength,art,reconstruction,repair,repairCount,shape,lines,total:lines.reduce((n,l)=>n+l.amount,0),currency:'CAD',approved:pricingDraft.approved,needsConsultation:'startingAt' in service||art==='unsure'||length==='unsure'||reconstruction!=='none'||repair!=='none'||(service.structured&&length==='extra-long')};
 }
 export function formatBookingEstimate(quote:{total:number|null;needsConsultation:boolean;approved:boolean}){
  if(quote.total===null)return 'Bianca will help you choose and confirm your quote.';

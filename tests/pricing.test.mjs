@@ -38,7 +38,7 @@ test('length guide and tier prices follow a simple increasing model', () => {
   const { lengths, artTiers, shapes } = pricingDraft;
   assert.deepEqual(lengths.map((item) => item.name), ['Short', 'Medium', 'Long', 'Extra long']);
   assert.deepEqual(lengths.map((item) => item.addOn), [0, 10, 20, null]);
-  assert.deepEqual(artTiers.map((item) => item.addOn), [10, 20, 35, 50]);
+  assert.deepEqual(artTiers.map((item) => item.addOn), [10, 20, 35]);
   assert.ok(artTiers.every((item) => item.name && item.detail));
   assert.ok(shapes.includes('Almond') && shapes.includes('Squoval'));
   assert.equal(new Set(shapes).size, shapes.length);
@@ -61,7 +61,7 @@ test('the prices and CTAs appear in the intended page locations', () => {
   const header = readSource('src/components/Header.astro');
   const footer = readSource('src/components/Footer.astro');
   const booking = readSource('src/components/BookingRequest.astro');
-  const components = ['manicures', 'fills', 'length', 'art', 'repairs', 'pricing-example'];
+  const components = ['manicures', 'fills', 'repairs', 'pricing-example'];
   for (const id of components) assert.ok(page.includes('id="' + id + '"'), id);
   assert.ok(index.indexOf('<PricingTeaser />') < index.indexOf('<ProcessStory '), 'pricing preview precedes the process section');
   assert.match(index, /pricingDraft\.approved\) && <PricingTeaser \/>/, 'preview is approval-gated');
@@ -69,7 +69,6 @@ test('the prices and CTAs appear in the intended page locations', () => {
   assert.match(footer, /href="\/services-pricing"/);
   assert.match(booking, /href="\/services-pricing"/);
   assert.match(page, /href="\/#booking"/);
-  assert.match(page, /AI-generated inspiration/);
   assert.ok(!page.includes('priceRange') && !page.includes('aggregateRating'));
 });
 

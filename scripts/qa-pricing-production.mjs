@@ -45,7 +45,8 @@ try {
     const response = await respond(path);
     assert.equal(response.status, 200);
     const html = await response.text();
-    assert.ok(html.includes('Tier 4 — Bespoke'));
+    assert.ok(html.includes('Tier 3 — Detailed'));
+    assert.ok(!html.includes('Tier 4 — Bespoke'));
     assert.ok(!html.includes('Pricing draft for studio review.'));
   }
   // A noncanonical local preview must not advertise URLs for indexing.

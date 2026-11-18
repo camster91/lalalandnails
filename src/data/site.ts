@@ -170,7 +170,6 @@ export const siteConfig: SiteConfig = {
     { question: 'Can I request a fill with gel from another nail technician?', answer: 'Tell Bianca what product is on your nails and who applied it. Product from another technician needs assessment before a fill is accepted; removal and a new application may be more suitable. The service menu shows separate prices for fills, removal and repairs.' },
     { question: 'Can I add Pinterest inspiration links or nail images?', answer: 'Yes. Add up to three public HTTPS links or two images in the optional inspiration section. A shape, colour or detail is enough to start the discussion. Images are shared privately with authorised studio staff, and Bianca confirms what is achievable before your appointment.' },
     { question: 'Do you accept walk-ins?', answer: 'La La Land works by appointment. Use the request calendar and wait for Bianca to confirm your time and visit details before travelling to the studio.' },
-    { question: 'Are the website images Bianca’s client work?', answer: 'The manicure inspiration images currently shown are AI-generated using real manicure references. They show ideas for colour, shape and finish; they are not client photographs, Bianca’s portfolio or photographs of the studio.' },
   ],
   policies: [
     'Appointments are requests until Bianca confirms the service, price and visit details.',

@@ -126,7 +126,7 @@ em { color: var(--plum); font-weight: 300; }
 .service a:focus-visible { outline-color: var(--cream); }
 .service__content { align-self: start; }
 .service__lead { margin: 0 0 3.5rem; font-family: var(--serif); font-size: clamp(1.55rem, 2.8vw, 2.6rem); line-height: 1.14; letter-spacing: -.035em; }
-.service__feature-photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 62%; border-radius: var(--radius); }
+.service__feature-photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 85%; border-radius: var(--radius); }
 .service__lead:has(+ .service__feature-photo) { margin-bottom: 1.5rem; }
 .service__facts { margin: 2rem 0 0; border-top: 1px solid rgba(255, 240, 200, .3); }
 .service__facts div { display: grid; grid-template-columns: 1fr 1.3fr; padding: 1.15rem 0; border-bottom: 1px solid rgba(255, 240, 200, .3); }
@@ -189,7 +189,7 @@ em { color: var(--plum); font-weight: 300; }
 .process { display: grid; grid-template-columns: minmax(20rem, .9fr) minmax(22rem, 1.1fr); gap: clamp(3rem, 8vw, 9rem); padding-top: 2rem; color: var(--blush); background: var(--burgundy); }
 .process em { color: var(--plum-on-dark); }
 .process__visual { position: sticky; top: calc(var(--header-height) + 1rem); height: calc(100svh - var(--header-height) - 2rem); max-height: 52rem; align-self: start; overflow: hidden; border-radius: var(--radius); background: var(--burgundy-soft); }
-.process__visual > img { width: 100%; height: 100%; object-fit: cover; object-position: 54% center; }
+.process__visual > img { width: 100%; height: 100%; object-fit: cover; object-position: 54% top; }
 .process__visual::after { position: absolute; inset: 0; content: ''; background: linear-gradient(180deg, transparent 50%, rgba(36, 2, 4, .72)); }
 .process__visual-overlay { position: absolute; z-index: 2; right: 1.5rem; bottom: 1.5rem; left: 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; }
 .process__visual-overlay span { font-family: var(--serif); font-size: clamp(4rem, 9vw, 8rem); line-height: .8; letter-spacing: -.06em; transition: opacity 180ms ease; }
@@ -648,7 +648,6 @@ html, body { overflow-x: clip; }
 .manicure-comparison__frame { --reveal: 50%; }
 .section-photo__frame > .manicure-comparison__before,
 .section-photo__frame > .manicure-comparison__after { inset: 0; height: 100%; transform: none !important; }
-.section-photo__frame > .manicure-comparison__after { inset: -35% auto auto -8%; width: 180%; max-width: none; height: 180%; }
 .manicure-comparison__before { clip-path: inset(0 calc(100% - var(--reveal)) 0 0); }
 .manicure-comparison__divider { position: absolute; inset-block: 0; left: var(--reveal); width: 2px; background: #fff; transform: translateX(-50%); pointer-events: none; }
 .manicure-comparison__tag { position: absolute; top: .75rem; padding: .3rem .65rem; border-radius: 999px; color: var(--cream); background: var(--burgundy); font-size: .75rem; font-weight: 700; }

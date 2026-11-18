@@ -3,10 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../data/site';
-import NailLengthIllustration from '../components/NailLengthIllustration.astro';
-import NailArtIllustration from '../components/NailArtIllustration.astro';
 import PriceEstimator from '../components/PriceEstimator.astro';
 import { pricingDraft as prices, displayPrice } from '../data/pricing';
+
+const tierPhotos = [
+  { src: '/images/tier-one-pink.webp', alt: 'Pink shimmer manicure with white French tips', position: '50% 65%' },
+  { src: '/images/olive-cat-eye-manicure.webp', alt: 'Olive-gold cat-eye manicure', position: '50% 80%' },
+  { src: '/images/tier-three-nail-art-closeup.webp', alt: 'Close-up of pink nails with detailed spotted nail art', position: '50% 50%' },
+];
 
 // Fail closed for public requests; development QA may still inspect the draft.
 if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', { status: 404 });
@@ -28,8 +32,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           <p class="pricing-hero__fine">Introductory prices in CAD, before applicable taxes. Request first; Bianca confirms the final price and appointment. No online payment.</p>
         </div>
         <figure class="pricing-hero__photo">
-          <img src="/images/generated/neutral-1440.webp" srcset="/images/generated/neutral-720.webp 720w, /images/generated/neutral-1440.webp 1440w" sizes="(max-width: 800px) 100vw, 45vw" alt="AI-generated blush manicure inspiration on natural-looking short nails" width="1440" height="960" loading="eager" />
-          <figcaption>AI-generated inspiration · Not client work</figcaption>
+          <img src="/images/pricing-red-manicure-1440.webp" srcset="/images/pricing-red-manicure-720.webp 720w, /images/pricing-red-manicure-1440.webp 1440w" sizes="(max-width: 900px) 100vw, 45vw" alt="Glossy burgundy manicure on short square nails" width="1440" height="1920" fetchpriority="high" loading="eager" />
         </figure>
       </section>
 
@@ -41,9 +44,8 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
 
       <nav class="pricing-index" aria-label="On this page">
         <a href="#manicures">Manicures</a>
+        <a href="#art">Nail art tiers</a>
         <a href="#fills">Fills & maintenance</a>
-        <a href="#length">Lengths & shapes</a>
-        <a href="#art">Nail art</a>
         <a href="#repairs">Repairs</a>
         <a href="#reconstruction">Reconstruction</a>
         <a href="#pricing-example">How pricing works</a>
@@ -70,6 +72,27 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <p class="pricing-caption">Detailed art, additional length and certain repairs are priced separately. Each manicure includes standard shaping where suitable.</p>
       </section>
 
+      <section id="art" class="pricing-section pricing-tiers" aria-labelledby="art-title">
+        <div class="pricing-intro">
+          <p class="eyebrow">Make it your own</p>
+          <h2 id="art-title">Nail art <em>tiers.</em></h2>
+          <p>Choose your detail, from a small accent to a custom set. Tier prices are added to your manicure service, in CAD. Send your inspiration so Bianca can confirm the tier and appointment time.</p>
+        </div>
+        <div class="pricing-tiers__grid">
+          {prices.artTiers.map((tier, index) => (
+            <article class="pricing-tier">
+              <img src={tierPhotos[index].src} alt={tierPhotos[index].alt} style={{ objectPosition: tierPhotos[index].position }} width="720" height="900" loading="lazy" decoding="async" />
+              <div class="pricing-tier__copy">
+                <h3>{tier.name}</h3>
+                <strong>{'startingAt' in tier ? 'From ' : '+'}{displayPrice(tier.addOn)} CAD</strong>
+                <p>{tier.detail}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p class="pricing-caption">Photos show manicure work for inspiration. Your design determines its tier. French tips, chrome and other effects included in a tier are charged once.</p>
+      </section>
+
       <section id="fills" class="pricing-section pricing-section--cream" aria-labelledby="fills-title">
         <div class="pricing-intro">
           <p class="eyebrow">02 · Returning clients</p>
@@ -89,50 +112,6 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           </article>
         </div>
         <p class="pricing-caption">Routine preparation and removal of compatible old product is included in our own structured gel fills. Work from another technician may need a consultation and a different service.</p>
-      </section>
-
-      <section id="length" class="pricing-section" aria-labelledby="length-title">
-        <div class="pricing-intro">
-          <p class="eyebrow">03 · Your natural nails</p>
-          <h2 id="length-title">Choose your <em>length.</em></h2>
-          <p>Length add-ons apply to new structured gel manicures. A shape change alone is not an added charge; the shape must suit your natural nails.</p>
-        </div>
-        <div class="pricing-length-grid">
-          {prices.lengths.map((item) => (
-            <article class="pricing-length">
-              <NailLengthIllustration length={item.name} />
-              <h3>{item.name}</h3>
-              <strong>{item.addOn === null ? 'Consultation' : item.addOn === 0 ? 'Included' : '+' + displayPrice(item.addOn)}</strong>
-              <p>{item.detail}</p>
-            </article>
-          ))}
-        </div>
-        <p class="pricing-caption">These are illustrated length references, not photos or exact measurements. Free-edge length and structural suitability are assessed individually.</p>
-        <div class="pricing-shapes"><strong>Included nail shapes (when suitable):</strong><p>{prices.shapes.join(' · ')}</p></div>
-      </section>
-
-      <section id="art" class="pricing-section pricing-section--blush" aria-labelledby="art-title">
-        <div class="pricing-intro">
-          <p class="eyebrow">04 · Add your detail</p>
-          <h2 id="art-title">Nail art <em>tiers.</em></h2>
-          <p>Choose one tier based on complexity across the full set. Send an inspiration photo when requesting detailed art so we can confirm the right price and time.</p>
-        </div>
-        <div class="pricing-art-cards">
-          {prices.artTiers.map((tier, index) => (
-            <article class="pricing-art-card">
-              <figure>
-                <NailArtIllustration tier={(index + 1) as 1 | 2 | 3 | 4} />
-                <figcaption>Illustrative design motifs · Not Bianca’s client work</figcaption>
-              </figure>
-              <div class="pricing-art-card__title">
-                <h3>{tier.name}</h3>
-                <strong>{'startingAt' in tier ? 'From ' : '+'}{displayPrice(tier.addOn)}</strong>
-              </div>
-              <p>{tier.detail}</p>
-            </article>
-          ))}
-        </div>
-        <p class="pricing-caption">French tips, chrome or similar effects already included in your selected art tier are not charged again separately.</p>
       </section>
 
       <section id="repairs" class="pricing-section" aria-labelledby="repairs-title">
@@ -217,6 +196,18 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
 </BaseLayout>
 
 <style>
+  .pricing-tiers { color: var(--cream); background: var(--burgundy); }
+  .pricing-tiers em { color: var(--blush); }
+  .pricing-tiers__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+  .pricing-tier { overflow: hidden; border: 1px solid rgba(255, 240, 200, .25); border-radius: var(--radius); }
+  .pricing-tier > img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+  .pricing-tier__copy { padding: 1.4rem; }
+  .pricing-tier h3 { font-size: 1.1rem; line-height: 1.4; }
+  .pricing-tier strong { display: block; margin-top: 1rem; font: 400 2rem/1.2 var(--serif); color: var(--blush); }
+  .pricing-tier p { margin-bottom: 0; line-height: 1.65; }
+  @media (max-width: 1100px) { .pricing-tiers__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .pricing-tiers__grid { grid-template-columns: 1fr; } }
+
   .pricing-page { background: var(--paper); }
   .pricing-hero { display: grid; grid-template-columns: 1fr 0.9fr; align-items: stretch; min-height: 39rem; background: var(--burgundy); color: var(--cream); }
   .pricing-hero__copy { padding: clamp(5rem, 8vw, 8rem) var(--page-gutter); align-self: center; }

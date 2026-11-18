@@ -18,7 +18,7 @@ test('reconstruction and individual repairs cannot charge for the same work',()=
  assert.equal(quoteBooking(pick({reconstruction:'2'})).total,95);
 });
 test('consultation and complex options are identified rather than guaranteed to fit two hours',()=>{
- assert.equal(quoteBooking(pick({art:'4'})).needsConsultation,true);
+ assert.throws(()=>quoteBooking(pick({art:'4'})),/art tier/);
  assert.equal(quoteBooking(pick({length:'extra-long'})).needsConsultation,true);
  assert.throws(()=>quoteBooking(pick({package:'fake'})),/service/i);
  assert.throws(()=>quoteBooking(pick({repair:'broken',repairCount:'99'})),/repair/i);
