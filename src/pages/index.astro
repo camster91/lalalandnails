@@ -32,7 +32,7 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
           </div>
         </div>
         <figure class="hero__media reveal">
-          <video class="hero__video" controls muted playsinline loop preload="none" poster="/videos/long-gel-x-poster.webp" width="720" height="1280" aria-labelledby="hero-video-caption">
+          <video class="hero__video" muted playsinline loop preload="none" poster="/videos/long-gel-x-poster.webp" width="720" height="1280" aria-labelledby="hero-video-caption">
             <source src="/videos/long-gel-x.mp4" type="video/mp4" />
           </video>
           <figcaption id="hero-video-caption">Long Gel-X with Manicure</figcaption>
@@ -46,7 +46,6 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
             {[0, 1, 2].map(() => <><span>OOO looks good on you</span><img src="/brand/submark.svg" alt="" /></>)}
           </div>)}
         </div>
-        <button class="brand-marquee__pause" type="button" aria-label="Pause scrolling banner" aria-pressed="false" data-marquee-toggle><span aria-hidden="true">Ⅱ</span></button>
       </div>
 
       <section class="about section" id="about" aria-labelledby="about-title">
@@ -144,12 +143,4 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
     void heroVideo.play().catch(() => {});
   }
 
-  const marquee = document.querySelector('[data-marquee]');
-  const pause = document.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
-  pause?.addEventListener('click', () => {
-    const paused = marquee?.classList.toggle('is-paused') ?? false;
-    pause.setAttribute('aria-pressed', String(paused));
-    pause.setAttribute('aria-label', paused ? 'Resume scrolling banner' : 'Pause scrolling banner');
-    pause.innerHTML = `<span aria-hidden="true">${paused ? '▶' : 'Ⅱ'}</span>`;
-  });
 </script>

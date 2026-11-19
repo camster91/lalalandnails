@@ -450,7 +450,6 @@ p { line-height: 1.7; }
 .brand-marquee__group { display: flex; min-width: 100vw; flex-shrink: 0; align-items: center; justify-content: space-around; gap: 2.5rem; padding-right: 2.5rem; }
 .brand-marquee__group span { font-family: var(--serif); font-size: clamp(2rem, 3.8vw, 4.5rem); letter-spacing: -.015em; line-height: 1.25; white-space: nowrap; }
 .brand-marquee__group img { width: 2.25rem; height: 2.25rem; flex-shrink: 0; filter: brightness(0) saturate(100%); }
-.brand-marquee__pause { position: absolute; right: .75rem; bottom: .25rem; min-height: 2.75rem; min-width: 2.75rem; border: 1px solid var(--burgundy); border-radius: 50%; color: var(--blush); background: var(--burgundy); cursor: pointer; }
 .brand-marquee:hover .brand-marquee__track, .brand-marquee:focus-within .brand-marquee__track, .brand-marquee.is-paused .brand-marquee__track { animation-play-state: paused; }
 @keyframes brand-scroll { to { transform: translateX(-50%); } }
 .service { padding-block: clamp(4rem, 7vw, 7rem); align-items: start; }
@@ -529,7 +528,6 @@ p { line-height: 1.7; }
 }
 @media (prefers-reduced-motion: reduce) {
   .brand-marquee__track { animation: none; }
-  .brand-marquee__pause { display: none; }
   .process__visual > img { transform: none !important; will-change: auto; }
 }
 /* Clip without creating a competing scroll container for sticky media. */
@@ -745,3 +743,8 @@ html, body { overflow-x: clip; }
 .booking-form [data-service-options],.booking-optional[open] { display: grid; gap: 1rem; }
 .booking-optional { min-width: 0; padding: .75rem; border: 1px solid rgba(51,5,5,.25); border-radius: .5rem; }
 .booking-optional > summary { min-height: 2.75rem; padding: .5rem 0; cursor: pointer; font-weight: 700; }
+
+@media (max-width: 900px) {
+  .about__portrait { grid-row: 1; }
+  .about__body { grid-row: 2; }
+}
