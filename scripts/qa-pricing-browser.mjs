@@ -59,11 +59,12 @@ try {
     assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'), 'noindex, nofollow', size.name + ': preview host noindex');
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://lalalandnails.ca/services-pricing', size.name + ': expected canonical');
     assert.equal(await page.locator('main.pricing-page h1').count(), 1, size.name + ': one page heading (excluding dev toolbar)');
-    for (const section of ['manicures', 'fills', 'repairs', 'pricing-example']) {
+    for (const section of ['manicures', 'art', 'fills', 'repairs', 'pricing-example']) {
       assert.equal(await page.locator('#' + section).count(), 1, size.name + ': missing section ' + section);
     }
-    assert.equal(await page.locator('.pricing-length svg').count(), 4, size.name + ': 4 length visuals');
-    assert.equal(await page.locator('.pricing-art-card svg').count(), 4, size.name + ': 4 art tiers');
+    assert.equal(await page.locator('[data-estimate-length] option').count(), 3, size.name + ': 3 selectable lengths');
+    assert.equal(await page.locator('#art .pricing-tier').count(), 3, size.name + ': 3 art tiers');
+    assert.equal(await page.locator('#art .pricing-tier img').count(), 3, size.name + ': 3 art tier photos');
     assert.equal(await page.locator('[data-estimate-total]').textContent(), '$105', size.name + ': initial estimate matches 75+10+20');
 
     const layout = await page.evaluate(() => {
