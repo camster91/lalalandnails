@@ -759,3 +759,5 @@ html, body { overflow-x: clip; }
 @media (max-width: 900px) {
   #service, .booking-policies { grid-template-columns: minmax(0,1fr); }
 }
+
+.service-guide-link { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; }

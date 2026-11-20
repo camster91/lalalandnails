@@ -84,7 +84,7 @@ export const guides = [
     "path": "/services/structured-gel-fills-scarborough",
     "title": "Structured gel fills in Scarborough",
     "label": "Structured gel fill guide",
-    "description": "Returning to Bianca for a builder-gel fill? Compare short, medium and long fill prices and find out when to mention lifting or a broken nail.",
+    "description": "Structured gel fills in Scarborough for returning clients wearing Bianca’s work. Short $70, medium $80 and long $90 CAD. Tell Bianca about any lifting or repairs.",
     "img": "/images/pricing-red-manicure-720.webp",
     "alt": "Glossy burgundy finish on short square nails",
     "intro": "If I applied your structured gel and you have a band of new growth at the cuticle, request a fill. Tell me which length you’d like to keep and whether any nails have lifted or broken.",
