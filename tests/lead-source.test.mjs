@@ -10,3 +10,15 @@ test('attribution retains known channels but no arbitrary query or referrer data
  assert.equal(leadSource('private@example.com'),'unknown');
  assert.equal(detectLeadSource(base,'https://google.evil.example/private'),'referral');
 });
+
+test('a Google guide visit retains its channel through pricing and booking', async () => {
+  const {visitSource} = await import('../src/lib/lead-source.ts');
+  const home = 'https://lalalandnails.ca/';
+  const guide = home + 'services/nail-art-scarborough';
+  const pricing = home + 'services-pricing';
+  const first = visitSource(guide, 'https://www.google.ca/', null);
+  assert.equal(visitSource(home, pricing, visitSource(pricing, guide, first)), 'google');
+  assert.equal(visitSource(home + '?utm_source=pinterest', guide, first), 'pinterest');
+  assert.equal(visitSource(home, '', first), 'direct');
+  assert.equal(visitSource(home, 'https://www.bing.com/', first), 'bing');
+});

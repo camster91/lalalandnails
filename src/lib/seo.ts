@@ -1,3 +1,4 @@
+import { guides } from '../data/service-guides.ts';
 import { pricingDraft } from '../data/pricing.ts';
 import {bookingPolicy} from './booking-policy.ts';
 import { homeMetadata, type SiteConfig } from '../data/site.ts';
@@ -7,7 +8,7 @@ export function isPublicOrigin(site: SiteConfig, url: URL): boolean {
 }
 
 export function isIndexable(site: SiteConfig, url: URL): boolean {
-  return isPublicOrigin(site, url) && (url.pathname === '/' || (pricingDraft.approved && url.pathname === '/services-pricing'));
+  return isPublicOrigin(site, url) && (url.pathname === '/' || (pricingDraft.approved && (url.pathname === '/services-pricing' || url.pathname === '/durham-region-manicures' || guides.some(g => g.path === url.pathname))));
 }
 
 export function buildRobots(site: SiteConfig, url: URL): string {

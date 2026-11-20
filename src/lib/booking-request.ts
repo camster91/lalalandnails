@@ -19,7 +19,10 @@ export async function handleBookingRequest(request:Request,dependencies:Dependen
     const name = clean(input.name, 80);
     const phone = normalizePhone(clean(input.phone, 40));
     const contactMethod = clean(input.contactMethod, 10);
-    const notes = clean(input.notes, 600);
+    const clientNotes = clean(input.notes, 600);
+    const vibe = input.vibe;
+    const hasVibe = vibe === 'Quiet' || vibe === 'TV' || vibe === 'Music';
+    const notes = hasVibe ? [`Appointment vibe: ${vibe}`, clientNotes].filter(Boolean).join('\n') : clientNotes;
     const consent = input.consent === true || input.consent === 'on' || input.consent === 'true';
 
     const errors: Record<string, string> = {};

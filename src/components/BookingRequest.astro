@@ -70,6 +70,17 @@ import { pricingDraft } from '../data/pricing';
 
     <span id="contactMethod-error" class="field-error" data-field-error="contactMethod"></span>
 
+    <label>
+      Pick your vibe <span class="field-optional">Optional</span>
+      <select name="vibe" aria-describedby="vibe-hint">
+        <option value="">No preference</option>
+        <option value="Quiet">Quiet</option>
+        <option value="TV">TV</option>
+        <option value="Music">Music</option>
+      </select>
+    </label>
+    <p id="vibe-hint" class="field-hint">For a quiet appointment, Bianca will wear headphones to help her focus.</p>
+
     <BookingInspiration />
     <label>
       What do you have in mind? <span class="field-optional">Optional</span>

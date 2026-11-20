@@ -19,3 +19,28 @@ export function detectLeadSource(page: string, referrer: string): string {
     return 'referral';
   } catch { return 'unknown'; }
 }
+
+/** Carry the channel label across internal links in the current browser tab. */
+export function visitSource(page: string, referrer: string, previous: string | null): string {
+  const detected = detectLeadSource(page, referrer);
+  const saved = leadSource(previous);
+  if (saved === 'unknown' || !referrer) return detected;
+  const current = new URL(page);
+  if (leadSource(current.searchParams.get('utm_source')) !== 'unknown') return detected;
+  try {
+    return new URL(referrer).origin === current.origin ? saved : detected;
+  } catch {
+    return detected;
+  }
+}
+
+export function rememberVisitSource(): string {
+  const key = 'lala-visit-channel';
+  try {
+    const source = visitSource(location.href, document.referrer, sessionStorage.getItem(key));
+    sessionStorage.setItem(key, source);
+    return source;
+  } catch {
+    return detectLeadSource(location.href, document.referrer);
+  }
+}

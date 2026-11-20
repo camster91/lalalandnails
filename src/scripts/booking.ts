@@ -1,7 +1,7 @@
 import {startBookingSteps} from './booking-steps';
 import {quoteBooking,parseInspirationLinks} from '../lib/booking-options';
 import { normalizePhone } from '../lib/phone';
-import { detectLeadSource } from '../lib/lead-source';
+import { rememberVisitSource } from '../lib/lead-source';
 import {startBookingCalendar} from './booking-calendar';
 export function startBooking() {
   const form = document.querySelector<HTMLFormElement>('[data-booking-form]');
@@ -12,7 +12,7 @@ export function startBooking() {
   const steps=startBookingSteps(form);
   const calendar=startBookingCalendar(form);
   const sourceInput=form.elements.namedItem('leadSource') as HTMLInputElement;
-  sourceInput.value=detectLeadSource(location.href,document.referrer);
+  sourceInput.value=rememberVisitSource();
   if (typeof dialog.showModal === 'function') document.querySelectorAll('a[href="#booking"]').forEach(link=> { link.setAttribute('aria-haspopup','dialog'); link.setAttribute('aria-controls','booking-dialog'); });
   const status = form.querySelector<HTMLElement>('[data-booking-status]')!;
   let started = false;
@@ -119,7 +119,7 @@ export function startBooking() {
       const result=await response.json() as {ok?:boolean;message?:string;errors?:Record<string,string>};
       if(result.errors) {if(response.status===409)await calendar.refresh();showErrors(result.errors);return;}
       if(!response.ok || !result.ok) throw Error(result.message || 'The request could not be sent. Please try again shortly.');
-      form.reset();calendar.reset();steps.reset();sourceInput.value=detectLeadSource(location.href,document.referrer);started=false;
+      form.reset();calendar.reset();steps.reset();sourceInput.value=rememberVisitSource();started=false;
       status.textContent=result.message || 'Your request has been received.';
       status.tabIndex=-1;status.focus();
       window.plausible?.('booking_request_submitted');

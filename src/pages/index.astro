@@ -25,7 +25,7 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
           <p class="eyebrow">Scarborough nail studio · By appointment</p>
           <h1 id="hero-title">Dreamy nails <em>await.</em></h1>
           <p class="hero__intro">Get cosy in Bianca’s home studio for a one-on-one dry combi manicure with precise cuticle work and structure built around your natural nails.</p>
-          <ul class="hero__areas" aria-label="Clients welcome from"><li>Scarborough</li><li>Pickering</li><li>Ajax</li><li>Whitby</li><li>Durham Region</li><li>Greater Toronto Area</li></ul>
+          <ul class="hero__areas" aria-label="Clients welcome from"><li>Scarborough</li><li>Pickering</li><li>Ajax</li><li>Whitby</li><li><a href="/durham-region-manicures">Durham Region</a></li><li>Greater Toronto Area</li></ul>
           <div class="hero__actions">
             <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
             <a class="text-link" href="/services-pricing">See services &amp; prices <span aria-hidden="true">↘</span></a>
@@ -65,10 +65,17 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
       </section>
 
       <section class="service section" id="service" aria-labelledby="service-title">
-        <div class="section-heading reveal">
+        <div class="section-heading">
           <p class="eyebrow">Dry manicure · Gel colour · Structured gel · Soft gel tips</p>
-          <h2 id="service-title">Before You Book / <em>Policies</em></h2>
-          <figure class="section-photo section-photo--wide">
+          <h2 id="service-title">The manicure <em>experience</em></h2>
+          <p class="service__lead">Take a little time for yourself with a one-on-one European-style dry manicure. Each appointment starts with detailed cuticle care and shaping that follows the natural curve of your nails.</p>
+          <div class="service__decision">
+            <p>From there, you can keep your nails bare, add gel colour, or go with a structured gel overlay for a little extra support. If you’d like more length, soft gel extensions are an option too.</p>
+            <p>If you’ve been in before, you can come back for a fill, a little upkeep, or a nail repair.</p>
+            <a class="button button--cream" href="/services-pricing">Compare services &amp; pricing</a>
+          </div>
+        </div>
+        <div><figure class="section-photo section-photo--wide">
             <div class="section-photo__frame manicure-comparison__frame" id="manicure-comparison">
               <img class="manicure-comparison__after" src="/images/red-manicure-1440.webp" srcset="/images/red-manicure-720.webp 720w, /images/red-manicure-1440.webp 1440w" sizes="(max-width: 900px) 90vw, 660px" width="1440" height="1080" alt="Glossy deep-red polish on short square nails" loading="lazy" decoding="async" />
               <img class="manicure-comparison__before" src="/images/red-manicure-before.webp" width="942" height="665" alt="Short bare nails before the manicure" loading="lazy" decoding="async" />
@@ -87,20 +94,16 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
             {service.duration && <div><dt>Duration</dt><dd>{service.duration}</dd></div>}
           </dl>
         </div>
-        <div class="service__content reveal">
-          <p class="service__lead">Take a little time for yourself with a one-on-one European-style dry manicure. Each appointment starts with detailed cuticle care and shaping that follows the natural curve of your nails.</p>
-          <img class="service__feature-photo" src="/images/olive-cat-eye-manicure.webp" width="1122" height="1402" alt="Olive-gold cat-eye manicure on green fabric" loading="lazy" decoding="async" />
-          <div class="service__decision">
-            <p>From there, you can keep your nails bare, add gel colour, or go with a structured gel overlay for a little extra support. If you’d like more length, soft gel extensions are an option too.</p>
-            <p>If you’ve been in before, you can come back for a fill, a little upkeep, or a nail repair.</p>
-            <p>New here and wearing gel from another nail tech? Please arrive with bare nails or book a removal with your manicure. A fresh set starts on bare nails, so please mention the existing gel in your booking request so extra time can be set aside for removal.</p>
-            <a class="button button--cream" href="/services-pricing">Compare services &amp; pricing</a>
-            <a class="text-link" href="#booking" data-analytics-events="booking_request_view">Request an appointment <span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="service__detail-list">
-            <h3>Deposits and cancellations</h3>
-            <p>A $30 deposit secures your booking and goes toward the cost of your appointment. If you need to cancel, please give at least 24 hours’ notice. The deposit is non-refundable if you cancel less than 24 hours before your appointment.</p>
-          </div>
+      </section>
+
+      <section class="section booking-policies" id="booking-policies" aria-labelledby="policies-title">
+        <h2 id="policies-title">Before you <em>book</em></h2>
+        <div>
+          <h3>Arriving with gel</h3>
+          <p>New here and wearing gel from another nail tech? Please arrive with bare nails or book a removal with your manicure. A fresh set starts on bare nails, so please mention the existing gel in your booking request so extra time can be set aside for removal.</p>
+          <h3>Deposits and cancellations</h3>
+          <p>A $30 deposit secures your booking and goes toward the cost of your appointment. If you need to cancel, please give at least 24 hours’ notice. The deposit is non-refundable if you cancel less than 24 hours before your appointment.</p>
+          <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
         </div>
       </section>
 

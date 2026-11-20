@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { siteConfig as site } from '../../data/site';
+import { guides } from '../../data/service-guides';
+import { pricingDraft } from '../../data/pricing';
+const guide = guides.find(g => g.path === '/services/' + Astro.params.slug);
+if (!guide || !pricingDraft.approved) return new Response('Page not found', {status:404});
+---
+<BaseLayout site={site} title={guide.title + ' | La La Land Nail Hub'} description={guide.description} photo={guide}>
+<div class="page-shell" id="top"><Header site={site}/>
+<main id="main"><article>
+<header class="intro"><div><a href="/services-pricing">Services &amp; pricing</a><h1>{guide.title}</h1><p>{guide.intro}</p></div><img src={guide.img} alt={guide.alt} fetchpriority="high"/></header>
+<div class="details">{guide.questions.map(({q,a}) => <section><h2>{q}</h2><p>{a}</p></section>)}
+{!['structured-gel-fills', 'gel-removal'].includes(guide.id) && <section><h2>Coming in with gel from another technician?</h2><p>Please arrive with bare nails or request removal with your manicure. Mention your existing product when booking so I can set aside time at my Scarborough studio.</p></section>}
+<a class="button" href="/#booking">Request an appointment</a>
+<nav aria-label="Compare manicure services">{guides.filter(g=>g.id!==guide.id).map(g=><a href={g.path}>{g.label}</a>)}</nav></div>
+</article></main><Footer site={site}/></div></BaseLayout>
+<style>
+.intro{background:#330505;color:#fff0cb;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;padding:9rem 5vw 4rem}.intro h1{font-size:clamp(2.8rem,5vw,5.5rem);line-height:1.05;margin:1.2rem 0}.intro img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:1rem}.details{max-width:48rem;margin:auto;padding:3rem 1.25rem}.details section{margin-bottom:2rem}.details h2{font-size:clamp(1.6rem,3vw,2.4rem)}p{line-height:1.65}.details nav{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:2rem}nav a,.intro a{text-decoration:underline}@media(max-width:800px){.intro{grid-template-columns:1fr;padding-top:9rem}}
+</style>

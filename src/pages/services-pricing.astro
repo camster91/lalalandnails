@@ -6,6 +6,14 @@ import { siteConfig } from '../data/site';
 import PriceEstimator from '../components/PriceEstimator.astro';
 import { pricingDraft as prices, displayPrice } from '../data/pricing';
 
+import { guides } from '../data/service-guides';
+const servicePhotos = {
+  dry: { src: '/images/manicure-prep.webp', alt: 'Manicure preparation at Bianca’s studio' },
+  'gel-colour': { src: '/images/red-manicure-720.webp', alt: 'Glossy red colour on short square nails' },
+  structured: { src: '/images/pricing-red-manicure-720.webp', alt: 'Example of a short natural-nail shape with solid burgundy colour' },
+  'soft-gel-tips': { src: '/images/tier-one-pink.webp', alt: 'Long pink shimmer nails with tapered tips' },
+} as const;
+
 const tierPhotos = [
   { src: '/images/tier-one-pink.webp', alt: 'Pink shimmer manicure with white French tips', position: '50% 65%' },
   { src: '/images/olive-cat-eye-manicure.webp', alt: 'Olive-gold cat-eye manicure', position: '50% 80%' },
@@ -55,21 +63,23 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <div class="pricing-intro">
           <p class="eyebrow">01 · Signature services</p>
           <h2 id="manicures-title">Start with your <em>manicure.</em></h2>
-          <p>Structured gel reinforces your natural nails with a builder-gel overlay. Soft gel tips add length with full-cover extensions.</p>
+          <p>For bare, neatly shaped nails, choose a dry/combi manicure. For more support at your natural length, choose structured gel. For extra length, choose soft gel tips. All prices are in CAD.</p>
         </div>
         <div class="pricing-card-grid">
           {prices.manicures.map((service) => (
             <article class:list={['pricing-card', { 'pricing-card--featured': service.id === 'structured' }]}>
+              <img class="service-example" src={servicePhotos[service.id].src} alt={servicePhotos[service.id].alt} loading="lazy" decoding="async" />
               <div class="pricing-card__top">
                 <h3>{service.name}</h3><strong>{(service.id === 'structured' || 'startingAt' in service) && <small>From </small>}{displayPrice(service.price)}</strong>
               </div>
-              <p>{service.description}</p>
+              <p>{service.description}</p>{guides.filter(g => g.id === service.id).map(g => <a href={g.path}><u>{g.label}</u></a>)}
               {'duration' in service && <span class="pricing-card__meta">{service.duration}</span>}
+              {service.id === 'soft-gel-tips' && <span class="pricing-card__meta">Bianca confirms timing with your request.</span>}
               {service.id === 'structured' && <span class="pricing-card__meta">Short natural-nail length included</span>}
             </article>
           ))}
         </div>
-        <p class="pricing-caption">Detailed art, additional length and certain repairs are priced separately. Each manicure includes standard shaping where suitable.</p>
+        <p class="pricing-caption">New clients, please arrive with bare nails or book removal with your manicure so Bianca can allow extra time. Detailed art, additional length and certain repairs are priced separately. Each manicure includes standard shaping where suitable.</p>
       </section>
 
       <section id="art" class="pricing-section pricing-tiers" aria-labelledby="art-title">
@@ -90,7 +100,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
             </article>
           ))}
         </div>
-        <p class="pricing-caption">Photos show manicure work for inspiration. Your design determines its tier. French tips, chrome and other effects included in a tier are charged once.</p>
+        <p class="pricing-caption">Photos show manicure work for inspiration. Your design determines its tier. French tips, chrome and other effects included in a tier are charged once. <a href="/services/nail-art-scarborough"><u>See nail art examples and a French tip price breakdown</u></a>.</p>
       </section>
 
       <section id="fills" class="pricing-section pricing-section--cream" aria-labelledby="fills-title">
@@ -111,7 +121,11 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
             <strong>{displayPrice(prices.standaloneRemoval.price)}</strong>
           </article>
         </div>
-        <p class="pricing-caption">Routine preparation and removal of compatible old product is included in our own structured gel fills. Work from another technician may need a consultation and a different service.</p>
+        <p class="pricing-caption">Routine preparation and removal of compatible old product is included in our own structured gel fills. Fills are for returning clients wearing Bianca’s work.</p>
+        <nav aria-label="Fill and removal guides">
+          <a href="/services/structured-gel-fills-scarborough"><u>What to book for a structured gel fill</u></a> ·
+          <a href="/services/gel-removal-scarborough"><u>Gel removal with or without a new manicure</u></a>
+        </nav>
       </section>
 
       <section id="repairs" class="pricing-section" aria-labelledby="repairs-title">
@@ -158,7 +172,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         <div class="pricing-faq">
           <details>
             <summary>Should I book a fill or a new structured gel manicure?</summary>
-            <p>A fill maintains suitable existing builder gel and rebalances the grown-out structure. If you have extensive lifting, damage or unknown product, Bianca may recommend removal and a new application instead.</p>
+            <p>Book a fill if Bianca applied your current structured gel and it is suitable for maintenance. New clients should arrive with bare nails or book removal with their manicure.</p>
           </details>
           <details>
             <summary>How often will I need structured gel maintenance?</summary>
@@ -166,7 +180,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           </details>
           <details>
             <summary>Does routine fill pricing include removal of the old gel?</summary>
-            <p>Routine preparation and removal of lifted or grown-out compatible product from your existing La La Land structured set are included in the fill. Full standalone removal and work from another technician may require a different service.</p>
+            <p>Routine preparation and removal of lifted or grown-out compatible product from your existing La La Land structured set are included in the fill. If another technician applied your gel, book removal with your new manicure or arrive with bare nails.</p>
           </details>
           <details>
             <summary>Can you repair a broken nail?</summary>
@@ -291,4 +305,8 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
     .pricing-list__item strong { font-size: 1.35rem; }
   }
   @media(prefers-reduced-motion: reduce) { .pricing-index { scroll-behavior: auto; } }
+</style>
+
+<style>
+  .service-example { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: center 62%; border-radius: var(--radius); margin-bottom: 1rem; }
 </style>
