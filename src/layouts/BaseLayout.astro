@@ -8,6 +8,7 @@ interface Props {
   site: SiteConfig;
   photo?: { img: string; alt: string };
   title?: string;
+  notFound?: boolean;
   description?: string;
 }
 
@@ -20,7 +21,8 @@ const {
 const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();
 const socialImage = new URL(Astro.props.photo?.img ?? '/images/generated/red-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
 const indexable = isIndexable(site, Astro.url);
-const measurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+const publicProduction = Astro.url.origin === 'https://lalalandnails.ca'
+  && !/^\/(admin|api|calendar|studio-preview|studio-review|signin-with-chatgpt)(?:\/|$)/i.test(Astro.url.pathname);
 const publicPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
 ---
@@ -63,8 +65,8 @@ const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    {measurementId && (indexable || publicPath === '/privacy') &&
-      <AnalyticsChoice measurementId={measurementId} pagePath={publicPath} />}
+    {publicProduction &&
+      <AnalyticsChoice measurementId="G-SN2ZY23TZP" pagePath={Astro.props.notFound ? '/404' : publicPath} />}
     <script>
       import { rememberVisitSource } from '../lib/lead-source';
       rememberVisitSource();
