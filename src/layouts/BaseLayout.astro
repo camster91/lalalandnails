@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import AnalyticsChoice from '../components/AnalyticsChoice.astro';
 import { homeMetadata, type SiteConfig } from '../data/site';
 import { buildSchema, isIndexable, serializeSchema } from '../lib/seo';
 
@@ -19,6 +20,8 @@ const {
 const canonicalUrl = new URL(Astro.url.pathname, site.approvedDomain ?? site.canonicalOrigin).toString();
 const socialImage = new URL(Astro.props.photo?.img ?? '/images/generated/red-1440.webp', site.approvedDomain ?? site.canonicalOrigin).toString();
 const indexable = isIndexable(site, Astro.url);
+const measurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+const publicPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
 ---
 
@@ -60,6 +63,8 @@ const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
+    {measurementId && (indexable || publicPath === '/privacy') &&
+      <AnalyticsChoice measurementId={measurementId} pagePath={publicPath} />}
     <script>
       import { rememberVisitSource } from '../lib/lead-source';
       rememberVisitSource();

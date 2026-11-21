@@ -1,0 +1,58 @@
+---
+const { measurementId, pagePath } = Astro.props;
+---
+<section hidden data-analytics-choice data-measurement={measurementId} data-page={pagePath} aria-label="Analytics preferences">
+  <label><input type="checkbox" /> Allow Google Analytics to count page visits and saved appointment requests</label>
+  <a href="/privacy">Privacy notice</a>
+</section>
+<style>
+  section { padding: 1rem 1.5rem; background: #fffaf6; color: #330505; font-size: .95rem; }
+  a { color: inherit; margin-inline-start: .5rem; }
+</style>
+<script>
+  const panel = document.querySelector<HTMLElement>('[data-analytics-choice]');
+  if (panel && ['https://lalalandnails.ca','https://www.lalalandnails.ca'].includes(location.origin)) {
+    const id = panel.dataset.measurement!;
+    const choice = panel.querySelector('input')!;
+    const storageKey = 'lala-analytics-consent';
+    const flags = window as unknown as Record<string, unknown>;
+    const layer = (flags.dataLayer ??= []) as IArguments[];
+    function tag(..._args: unknown[]) { layer.push(arguments); }
+    let started = false;
+    function apply(allowed: boolean) {
+      choice.checked = allowed;
+      flags['ga-disable-' + id] = !allowed;
+      if (!allowed || started) return;
+      started = true;
+      tag('js', new Date());
+      let referrer = '';
+      try { referrer = new URL(document.referrer).origin; } catch { /* direct visit */ }
+      tag('config', id, {
+        send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false,
+        page_location: location.origin + panel!.dataset.page, page_referrer: referrer,
+      });
+      tag('event', 'page_view', {send_to: id});
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      document.head.appendChild(script);
+    }
+    const restricted = navigator.doNotTrack === '1' || (navigator as Navigator & {globalPrivacyControl?: boolean}).globalPrivacyControl === true;
+    let allowed = false;
+    try { allowed = localStorage.getItem(storageKey) === 'yes'; } catch { /* default off */ }
+    apply(!restricted && allowed);
+    if (!restricted) {
+      panel.hidden = false;
+      choice.addEventListener('change', () => {
+        try { localStorage.setItem(storageKey, choice.checked ? 'yes' : 'no'); } catch { /* current page only */ }
+        apply(choice.checked);
+      });
+      window.addEventListener('storage', e => {
+        if (e.key === storageKey || e.key === null) apply(e.newValue === 'yes');
+      });
+    }
+    document.addEventListener('booking:saved', () => {
+      if (choice.checked) tag('event', 'generate_lead', {send_to: id});
+    });
+  }
+</script>

@@ -1,3 +1,4 @@
+import {savedBookingTracker} from '../lib/booking-measurement';
 import {startBookingSteps} from './booking-steps';
 import {quoteBooking,parseInspirationLinks} from '../lib/booking-options';
 import { normalizePhone } from '../lib/phone';
@@ -9,6 +10,7 @@ export function startBooking() {
   const home = document.querySelector<HTMLElement>('[data-booking-home]');
   const dialogBody = dialog?.querySelector<HTMLElement>('[data-booking-dialog-body]');
   if (!form || !dialog || !home || !dialogBody) return;
+  const trackSaved = savedBookingTracker(() => document.dispatchEvent(new Event('booking:saved')));
   const steps=startBookingSteps(form);
   const calendar=startBookingCalendar(form);
   const sourceInput=form.elements.namedItem('leadSource') as HTMLInputElement;
@@ -116,9 +118,10 @@ export function startBooking() {
     try {
       const response=await fetch(form.action,{method:'POST',body:data});
       if (!response.headers.get('content-type')?.includes('application/json')) throw Error('The request could not be sent. Please try again shortly. Your details are still here.');
-      const result=await response.json() as {ok?:boolean;message?:string;errors?:Record<string,string>};
+      const result=await response.json() as {ok?:boolean;id?:unknown;message?:string;errors?:Record<string,string>};
       if(result.errors) {if(response.status===409)await calendar.refresh();showErrors(result.errors);return;}
       if(!response.ok || !result.ok) throw Error(result.message || 'The request could not be sent. Please try again shortly.');
+      trackSaved(response.status, result);
       form.reset();calendar.reset();steps.reset();sourceInput.value=rememberVisitSource();started=false;
       status.textContent=result.message || 'Your request has been received.';
       status.tabIndex=-1;status.focus();
