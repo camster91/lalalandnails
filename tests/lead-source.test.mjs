@@ -22,3 +22,14 @@ test('a Google guide visit retains its channel through pricing and booking', asy
   assert.equal(visitSource(home, '', first), 'direct');
   assert.equal(visitSource(home, 'https://www.bing.com/', first), 'bing');
 });
+
+test('Google campaign markers survive navigation without reclassifying untagged referrals', async () => {
+  const {visitSource} = await import('../src/lib/lead-source.ts');
+  const home = 'https://lalalandnails.ca/';
+  for (const query of ['?gclid=example','?gbraid=example','?wbraid=example','?utm_source=Google&utm_medium=CPC']) {
+    assert.equal(visitSource(home + query,home,'direct'),'google-paid');
+  }
+  assert.equal(visitSource(home,home+'services-pricing','google-paid'),'google-paid');
+  assert.equal(visitSource(home+'?utm_source=google&utm_medium=organic','',''),'google-organic');
+  assert.equal(visitSource(home,'https://www.google.ca/',''),'google');
+});

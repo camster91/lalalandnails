@@ -1,4 +1,4 @@
-const known = new Set(['google','bing','instagram','facebook','pinterest','referral','direct']);
+const known = new Set(['google','google-paid','google-organic','bing','instagram','facebook','pinterest','referral','direct']);
 export function leadSource(source: unknown): string {
   return typeof source === 'string' && known.has(source.toLowerCase()) ? source.toLowerCase() : 'unknown';
 }
@@ -6,6 +6,10 @@ export function leadSource(source: unknown): string {
 export function detectLeadSource(page: string, referrer: string): string {
   const url=new URL(page);
   const tagged=leadSource(url.searchParams.get('utm_source'));
+  const medium = url.searchParams.get('utm_medium')?.toLowerCase();
+  const hasAdClick = ['gclid', 'gbraid', 'wbraid'].some(key => Boolean(url.searchParams.get(key)));
+  if (hasAdClick || (tagged === 'google' && ['cpc', 'ppc', 'paidsearch', 'paid_search'].includes(medium ?? ''))) return 'google-paid';
+  if (tagged === 'google' && medium === 'organic') return 'google-organic';
   if(tagged !== 'unknown') return tagged;
   if(!referrer) return 'direct';
   try {
@@ -24,6 +28,7 @@ export function detectLeadSource(page: string, referrer: string): string {
 export function visitSource(page: string, referrer: string, previous: string | null): string {
   const detected = detectLeadSource(page, referrer);
   const saved = leadSource(previous);
+  if (detected === 'google-paid') return detected;
   if (saved === 'unknown' || !referrer) return detected;
   const current = new URL(page);
   if (leadSource(current.searchParams.get('utm_source')) !== 'unknown') return detected;
