@@ -5,7 +5,7 @@ import {requestWindow,saveTimedRequest,BookingSlotError} from './booking-availab
 import {normalizePhone,recentPhoneSql} from './phone.ts';
 import {allowBookingRequest} from './booking-rate-limit.ts';
 import {leadSource} from './lead-source.ts';
-export type BookingNotification={from:{email:string;name:string};to:string;subject:string;text:string};
+export type BookingNotification={from:{email:string;name:string};to:string;subject:string;text:string;html:string};
 type Dependencies={db:D1Database;ready:()=>Promise<void>;send:(message:BookingNotification)=>Promise<void>;allowDraft:boolean};
 const CONTACT_METHODS=new Set(['call','text']);
 export async function handleBookingRequest(request:Request,dependencies:Dependencies){
@@ -60,28 +60,30 @@ export async function handleBookingRequest(request:Request,dependencies:Dependen
 
     // Save the request first so an email outage cannot lose a client's enquiry.
     try {
+    const lines = [
+        `Hi Bianca,`,
+        '',
+        `${name} requested ${selection!.serviceName} for ${preferredDate} at ${preferredTime} (Toronto time). The two-hour block is held for your review.`,
+        `${contactMethod === 'text' ? 'Text' : 'Call'} ${name} at ${phone} to agree on the service, price and appointment time.`,
+        '',
+        'Service details',
+        `Estimate: ${formatBookingEstimate(selection!)}`,
+        `Selections: ${selection!.lines.map(line => line.label).join(', ')}`,
+        `Shape: ${selection!.shape}`,
+        ...(selection!.needsConsultation ? ['A consultation is needed to confirm this estimate.'] : []),
+        ...(hasVibe ? [`Appointment vibe: ${vibe}`] : []),
+        ...(clientNotes ? [`Client note: ${clientNotes}`] : []),
+        '',
+        ...(links.length || images.length ? [`Inspiration to review: ${links.length} link(s), ${images.length} private image(s).`] : []),
+        'Review the request in your staff workspace: https://lalalandnails.ca/admin',
+        `Request ID: ${id}`,
+            ];
       await dependencies.send({
         from: { email: 'requests@lalalandnails.ca', name: 'La La Land Nail Hub' },
         to: 'bianca@ashbi.ca',
         subject: `Booking request · ${preferredDate} at ${preferredTime} · ${selection!.serviceName}`,
-        text: [
-          `Hi Bianca,`,
-          '',
-          `${name} requested ${selection!.serviceName} for ${preferredDate} at ${preferredTime} (Toronto time). The two-hour block is held for your review.`,
-          `${contactMethod === 'text' ? 'Text' : 'Call'} ${name} at ${phone} to agree on the service, price and appointment time.`,
-          '',
-          'Service details',
-          `Estimate: ${formatBookingEstimate(selection!)}`,
-          `Selections: ${selection!.lines.map(line => line.label).join(', ')}`,
-          `Shape: ${selection!.shape}`,
-          ...(selection!.needsConsultation ? ['A consultation is needed to confirm this estimate.'] : []),
-          ...(hasVibe ? [`Appointment vibe: ${vibe}`] : []),
-          ...(clientNotes ? [`Client note: ${clientNotes}`] : []),
-          '',
-          ...(links.length || images.length ? [`Inspiration to review: ${links.length} link(s), ${images.length} private image(s).`] : []),
-          'Review the request in your staff workspace: https://lalalandnails.ca/admin',
-          `Request ID: ${id}`,
-        ].join('\n'),
+        text: lines.join('\n'),
+        html: bookingEmailHtml(lines),
       });
     } catch {
       console.error('booking_email_failed', { requestId: id });
@@ -111,4 +113,16 @@ function json(body: unknown, status: number): Response {
       'Cache-Control': 'no-store',
     },
   });
+}
+
+function bookingEmailHtml(lines: string[]): string {
+  const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const workspace = 'https://lalalandnails.ca/admin';
+  const body = lines.filter(Boolean).map(line => {
+    if (line === 'Service details') return '<h2 style="font:24px Georgia,serif;margin:26px 0 12px">Service details</h2>';
+    if (line === 'Review the request in your staff workspace: ' + workspace)
+      return '<p style="margin:24px 0"><a href="' + workspace + '" style="display:inline-block;padding:14px 22px;background:#380909;color:#fffaf6;border-radius:24px;text-decoration:none;font-weight:bold">Open staff workspace</a></p>';
+    return '<p style="margin:0 0 10px;overflow-wrap:anywhere">' + escape(line) + '</p>';
+  }).join('');
+  return `<div style="background:#fffaf6;padding:16px;color:#380909;font:16px/1.5 Arial,sans-serif"><div style="max-width:560px;margin:auto"><div style="background:#380909;padding:24px;color:#ffd1df"><img src="https://lalalandnails.ca/brand/logo-main.svg" width="110" alt="La La Land" style="display:block"><p style="margin:12px 0 4px;font-weight:bold">La La Land Nail Hub</p><h1 style="margin:0;font:32px Georgia,serif;color:#fffaf6">New booking request</h1></div><div style="padding:24px 12px">${body}</div></div></div>`;
 }
