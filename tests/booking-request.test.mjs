@@ -76,3 +76,24 @@ test('staff explicitly agrees the final price and rescheduling preserves it befo
  const available=await monthAvailability(db,movedDate.slice(0,7));assert.equal(available.days.find(d=>d.date===movedDate).times.length,4);
  assert.equal((await bookingDetails(db,leadId)).images.length,1);sql.close();
 });
+
+test('only one confirmed save signals a lead, without passing booking data', async () => {
+ const {savedBookingTracker} = await import('../src/lib/booking-measurement.ts');
+ const {sql, dependencies} = await setup();
+ const events = [];
+ const track = savedBookingTracker((...args) => events.push(args));
+ try {
+   for (const input of [{website:'spam.invalid'}, {phone:'invalid'}]) {
+     const response = await handleBookingRequest(request(input, false), dependencies);
+     track(response.status, await response.json());
+   }
+   assert.deepEqual(events, []);
+   const response = await handleBookingRequest(request({}, false), dependencies);
+   const result = await response.json();
+   track(response.status, result);
+   track(response.status, result);
+   const retry = await handleBookingRequest(request({}, false), dependencies);
+   track(retry.status, await retry.json());
+   assert.deepEqual(events, [[]]);
+ } finally { sql.close(); }
+});
