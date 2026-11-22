@@ -1,5 +1,19 @@
 export const guides = [
   {
+    id: 'gel-colour',
+    path: '/services/gel-manicure-scarborough',
+    title: 'Gel manicure in Scarborough',
+    label: 'Gel manicure guide',
+    description: 'Book a $60 CAD European Gel Manicure with Bianca in Scarborough. Allow 75–90 minutes for dry cuticle care, shaping and solid gel colour on your natural nails.',
+    img: '/images/red-manicure-720.webp',
+    alt: 'Glossy red gel colour on short square nails',
+    intro: 'Like the length of your nails and want a solid colour? My European Gel Manicure is $60 CAD and takes 75–90 minutes. I prepare your cuticles, shape your natural nails and finish them with your choice of gel colour.',
+    questions: [
+      { q: 'Can I keep my nails short?', a: 'Yes. We can keep the length close to your fingertips and choose a shape that suits your hands. The short square red set above is one finish you can ask for.' },
+      { q: 'When should I choose builder gel instead?', a: 'Choose the European Gel Manicure for colour at your current length. If you want a shaped overlay for extra support, my Signature Structured Gel Manicure starts at $75 CAD on short natural nails.' },
+    ],
+  },
+  {
     "id": "dry",
     "path": "/services/dry-manicure-scarborough",
     "title": "Dry combi manicure in Scarborough",
@@ -7,7 +21,7 @@ export const guides = [
     "description": "Compare a bare European-style dry manicure with solid gel colour at Bianca’s Scarborough home studio. See prices, service times and first-visit preparation.",
     "img": "/images/manicure-prep.webp",
     "alt": "Close-up of manicure preparation",
-    "intro": "If you like wearing your nails bare, this is the appointment I’d choose. I shape your natural nails and work carefully around the cuticles. You leave with the length and finish we agreed on together.",
+    "intro": "Looking for a Russian manicure in Scarborough? On my menu, choose the European Dry Manicure. I use dry combi preparation to detail the cuticles and shape your natural nails. The bare finish is $45 CAD and takes 45–60 minutes.",
     "questions": [
       {
         "q": "What should I book if I searched for a Russian manicure?",
@@ -21,13 +35,14 @@ export const guides = [
   },
   {
     "id": "structured",
+    "seoTitle": "Builder Gel Manicure in Scarborough | La La Land",
     "path": "/services/structured-gel-scarborough",
     "title": "Structured gel manicure in Scarborough",
     "label": "Structured gel guide",
     "description": "Explore a builder-gel overlay on your natural nails with Bianca in Scarborough. Short nails and one solid colour start at $75 CAD.",
     "img": "/images/pricing-red-manicure-720.webp",
     "alt": "Short square nails with glossy burgundy polish",
-    "intro": "If you like your own nail length but want a little more support, I build a gel overlay around the curve of each nail. We can keep the shape short and practical or work with the length you already have.",
+    "intro": "My Signature Structured Gel Manicure uses builder gel to support your natural nails. From $75 CAD, it includes dry manicure preparation, shaping and one solid gel colour on short nails.",
     "questions": [
       {
         "q": "What comes with a structured gel manicure?",
