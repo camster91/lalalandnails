@@ -131,4 +131,12 @@ export function startBooking() {
       window.plausible?.('booking_request_failed');
     } finally {submit.disabled=false;form.removeAttribute('aria-busy');}
   });
+  const requestedService = new URLSearchParams(location.search).get('service');
+  const serviceSelect = form.elements.namedItem('package');
+  if (location.hash === '#booking' && requestedService && serviceSelect instanceof HTMLSelectElement &&
+      Array.from(serviceSelect.options).some(option => option.value === requestedService)) {
+    serviceSelect.value = requestedService;
+    serviceSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
 }

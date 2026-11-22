@@ -18,7 +18,7 @@ const breadcrumbSchema = {
   }))
 };
 ---
-<BaseLayout site={site} title={guide.title + ' | La La Land Nail Hub'} description={guide.description} photo={guide}>
+<BaseLayout site={site} title={guide.seoTitle ?? guide.title + ' | La La Land Nail Hub'} description={guide.description} photo={guide}>
 <div class="page-shell" id="top"><Header site={site}/>
 <main id="main"><article>
 <script type="application/ld+json" is:inline set:html={serializeSchema(breadcrumbSchema)} />

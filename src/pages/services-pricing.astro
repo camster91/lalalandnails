@@ -27,7 +27,7 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
   site={siteConfig}
   photo={{ img: "/images/pricing-red-manicure-720.webp", alt: "Short square nails finished in glossy burgundy" }}
   title="Manicure & Structured Gel Prices in Scarborough | La La Land"
-  description="Compare dry manicures at $45 CAD, structured gel from $75 CAD and soft gel tips from $65 CAD at Bianca’s Scarborough studio. See fills, removal and nail art prices."
+  description="Compare dry manicures, structured gel and soft gel tips at Bianca’s Scarborough home studio. Soft gel tips start at $65 CAD. View prices and request a visit."
 >
   <div id="top" class="page-shell">
     <Header site={siteConfig} />
@@ -80,6 +80,9 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
             </article>
           ))}
         </div>
+        <h3>Keep your natural length or add length?</h3>
+        <p><a href="/?service=rubber-base#booking">Rubber base with gel colour · $65 CAD</a> gives your natural nails a flexible base and a gel colour finish at their current length.</p>
+        <p><a href="/?service=soft-gel-tips#booking">Soft gel tips · from $65 CAD</a> extend past your fingertips. Choose these if you’d like longer nails at this appointment.</p>
         <p class="pricing-caption">New clients, please arrive with bare nails or book removal with your manicure so Bianca can allow extra time. Detailed art, additional length and certain repairs are priced separately. Each manicure includes standard shaping where suitable.</p>
       </section>
 
