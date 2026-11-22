@@ -753,9 +753,16 @@ html, body { overflow-x: clip; }
 
 #service .service__lead { margin: 1.5rem 0 0; }
 #service .section-photo { margin-top: 0; }
-.booking-policies { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5vw; background: #fffaf6; color: var(--burgundy); }
+.booking-policies { padding-block: clamp(2rem, 4vw, 3.5rem); align-items: start; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: clamp(1.5rem, 3.5vw, 3.5rem); background: #fffaf6; color: var(--burgundy); }
+.booking-policies__comparison { margin: 1.5rem 0 0; }
+.booking-policies__comparison figcaption { color: var(--burgundy); }
+.booking-policies__comparison input:focus-visible { outline-color: var(--burgundy); }
 .booking-policies p { max-width: 40rem; line-height: 1.7; margin: .5rem 0 1.5rem; }
 .booking-policies h3 { font-family: var(--serif); font-size: 1.5rem; }
+@media (min-width: 901px) {
+  .booking-policies__comparison { margin-top: 1rem; }
+  .booking-policies__comparison .section-photo__frame { height: clamp(13rem, 22vw, 18rem); aspect-ratio: auto; }
+}
 @media (max-width: 900px) {
   #service, .booking-policies { grid-template-columns: minmax(0,1fr); }
 }

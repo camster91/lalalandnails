@@ -10,7 +10,7 @@ import { guides } from '../data/service-guides';
 const servicePhotos = {
   dry: { src: '/images/manicure-prep.webp', alt: 'Manicure preparation at Bianca’s studio' },
   'gel-colour': { src: '/images/red-manicure-720.webp', alt: 'Glossy red colour on short square nails' },
-  structured: { src: '/images/pricing-red-manicure-720.webp', alt: 'Example of a short natural-nail shape with solid burgundy colour' },
+  structured: { src: '/images/structured-pink-french.webp', alt: 'Two hands with soft pink nails and square white French tips' },
   'soft-gel-tips': { src: '/images/tier-one-pink.webp', alt: 'Long pink shimmer nails with tapered tips' },
 } as const;
 
@@ -68,8 +68,8 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
         </div>
         <div class="pricing-card-grid">
           {prices.manicures.map((service) => (
-            <article class:list={['pricing-card', { 'pricing-card--featured': service.id === 'structured' }]}>
-              <img class="service-example" src={servicePhotos[service.id].src} alt={servicePhotos[service.id].alt} loading="lazy" decoding="async" />
+            <article class="pricing-card">
+              <img class:list={['service-example', { 'service-example--dry': service.id === 'dry' }]} src={servicePhotos[service.id].src} alt={servicePhotos[service.id].alt} loading="lazy" decoding="async" />
               <div class="pricing-card__top">
                 <h3>{service.name}</h3><strong>{(service.id === 'structured' || 'startingAt' in service) && <small>From </small>}{displayPrice(service.price)}</strong>
               </div>
@@ -171,6 +171,10 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
           <h2 id="pricing-faq-title">Your manicure questions, <em>answered.</em></h2>
         </div>
         <div class="pricing-faq">
+          <details id="deposit-policy">
+            <summary>How much is the deposit, and what if I need to cancel?</summary>
+            <p>A $30 CAD deposit secures your booking and goes toward the cost of your appointment. If you need to cancel, please give Bianca at least 24 hours’ notice. The deposit is non-refundable if you cancel less than 24 hours before your appointment.</p>
+          </details>
           <details>
             <summary>Should I book a fill or a new structured gel manicure?</summary>
             <p>Book a fill if Bianca applied your current structured gel and it is suitable for maintenance. New clients should arrive with bare nails or book removal with their manicure.</p>
@@ -244,13 +248,15 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
   .pricing-intro > p:last-child, .pricing-example__copy p { max-width: 52rem; font-size: 1.04rem; line-height: 1.75; }
   .pricing-card-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
   .pricing-card { padding: clamp(1.4rem,2.8vw,2.4rem); border: 1px solid rgba(51,5,5,.22); border-radius: var(--radius); background: #fff; }
-  .pricing-card--featured { background: var(--burgundy); color: var(--cream); }
   .pricing-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
   .pricing-card h3, .pricing-list h3 { font-size: 1.2rem; line-height: 1.4; }
   .pricing-card__top strong { flex-shrink: 0; font-family: var(--serif); font-size: 2rem; font-weight: 400; }
   .pricing-card__top strong small { display: block; font-family: var(--sans); font-size: .75rem; line-height: 1.5; }
   .pricing-card p { margin: 1.5rem 0 0; line-height: 1.7; }
   .pricing-card__meta { display: inline-block; margin-top: 1.25rem; font-size: .78rem; font-weight: 700; }
+  #manicures .pricing-card > a { display: block; width: fit-content; margin-top: .75rem; }
+  #manicures .pricing-card__meta { display: block; margin-top: .75rem; font-size: .875rem; line-height: 1.5; }
+  #manicures .pricing-card__meta + .pricing-card__meta { margin-top: .375rem; }
   .pricing-caption { max-width: 65rem; margin: 1.4rem 0 0; line-height: 1.65; font-size: .875rem; }
   .pricing-section--cream { background: var(--cream); }
   .pricing-section--blush { background: var(--blush-light); }
@@ -310,4 +316,5 @@ if (!import.meta.env.DEV && !prices.approved) return new Response('Not found', {
 
 <style>
   .service-example { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: center 62%; border-radius: var(--radius); margin-bottom: 1rem; }
+  .service-example--dry { object-position: center top; }
 </style>

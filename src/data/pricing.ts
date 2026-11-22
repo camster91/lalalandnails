@@ -12,6 +12,7 @@ export const pricingDraft = {
     { id: 'fill-short', name: 'Short structured gel fill', price: 70, detail: 'Removal of lifted product, structure rebalance, dry manicure, reshaping and a fresh solid colour.' },
     { id: 'fill-medium', name: 'Medium structured gel fill', price: 80, detail: 'Routine maintenance of an existing medium-length structured set.' },
     { id: 'fill-long', name: 'Long structured gel fill', price: 90, detail: 'Routine maintenance of an existing long structured set.' },
+    { id: 'rubber-base', name: 'Rubber base with gel colour', price: 65, detail: 'A flexible rubber base applied to your natural nails and finished with gel colour.' },
     { id: 'colour-refresh', name: 'Gel colour refresh', price: 60, detail: 'Colour service without builder-gel rebalance.' },
   ],
   lengths: [

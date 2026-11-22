@@ -24,7 +24,7 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
         <div class="hero__copy reveal">
           <p class="eyebrow">Scarborough nail studio · By appointment</p>
           <h1 id="hero-title">Dreamy nails <em>await.</em></h1>
-          <p class="hero__intro">Get cosy in Bianca’s home studio for a one-on-one dry combi manicure with precise cuticle work and structure built around your natural nails.</p>
+          <p class="hero__intro">Get cosy in Bianca’s home studio for clean, minimal nails and a one-on-one dry combi manicure, with precise cuticle work and structure built around your natural nails.</p>
           <ul class="hero__areas" aria-label="Clients welcome from"><li>Scarborough</li><li>Pickering</li><li>Ajax</li><li>Whitby</li><li><a href="/durham-region-manicures">Durham Region</a></li><li>Greater Toronto Area</li></ul>
           <div class="hero__actions">
             <a class="button" href="#booking" data-analytics-events="booking_request_view">Request an appointment</a>
@@ -97,7 +97,22 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
       </section>
 
       <section class="section booking-policies" id="booking-policies" aria-labelledby="policies-title">
-        <h2 id="policies-title">Before you <em>book</em></h2>
+        <div>
+          <h2 id="policies-title">Before you <em>book</em></h2>
+          <figure class="section-photo booking-policies__comparison">
+            <div class="section-photo__frame manicure-comparison__frame" id="policies-comparison">
+              <img class="manicure-comparison__after" src="/images/policies-after.webp" width="1000" height="750" alt="The same nails with a neat outline and soft pink finish" loading="lazy" decoding="async" />
+              <img class="manicure-comparison__before" src="/images/policies-before.webp" width="1000" height="750" alt="Short natural nails before cuticle care and shaping" loading="lazy" decoding="async" />
+              <span class="manicure-comparison__tag manicure-comparison__tag--before" aria-hidden="true">Before</span>
+              <span class="manicure-comparison__tag manicure-comparison__tag--after" aria-hidden="true">After</span>
+              <span class="manicure-comparison__divider" aria-hidden="true"></span>
+            </div>
+            <figcaption>
+              <label for="policies-reveal">Slide to compare the manicure</label>
+              <input class="manicure-comparison__range" id="policies-reveal" type="range" min="0" max="100" value="50" aria-controls="policies-comparison" aria-valuetext="50% before, 50% after" />
+            </figcaption>
+          </figure>
+        </div>
         <div>
           <h3>Arriving with gel</h3>
           <p>New here and wearing gel from another nail tech? Please arrive with bare nails or book a removal with your manicure. A fresh set starts on bare nails, so please mention the existing gel in your booking request so extra time can be set aside for removal.</p>
@@ -129,9 +144,9 @@ const chatEnabled = Boolean(env.OPENAI_API_KEY && env.CHAT_RATE_SALT);
 </BaseLayout>
 
 <script>
-  const comparison = document.querySelector<HTMLElement>('#manicure-comparison');
-  const reveal = document.querySelector<HTMLInputElement>('#manicure-reveal');
-  if (comparison && reveal) {
+  for (const reveal of document.querySelectorAll<HTMLInputElement>('.manicure-comparison__range')) {
+    const comparison = document.getElementById(reveal.getAttribute('aria-controls') || '');
+    if (!comparison) continue;
     const updateComparison = () => {
       comparison.style.setProperty('--reveal', `${reveal.value}%`);
       reveal.setAttribute('aria-valuetext', `${reveal.value}% before, ${100 - reveal.valueAsNumber}% after`);

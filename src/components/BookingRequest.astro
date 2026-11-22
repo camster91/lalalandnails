@@ -1,7 +1,6 @@
 ---
 import BookingInspiration from './BookingInspiration.astro';
 import BookingPreferences from './BookingPreferences.astro';
-import SectionPhoto from './SectionPhoto.astro';
 import { siteConfig } from '../data/site';
 import { pricingDraft } from '../data/pricing';
 ---
@@ -12,7 +11,13 @@ import { pricingDraft } from '../data/pricing';
     <p>Choose an available time and a service, then leave your number for a call or text from Bianca. Not sure which manicure to choose? Select “help me choose”.</p>
 
     <div class="request-booking__note"><span aria-hidden="true">↗</span><p><strong>See your estimate before you send.</strong><br />Inspiration is optional, and no online payment is taken. Bianca reviews your choices and agrees the final price and visit details with you.</p></div>
-    <SectionPhoto photo="neutral" caption="Your next manicure starts with a conversation. " aspect="wide" showCaption={false} />
+    <figure class="section-photo section-photo--wide">
+      <div class="section-photo__frame">
+        <video style="display:block;width:100%;height:100%;object-fit:cover" autoplay muted loop playsinline preload="metadata" poster="/videos/booking-manicure-poster.webp" width="720" height="1280" aria-label="Manicure video from La La Land Nail Hub">
+          <source src="/videos/booking-manicure.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </figure>
   </div>
 
   <div class="booking-form-home" data-booking-home>
