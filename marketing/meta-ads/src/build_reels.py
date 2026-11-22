@@ -6,7 +6,7 @@ logo PNGs made by export_logos.cjs.
 Output: marketing/meta-ads/reels/*.mp4 (1080x1920, 30 fps, H.264, silent AAC).
 
 Style: small phone-style caption "stickers" in brand colours, written in Bianca's
-first-person voice, kept inside the Reels safe zone (y 270-1248) and off the nails.
+first-person voice in plain everyday sentences, kept inside the Reels safe zone (y 270-1248) and off the nails.
 """
 import os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -52,7 +52,7 @@ def cap(lines, y, dark=False, size=50, x=None):
         d.text((l + pad + tw / 2, t + ph / 2 - 1), line, font=f, fill=fg, anchor='mm')
     return im
 
-def watermark(colour='blush', y=288, width=200):
+def watermark(colour='blush', y=268, width=340):
     """Small logo at the top of the safe zone, with a soft shadow so it reads on any footage."""
     lg = logo(colour, width); im = blank(); pos = ((W - width) // 2, y)
     if colour != 'burgundy':
@@ -67,7 +67,7 @@ def fill(src, focus_y=0.5):
     t = int((img.height - H) * focus_y); l = (img.width - W) // 2
     return img.crop((l, t, l + W, t + H))
 
-def card(src, width=960, y=400, label=None, caption=None):
+def card(src, width=940, y=470, label=None, caption=None):
     """Photo as a rounded 'sticker' on brand blush with the burgundy logo: keeps the whole
     photo visible and inside the safe zone (used for landscape and low-res photos)."""
     bg = Image.new('RGBA', (W, H), BLUSH_LIGHT + (255,))
@@ -78,19 +78,19 @@ def card(src, width=960, y=400, label=None, caption=None):
     bg = Image.alpha_composite(bg, sh.filter(ImageFilter.GaussianBlur(22)))
     mask = Image.new('L', (width, ph), 0); ImageDraw.Draw(mask).rounded_rectangle((0, 0, width, ph), 44, fill=255)
     bg.paste(img, (x, y), mask)
-    bg = Image.alpha_composite(bg, watermark('burgundy'))
+    bg = Image.alpha_composite(bg, watermark('burgundy', y=262, width=320))
     sm = Image.open(os.path.join(BRAND, 'submark-blush.png')).convert('RGBA').resize((330, 306), Image.LANCZOS)
     bg.paste(sm, ((W - 330) // 2, 1500), sm)  # quiet tone-on-tone brand mark in the lower third
     if label: bg = Image.alpha_composite(bg, cap(label, y + 26, dark=True, size=40, x=x + 26))
     if caption: bg = Image.alpha_composite(bg, cap(caption, y + ph + 34, dark=True))
     return bg.convert('RGB')
 
-def end_card(line='request your weekday spot'):
+def end_card(line='Request your appointment'):
     im = Image.new('RGBA', (W, H), DEEP + (255,)); d = ImageDraw.Draw(im)
     lg = logo('blush', 820); im.paste(lg, ((W - 820) // 2, 420), lg)
     d.text((W // 2, 930), line, font=serif(64, 480), fill=PAPER, anchor='mm')
     im = Image.alpha_composite(im, cap('lalalandnails.ca', 1000, size=48))
-    ImageDraw.Draw(im).text((W // 2, 1160), 'Scarborough  ·  by appointment, Mon–Fri', font=sans(36, 500), fill=BLUSH, anchor='mm')
+    ImageDraw.Draw(im).text((W // 2, 1160), 'Scarborough  ·  Monday to Friday, by appointment', font=sans(36, 500), fill=BLUSH, anchor='mm')
     return im.convert('RGB')
 
 # ---------- ffmpeg segments ----------
@@ -160,66 +160,107 @@ def join(name, make):
 
 V, I = 'public/videos/', 'public/images/'
 ALMOND, FRENCH, FIST = V + 'long-gel-x.mp4', V + 'booking-manicure.mp4', V + 'faq-manicure.mp4'
-def end(line='request your weekday spot'): return photo(end_card(line), 2.2, wm=None, zoom=False)
-# caption slots that sit in empty space on each video
-A1, A2 = 470, 556          # almond clip: above the hand
-F1, F2 = 400, 486          # French clip: on the dark sleeve, above the hands (they move down)
-T1, T2 = 440, 526          # fist clip: above the hand
+RED = lambda: fill(I + 'pricing-red-manicure-1440.webp', 0.55)
+def end(line='Request your appointment'): return photo(end_card(line), 2.2, wm=None, zoom=False)
+def tall(src, **kw): return card(src, width=640, y=450, **kw)   # portrait photo as a card
+# caption rows under the logo, above the hands
+C1, C2 = 480, 566
 
 join('reel-1-now-booking', lambda: [
-    clip(ALMOND, 0, 4.4, [(cap("hi, I'm Bianca", A1), 0.3), (cap('my books are open in Scarborough', A2), 1.2)]),
-    clip(FRENCH, 1, 4.2, [(cap('European manicures', F1), 0.2), (cap('+ structured gel', F2), 1.0)]),
-    clip(FIST, 0.6, 3.6, [(cap('manicures start at $45', T1), 0.2)]),
+    clip(ALMOND, 0, 4.4, [(cap("Hi, I'm Bianca.", C1), 0.3), (cap("I'm now booking in Scarborough.", C2), 1.2)]),
+    clip(FRENCH, 1, 4.2, [(cap('European manicures', C1), 0.2), (cap('and structured gel', C2), 1.0)]),
+    clip(FIST, 0.6, 3.6, [(cap('Manicures start at $45.', C1), 0.2)]),
     end()])
 
 join('reel-2-before-after', lambda: [
-    wipe(card(I + 'policies-before.webp', label='before', caption='what she came in with'),
-         card(I + 'policies-after.webp', label='after', caption='clean, shaped, cared for')),
-    wipe(card(I + 'red-manicure-before.webp', label='before', caption='bare nails'),
-         card(I + 'red-manicure-1440.webp', label='after', caption='this red though')),
-    photo(fill(I + 'pricing-red-manicure-1440.webp', 0.55), 2.6, [(cap('gel manicures from $60', 410), 0.3)]),
-    end('come see me in Scarborough')])
+    wipe(card(I + 'policies-before.webp', label='Before', caption='Before her appointment'),
+         card(I + 'policies-after.webp', label='After', caption='After her manicure')),
+    wipe(card(I + 'red-manicure-before.webp', label='Before', caption='Before'),
+         card(I + 'red-manicure-1440.webp', label='After', caption='After, in glossy red gel')),
+    photo(RED(), 2.6, [(cap('Gel manicures start at $60.', C1), 0.3)]),
+    end('Come see me in Scarborough')])
 
 join('reel-3-meet-bianca', lambda: [
-    photo(fill(I + 'bianca-ashley.webp'), 3.0, [(cap("hi, I'm Bianca", 1090), 0.3), (cap('your nail tech in Scarborough', 1176), 1.1)]),
-    photo(card(I + 'olive-cat-eye-manicure.webp', width=700, y=400, label='cat-eye'), 1.5, wm=None, zoom=False),
-    photo(card(I + 'structured-pink-french.webp', label='pink French'), 1.5, wm=None, zoom=False),
-    clip(ALMOND, 2.5, 1.7, [(cap('long almond', 470), 0)]),
-    photo(card(I + 'tier-three-nail-art-closeup.webp', width=700, y=400, label='nail art'), 1.5, wm=None, zoom=False),
-    photo(fill(I + 'pricing-red-manicure-1440.webp', 0.55), 2.4, [(cap('which one are you getting?', 410), 0.2)]),
+    photo(fill(I + 'bianca-ashley.webp'), 3.0, [(cap("Hi, I'm Bianca.", 1090), 0.3), (cap("I'm a nail tech in Scarborough.", 1176), 1.1)], wm=None),
+    photo(tall(I + 'olive-cat-eye-manicure.webp', label='Cat-eye'), 1.5, wm=None, zoom=False),
+    photo(card(I + 'structured-pink-french.webp', label='Pink French'), 1.5, wm=None, zoom=False),
+    clip(ALMOND, 2.5, 1.7, [(cap('Long almond', C1), 0)]),
+    photo(tall(I + 'tier-three-nail-art-closeup.webp', label='Nail art'), 1.5, wm=None, zoom=False),
+    photo(RED(), 2.4, [(cap('Which one would you pick?', C1), 0.2)]),
     end()])
 
 join('reel-4-question-hook', lambda: [
-    clip(FRENCH, 1, 3.6, [(cap('looking for a nail tech', F1), 0.1), (cap('in Scarborough?', F2), 0.1)]),
-    clip(ALMOND, 0.5, 4.0, [(cap("hi, that's me", A1), 0.2), (cap("I'm taking new clients", A2), 1.1)]),
-    clip(FIST, 0.8, 3.4, [(cap('manicures start at $45', T1), 0.2)]),
+    clip(FRENCH, 1, 3.6, [(cap('Looking for a nail tech', C1), 0.1), (cap('in Scarborough?', C2), 0.1)]),
+    clip(ALMOND, 0.5, 4.0, [(cap("Hi, I'm Bianca.", C1), 0.2), (cap("I'm taking new clients.", C2), 1.1)]),
+    clip(FIST, 0.8, 3.4, [(cap('Manicures start at $45.', C1), 0.2)]),
     end()])
 
 join('reel-5-soft-gel-tips', lambda: [
-    clip(ALMOND, 0, 5.2, [(cap('want more length?', A1), 0.3), (cap('soft gel tips, from $65', A2), 1.3)]),
-    photo(fill(I + 'tier-one-pink.webp'), 3.0, [(cap('you pick the shape', 440), 0.2), (cap("I'll make it yours", 526), 1.0)]),
+    clip(ALMOND, 0, 5.2, [(cap('Want longer nails?', C1), 0.3), (cap('Soft gel tips start at $65.', C2), 1.3)]),
+    photo(fill(I + 'tier-one-pink.webp'), 3.0, [(cap('You choose the shape and length.', C1), 0.2)]),
     end()])
 
 join('reel-6-structured-gel', lambda: [
-    clip(FRENCH, 0.5, 5.0, [(cap('structured gel', F1), 0.3), (cap('on your natural nails · $75', F2), 1.2)]),
-    photo(card(I + 'structured-pink-french.webp', caption='dry manicure + builder gel + colour'), 2.8, wm=None, zoom=False),
-    clip(FIST, 0.8, 3.0, [(cap('now booking in Scarborough', T1), 0.2)]),
+    clip(FRENCH, 0.5, 5.0, [(cap('Structured gel manicure', C1), 0.3), (cap('on your natural nails, $75', C2), 1.2)]),
+    photo(card(I + 'structured-pink-french.webp', caption='Dry manicure, builder gel and colour'), 2.8, wm=None, zoom=False),
+    clip(FIST, 0.8, 3.0, [(cap('Now booking in Scarborough', C1), 0.2)]),
     end()])
 
 join('reel-7-nail-art', lambda: [
-    photo(card(I + 'tier-three-nail-art-closeup.webp', width=700, y=400, caption='nail art starts at +$10'), 2.8, wm=None, zoom=False),
-    photo(card(I + 'olive-cat-eye-manicure.webp', width=700, y=400, label='cat-eye'), 1.7, wm=None, zoom=False),
-    clip(ALMOND, 2, 2.6, [(cap('French swoosh', 470), 0)]),
-    photo(card(I + 'structured-pink-french.webp', label='pink French'), 1.7, wm=None, zoom=False),
-    photo(fill(I + 'tier-three-nail-art.webp', 0.5), 2.8, [(cap('send me your inspo pics', 440), 0.2), (cap("I'll tell you what works", 526), 1.0)]),
+    photo(tall(I + 'tier-three-nail-art-closeup.webp', caption='Nail art starts at $10 extra.'), 2.8, wm=None, zoom=False),
+    photo(tall(I + 'olive-cat-eye-manicure.webp', label='Cat-eye'), 1.7, wm=None, zoom=False),
+    clip(ALMOND, 2, 2.6, [(cap('French swoosh', C1), 0)]),
+    photo(card(I + 'structured-pink-french.webp', label='Pink French'), 1.7, wm=None, zoom=False),
+    photo(fill(I + 'tier-three-nail-art.webp', 0.5), 2.8, [(cap('Send me your inspiration photos.', C1), 0.2)]),
     end()])
 
 join('reel-8-one-a-day', lambda: [
-    clip(FIST, 0, 4.4, [(cap('I take one client a day', T1), 0.3), (cap("so it's just you and me", T2), 1.3)]),
-    photo(fill(I + 'manicure-prep.webp', 0.0), 3.0, [(cap('detailed dry prep', 1010), 0.2), (cap('+ natural nail care', 1096), 0.9)], wm=None),
-    photo(fill(I + 'pricing-red-manicure-1440.webp', 0.55), 2.6, [(cap('manicures start at $45', 410), 0.2)]),
+    clip(FIST, 0, 4.4, [(cap('I see one client a day.', C1), 0.3), (cap("It's just you and me.", C2), 1.3)]),
+    photo(fill(I + 'manicure-prep.webp'), 3.0, [(cap('Careful dry prep and nail care', 1050), 0.2)], wm=None),
+    photo(RED(), 2.6, [(cap('Manicures start at $45.', C1), 0.2)]),
     end()])
 
 join('reel-9-short-story', lambda: [
-    clip(ALMOND, 0, 5.0, [(cap('Scarborough, my books are open', A1), 0.2), (cap('manicures start at $45', A2), 1.2)]),
+    clip(ALMOND, 0, 5.0, [(cap('Now booking in Scarborough', C1), 0.2), (cap('Manicures start at $45.', C2), 1.2)]),
+    end()])
+
+# ---------- more variations ----------
+join('reel-10-how-booking-works', lambda: [
+    clip(FIST, 0, 3.0, [(cap('How booking with me works', C1), 0.2)]),
+    clip(FRENCH, 1, 3.0, [(cap('1. Pick a weekday time on my site.', C1), 0.1)]),
+    photo(fill(I + 'tier-one-pink.webp'), 3.0, [(cap('2. Choose your service.', C1), 0.1), (cap('Add photos if you like.', C2), 0.9)]),
+    photo(RED(), 3.0, [(cap("3. I'll confirm the price and details.", C1), 0.1)]),
+    end()])
+
+join('reel-11-prices', lambda: [
+    photo(fill(I + 'manicure-prep.webp'), 2.6, [(cap('My prices', 1050), 0.2), (cap('European dry manicure, $45', 1136), 0.7)], wm=None),
+    photo(RED(), 2.6, [(cap('Gel manicure, $60', C1), 0.1)]),
+    clip(FRENCH, 1.5, 2.8, [(cap('Structured gel manicure, $75', C1), 0.1)]),
+    clip(ALMOND, 0.5, 2.8, [(cap('Soft gel tips, from $65', C1), 0.1)]),
+    end()])
+
+join('reel-12-classic-red', lambda: [
+    wipe(card(I + 'red-manicure-before.webp', label='Before', caption='Bare nails before'),
+         card(I + 'red-manicure-1440.webp', label='After', caption='Classic red gel after'), hold_a=1.9, hold_b=2.6),
+    photo(RED(), 3.2, [(cap('Gel manicure with one colour, $60', C1), 0.3)]),
+    end()])
+
+join('reel-13-natural-nails', lambda: [
+    wipe(card(I + 'policies-before.webp', label='Before', caption='Prefer short, natural nails?'),
+         card(I + 'policies-after.webp', label='After', caption='I do those too.'), hold_a=1.9, hold_b=2.6),
+    photo(fill(I + 'manicure-prep.webp'), 3.2, [(cap('European dry manicure, $45', 1050), 0.2), (cap('Careful prep and shaping', 1136), 1.0)], wm=None),
+    end()])
+
+join('reel-14-weekdays', lambda: [
+    clip(ALMOND, 0, 4.2, [(cap('Free on a weekday?', C1), 0.3), (cap('I book Monday to Friday, 10 to 3.', C2), 1.2)]),
+    clip(FIST, 0.6, 3.4, [(cap('One client a day, in Scarborough', C1), 0.2)]),
+    photo(RED(), 2.6, [(cap('Manicures start at $45.', C1), 0.2)]),
+    end()])
+
+join('reel-15-short-french', lambda: [
+    clip(FRENCH, 0.5, 5.0, [(cap('Structured gel manicure, $75', C1), 0.2), (cap('Now booking in Scarborough', C2), 1.2)]),
+    end()])
+
+join('reel-16-short-red', lambda: [
+    photo(RED(), 5.0, [(cap('Gel manicures start at $60.', C1), 0.2), (cap('Now booking in Scarborough', C2), 1.2)]),
     end()])

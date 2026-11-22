@@ -7,15 +7,22 @@ Built only from Bianca's own photos and videos in `public/images` and `public/vi
 | --- | --- | --- |
 | reel-1-now-booking | 14s | Launch: now booking, services, prices |
 | reel-2-before-after | 12s | Two before-and-after sets |
-| reel-3-meet-bianca | 14s | Bianca, then five finished sets |
+| reel-3-meet-bianca | 14s | Bianca, then five finished looks |
 | reel-4-question-hook | 13s | "Looking for a nail tech in Scarborough?" |
-| reel-5-soft-gel-tips | 10s | Soft gel tips, starting at $65 |
+| reel-5-soft-gel-tips | 10s | Soft gel tips, from $65 |
 | reel-6-structured-gel | 13s | Structured gel manicure, $75 |
-| reel-7-nail-art | 14s | Nail art add-ons from +$10 |
-| reel-8-one-a-day | 12s | One appointment per weekday |
-| reel-9-short-story | 7s | Short cut for Stories |
+| reel-7-nail-art | 14s | Nail art from $10 extra |
+| reel-8-one-a-day | 12s | One client a day |
+| reel-9-short-story | 7s | Short cut: almond clip |
+| reel-10-how-booking-works | 14s | Booking in three steps |
+| reel-11-prices | 13s | Price list across four looks |
+| reel-12-classic-red | 10s | Red before and after, gel manicure $60 |
+| reel-13-natural-nails | 10s | Short natural nails, dry manicure $45 |
+| reel-14-weekdays | 12s | Weekday hours, Monday to Friday 10 to 3 |
+| reel-15-short-french | 7s | Short cut: structured gel $75 |
+| reel-16-short-red | 7s | Short cut: gel manicures from $60 |
 
-Captions are small brand-coloured stickers written in Bianca's first-person voice, kept clear of the nails and of the areas Instagram covers with its buttons.
+Captions are small brand-coloured stickers written in Bianca's first-person voice in plain everyday sentences, with the logo at the top, kept clear of the nails and of the areas Instagram covers with its buttons.
 
 Each reel has a matching `-cover.jpg`. The videos have a silent audio track; add music from Meta's library when creating the ad.
 
