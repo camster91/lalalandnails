@@ -64,6 +64,20 @@ try {
         }
       }
     }
+    for (const [path, service] of [
+      ['/services-pricing', 'rubber-base'],
+      ['/services-pricing', 'soft-gel-tips'],
+      ['/services/dry-manicure-scarborough', 'dry'],
+      ['/services/structured-gel-scarborough', 'structured'],
+      ['/services/structured-gel-scarborough', 'rubber-base'],
+      ['/services/gel-removal-scarborough', 'removal'],
+    ]) {
+      await page.goto(origin + path);
+      await page.locator(`a[href="/?service=${service}#booking"]`).first().click();
+      await page.waitForFunction(id => document.querySelector('select[name="package"]')?.value === id, service);
+      const estimate = page.locator('[data-booking-estimate]');
+      assert.equal(await estimate.textContent(), formatBookingEstimate(quoteBooking({ package: service, length: service === 'structured' ? 'unsure' : 'short' })));
+    }
     await page.goto(origin, { waitUntil: 'networkidle' });
     await page.keyboard.press('Tab');
     assert.equal(await page.locator(':focus').textContent(), 'Skip to content');
