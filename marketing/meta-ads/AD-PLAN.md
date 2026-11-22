@@ -45,6 +45,7 @@ Start at $300. Raise it only if requests are coming in and there are still open 
 
 - 8 One client a day
 - 14 Weekdays
+- 10 How booking works
 - 5 Soft gel tips
 - 6 Structured gel
 - 12 Classic red
