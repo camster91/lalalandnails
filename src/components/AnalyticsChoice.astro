@@ -1,19 +1,21 @@
 ---
-const { measurementId, pagePath } = Astro.props;
+const { measurementId, pagePath, metaPixelId = null } = Astro.props;
 ---
-<section hidden data-analytics-choice data-measurement={measurementId} data-page={pagePath} aria-label="Analytics preferences">
-  <label><input type="checkbox" /> Allow Google Analytics to count page visits and saved appointment requests</label>
+<section hidden data-analytics-choice data-measurement={measurementId} data-page={pagePath} data-meta-pixel={metaPixelId} aria-label="Analytics preferences">
+  <label><input type="checkbox" data-analytics-input /> Allow Google Analytics to count page visits and saved appointment requests</label>
+  {metaPixelId && <label><input type="checkbox" data-meta-input /> Allow Meta (Facebook and Instagram) to measure visits and saved appointment requests from our ads</label>}
   <a href="/privacy">Privacy notice</a>
 </section>
 <style>
   section { padding: 1rem 1.5rem; background: #fffaf6; color: #330505; font-size: .95rem; }
-  a { color: inherit; margin-inline-start: .5rem; }
+  label { display: block; margin-block-end: .35rem; }
+  a { color: inherit; }
 </style>
 <script>
   const panel = document.querySelector<HTMLElement>('[data-analytics-choice]');
   if (panel && ['https://lalalandnails.ca','https://www.lalalandnails.ca'].includes(location.origin)) {
     const id = panel.dataset.measurement!;
-    const choice = panel.querySelector('input')!;
+    const choice = panel.querySelector<HTMLInputElement>('[data-analytics-input]')!;
     const storageKey = 'lala-analytics-consent';
     const flags = window as unknown as Record<string, unknown>;
     const layer = (flags.dataLayer ??= []) as IArguments[];
@@ -55,5 +57,44 @@ const { measurementId, pagePath } = Astro.props;
     document.addEventListener('booking:saved', () => {
       if (choice.checked) tag('event', 'generate_lead', {send_to: id});
     });
+
+    // Meta Pixel: off unless the visitor ticks its own box. Nothing is loaded from Meta before that.
+    const pixelId = panel.dataset.metaPixel;
+    const metaChoice = panel.querySelector<HTMLInputElement>('[data-meta-input]');
+    if (pixelId && metaChoice && !restricted) {
+      const metaKey = 'lala-meta-consent';
+      type Fbq = ((...args: unknown[]) => void) & {queue: unknown[][]; loaded: boolean; version: string; push: Fbq; callMethod?: (...args: unknown[]) => void};
+      let metaStarted = false;
+      const applyMeta = (metaAllowed: boolean) => {
+        metaChoice.checked = metaAllowed;
+        const existing = flags.fbq as Fbq | undefined;
+        if (existing) existing('consent', metaAllowed ? 'grant' : 'revoke');
+        if (!metaAllowed || metaStarted) return;
+        metaStarted = true;
+        // Same stub as Meta's own snippet: queue calls until fbevents.js takes over.
+        const fbq = ((...args: unknown[]) => { if (fbq.callMethod) fbq.callMethod(...args); else fbq.queue.push(args); }) as Fbq;
+        fbq.queue = []; fbq.loaded = true; fbq.version = '2.0'; fbq.push = fbq;
+        flags.fbq = fbq; flags._fbq = fbq;
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+        document.head.appendChild(script);
+        fbq('init', pixelId);
+        fbq('track', 'PageView');
+      };
+      let metaAllowed = false;
+      try { metaAllowed = localStorage.getItem(metaKey) === 'yes'; } catch { /* default off */ }
+      applyMeta(metaAllowed);
+      metaChoice.addEventListener('change', () => {
+        try { localStorage.setItem(metaKey, metaChoice.checked ? 'yes' : 'no'); } catch { /* current page only */ }
+        applyMeta(metaChoice.checked);
+      });
+      window.addEventListener('storage', e => {
+        if (e.key === metaKey || e.key === null) applyMeta(e.newValue === 'yes');
+      });
+      document.addEventListener('booking:saved', () => {
+        if (metaChoice.checked) (flags.fbq as Fbq | undefined)?.('track', 'Lead');
+      });
+    }
   }
 </script>

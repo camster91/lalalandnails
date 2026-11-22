@@ -66,7 +66,7 @@ const schema = Astro.url.pathname === '/' ? buildSchema(site) : null;
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
     {publicProduction &&
-      <AnalyticsChoice measurementId="G-SN2ZY23TZP" pagePath={Astro.props.notFound ? '/404' : publicPath} />}
+      <AnalyticsChoice measurementId="G-SN2ZY23TZP" metaPixelId={site.metaPixelId} pagePath={Astro.props.notFound ? '/404' : publicPath} />}
     <script>
       import { rememberVisitSource } from '../lib/lead-source';
       rememberVisitSource();

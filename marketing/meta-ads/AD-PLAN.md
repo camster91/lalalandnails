@@ -100,7 +100,7 @@ Pause the ads whenever the calendar is full for the next two weeks.
 
 ## Risks
 
-- **Meta cannot see bookings yet.** The site has no Meta tracking code (the "Pixel"), so Meta aims for clicks, not requests. Adding the Pixel later would let it aim for requests. That needs a change to the site and the privacy page.
+- **Meta sees very few bookings.** The site can now load Meta's tracking code (the "Pixel"), but only for visitors who tick a box allowing it, and only once a Pixel ID is added in `src/data/site.ts`. Most visitors will not tick it, so Meta should still aim for clicks (the Traffic goal). Count real results by the "instagram" label in the staff workspace.
 - **The reels will get stale.** All 16 use the same 3 videos and 13 photos. A few new phone clips from Bianca each month would fix that.
 - **The exact address is private.** The site shows Scarborough only. Some people will ask where the studio is before they book, so Bianca should have a ready answer.
 

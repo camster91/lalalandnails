@@ -22,6 +22,10 @@ import { siteConfig } from '../data/site';
     <h2>Website operation</h2>
     <p>The hosting provider processes technical request information to deliver and protect the website. Staff sign-in is restricted using Cloudflare Access. A private studio calendar subscription contains appointment times and generic event titles; it excludes client names, contact details and private notes. Requested blocks appear as tentative events.</p>
     <p>To protect availability, requests are limited per network connection using a daily hashed network identifier. The limit expires within 24 hours, and expired identifiers are cleared when the next form request is processed. We do not store your raw IP address in the booking database.</p>
+    {siteConfig.metaPixelId && <>
+      <h2>Ad measurement (optional)</h2>
+      <p>We advertise on Facebook and Instagram. If you tick the Meta box at the bottom of a page, your browser loads Meta’s measurement code (the Meta Pixel). It tells Meta that you visited a page and, if you send one, that an appointment request was saved, so we can see whether our ads are working. Meta may link this to your Facebook or Instagram account and use it under its own privacy policy. We do not send Meta your name, phone number, service choices, note or images. The box is off unless you tick it, you can untick it at any time, and it is not offered when your browser sends a Do Not Track or Global Privacy Control signal.</p>
+    </>}
     <a class="button" href="/#booking">Contact Bianca</a>
     <a class="text-link" href="/">Back to the website</a>
 </main>
