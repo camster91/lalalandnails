@@ -65,6 +65,7 @@ try {
       }
     }
     for (const [path, service] of [
+      ['/services/gel-manicure-scarborough', 'gel-colour'],
       ['/services-pricing', 'rubber-base'],
       ['/services-pricing', 'soft-gel-tips'],
       ['/services/dry-manicure-scarborough', 'dry'],
