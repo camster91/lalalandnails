@@ -1,5 +1,19 @@
 export const guides = [
   {
+    id: 'rubber-base',
+    path: '/services/rubber-base-manicure-scarborough',
+    title: 'Rubber base manicure in Scarborough',
+    label: 'Rubber base manicure guide',
+    description: 'Keep your natural length with a $65 CAD rubber base manicure and gel colour at Bianca’s Scarborough studio. Compare rubber base, builder gel and soft gel tips.',
+    img: '/images/manicure-prep.webp',
+    alt: 'Natural nail preparation at Bianca’s studio',
+    intro: 'If you like your natural length and want a flexible layer beneath your gel colour, choose rubber base. This appointment is $65 CAD at my Scarborough home studio.',
+    questions: [
+      { q: 'What is the difference between rubber base and builder gel?', a: 'With rubber base, I apply a flexible base to your natural nail and finish with gel colour. For a more structured overlay, I offer a builder gel manicure from $75 CAD on short natural nails. Tell me how you wear your nails and we can decide together.' },
+      { q: 'Do the $65 soft gel tips include the same service?', a: 'Soft gel tips are a separate service starting at $65 CAD. Choose tips if you want length beyond your fingertips at this appointment. Choose rubber base with gel colour to keep the length you already have.' },
+    ],
+  },
+  {
     id: 'gel-colour',
     path: '/services/gel-manicure-scarborough',
     title: 'Gel manicure in Scarborough',
