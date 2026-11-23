@@ -72,6 +72,9 @@ try {
       ['/services/dry-manicure-scarborough', 'dry'],
       ['/services/structured-gel-scarborough', 'structured'],
       ['/services/structured-gel-scarborough', 'rubber-base'],
+      ['/services/structured-gel-fills-scarborough', 'fill-short'],
+      ['/services/structured-gel-fills-scarborough', 'fill-medium'],
+      ['/services/structured-gel-fills-scarborough', 'fill-long'],
       ['/services/gel-removal-scarborough', 'removal'],
     ]) {
       await page.goto(origin + path);

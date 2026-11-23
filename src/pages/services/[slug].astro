@@ -33,7 +33,13 @@ const breadcrumbSchema = {
 <h3 id="short-french-tips">Short French tips on natural nails</h3>
 <p>A soft pink base and a fine white edge keep the French tip visible on a short square nail. Bring this photo if you like the width of the white tip. Bianca can adapt it to the free edge you already have.</p>
 <figure><img src="/images/structured-pink-french.webp" alt="Soft pink square nails with white French tips" loading="lazy" /><figcaption>For this French finish on short natural nails, request <a href="/services/structured-gel-scarborough">structured gel from $75 CAD</a> with elevated nail art (+$20 CAD). The starting estimate is $95 CAD. <a href="/?service=structured&amp;look=short-french#booking">Request this French manicure</a> with short square nails and Tier 2 art preselected.</figcaption></figure></section>}
-{guide.questions.map(({q,a}) => <section><h2>{q}</h2><p>{guide.id === 'structured' && a.includes('request a structured gel fill') ? <>{a.split('request a structured gel fill')[0]}request a <a href="/services/structured-gel-fills-scarborough">structured gel fill</a>{a.split('request a structured gel fill')[1]}</> : a}</p></section>)}
+{guide.questions.map(({q,a}) => <section><h2>{q}</h2>{guide.id === 'structured-gel-fills' && q === 'How much is a structured gel fill?' ? <>
+  <p>If Bianca applied your current set, choose your fill by length. Each price includes the length shown.</p>
+  <ul>{pricingDraft.fills.filter(fill => fill.id.startsWith('fill-')).map(fill =>
+    <li><a href={'/?service=' + fill.id + '#booking'}>{fill.name} · ${fill.price} CAD</a></li>
+  )}</ul>
+  <p>Include a reference photo if you’d like to add nail art.</p>
+</> : <p>{guide.id === 'structured' && a.includes('request a structured gel fill') ? <>{a.split('request a structured gel fill')[0]}request a <a href="/services/structured-gel-fills-scarborough">structured gel fill</a>{a.split('request a structured gel fill')[1]}</> : a}</p>}</section>)}
 {!['structured-gel-fills', 'gel-removal'].includes(guide.id) && <section><h2>Coming in with gel from another technician?</h2><p>Please arrive with bare nails or <a href="/services/gel-removal-scarborough">book removal with your manicure</a>. Mention your existing product when booking so I can set aside time at my Scarborough studio.</p></section>}
 <a class="button" href={['structured', 'dry', 'soft-gel-tips', 'gel-colour', 'rubber-base'].includes(guide.id) ? "/?service=" + guide.id + "#booking" : "/#booking"}>Request an appointment</a>
 <nav aria-label="Compare manicure services">{guides.filter(g=>g.id!==guide.id).map(g=><a href={g.path}>{g.label}</a>)}</nav></div>
