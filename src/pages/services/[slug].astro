@@ -35,7 +35,7 @@ const breadcrumbSchema = {
 <figure><img src="/images/structured-pink-french.webp" alt="Soft pink square nails with white French tips" loading="lazy" /><figcaption>For this French finish on short natural nails, request <a href="/services/structured-gel-scarborough">structured gel from $75 CAD</a> with elevated nail art (+$20 CAD). The starting estimate is $95 CAD. <a href="/?service=structured#booking">Request this manicure</a> and select short length and Tier 2 — Elevated.</figcaption></figure></section>}
 {guide.questions.map(({q,a}) => <section><h2>{q}</h2><p>{guide.id === 'structured' && a.includes('request a structured gel fill') ? <>{a.split('request a structured gel fill')[0]}request a <a href="/services/structured-gel-fills-scarborough">structured gel fill</a>{a.split('request a structured gel fill')[1]}</> : a}</p></section>)}
 {!['structured-gel-fills', 'gel-removal'].includes(guide.id) && <section><h2>Coming in with gel from another technician?</h2><p>Please arrive with bare nails or <a href="/services/gel-removal-scarborough">book removal with your manicure</a>. Mention your existing product when booking so I can set aside time at my Scarborough studio.</p></section>}
-<a class="button" href={['structured', 'dry', 'soft-gel-tips', 'gel-colour'].includes(guide.id) ? "/?service=" + guide.id + "#booking" : "/#booking"}>Request an appointment</a>
+<a class="button" href={['structured', 'dry', 'soft-gel-tips', 'gel-colour', 'rubber-base'].includes(guide.id) ? "/?service=" + guide.id + "#booking" : "/#booking"}>Request an appointment</a>
 <nav aria-label="Compare manicure services">{guides.filter(g=>g.id!==guide.id).map(g=><a href={g.path}>{g.label}</a>)}</nav></div>
 </article></main><Footer site={site}/></div></BaseLayout>
 <style>
