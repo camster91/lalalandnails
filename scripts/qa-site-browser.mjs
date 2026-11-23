@@ -80,6 +80,13 @@ try {
       const estimate = page.locator('[data-booking-estimate]');
       assert.equal(await estimate.textContent(), formatBookingEstimate(quoteBooking({ package: service, length: service === 'structured' ? 'unsure' : 'short' })));
     }
+    await page.goto(origin + '/services/nail-art-scarborough#short-french-tips');
+    await page.getByRole('link', { name: 'Request this French manicure' }).click();
+    await page.waitForFunction(() => document.querySelector('select[name="art"]')?.value === '2');
+    for (const [field, value] of Object.entries({ package: 'structured', length: 'short', shape: 'Square' })) {
+      assert.equal(await page.locator(`select[name="${field}"]`).inputValue(), value);
+    }
+    assert.match(await page.locator('[data-booking-estimate]').textContent(), /\$95/);
     await page.goto(origin, { waitUntil: 'networkidle' });
     await page.keyboard.press('Tab');
     assert.equal(await page.locator(':focus').textContent(), 'Skip to content');

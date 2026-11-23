@@ -131,11 +131,18 @@ export function startBooking() {
       window.plausible?.('booking_request_failed');
     } finally {submit.disabled=false;form.removeAttribute('aria-busy');}
   });
-  const requestedService = new URLSearchParams(location.search).get('service');
+  const bookingParams = new URLSearchParams(location.search);
+  const requestedService = bookingParams.get('service');
   const serviceSelect = form.elements.namedItem('package');
   if (location.hash === '#booking' && requestedService && serviceSelect instanceof HTMLSelectElement &&
       Array.from(serviceSelect.options).some(option => option.value === requestedService)) {
     serviceSelect.value = requestedService;
+    if (requestedService === 'structured' && bookingParams.get('look') === 'short-french') {
+      for (const [field, value] of Object.entries({ length: 'short', art: '2', shape: 'Square' })) {
+        const select = form.elements.namedItem(field);
+        if (select instanceof HTMLSelectElement) select.value = value;
+      }
+    }
     serviceSelect.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
