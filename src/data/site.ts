@@ -76,6 +76,8 @@ export interface SiteConfig {
     provider: 'plausible';
     domain: string | null;
   };
+  /** Meta Pixel ID for ad measurement. Null keeps the Pixel and its consent box off the site. */
+  metaPixelId: string | null;
   services: ServiceEntry[];
   process: ProcessStep[];
   gallery: GalleryEntry[];
@@ -119,6 +121,7 @@ export const siteConfig: SiteConfig = {
     provider: 'plausible',
     domain: null,
   },
+  metaPixelId: null,
   services: [
     {
       name: 'European manicures and natural-nail structured gel',
