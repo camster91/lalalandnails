@@ -9,6 +9,7 @@ export const guides = [
     alt: 'Glossy red gel colour on short square nails',
     intro: 'Like the length of your nails and want a solid colour? My European Gel Manicure is $60 CAD and takes 75–90 minutes. I prepare your cuticles, shape your natural nails and finish them with your choice of gel colour.',
     questions: [
+      { q: 'How long will my gel manicure last?', a: 'Your nail growth and how the colour wears will help us choose your next appointment. If the colour has grown out evenly, ask me about a gel colour refresh. If an edge lifts or a nail breaks, mention which nail is affected when you request a visit so I can plan time to assess it.' },
       { q: 'Can I keep my nails short?', a: 'Yes. We can keep the length close to your fingertips and choose a shape that suits your hands. The short square red set above is one finish you can ask for.' },
       { q: 'When should I choose builder gel instead?', a: 'Choose the European Gel Manicure for colour at your current length. If you want a shaped overlay for extra support, my Signature Structured Gel Manicure starts at $75 CAD on short natural nails.' },
     ],
